@@ -1,101 +1,36 @@
-# With Docker Compose
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-This example contains everything needed to get a Next.js development and production environment up and running with Docker Compose.
-
-## Benefits of Docker Compose
-
-- Develop locally without Node.js or TypeScript installed ✨
-- Easy to run, consistent development environment across macOS, Windows, and Linux teams
-- Run multiple Next.js apps, databases, and other microservices in a single deployment
-- Multistage builds combined with [Output Standalone](https://nextjs.org/docs/advanced-features/output-file-tracing#automatically-copying-traced-files) outputs up to 85% smaller apps (Approximately 110 MB compared to 1 GB with create-next-app)
-- Easy configuration with YAML files
-
-## How to use
-
-Execute [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app) with [npm](https://docs.npmjs.com/cli/init), [Yarn](https://yarnpkg.com/lang/en/docs/cli/create/), or [pnpm](https://pnpm.io) to bootstrap the example:
-
-```bash
-npx create-next-app --example with-docker-compose with-docker-compose-app
-```
-
-```bash
-yarn create next-app --example with-docker-compose with-docker-compose-app
-```
-
-```bash
-pnpm create next-app --example with-docker-compose with-docker-compose-app
-```
-
-Optionally, after the installation is complete:
-
-- Run `cd next-app`, then run `npm install` or `yarn install` or `pnpm install` to generate a lockfile.
-
-It is recommended to commit a lockfile to version control. Although the example will work without one, build errors are more likely to occur when using the latest version of all dependencies. This way, we're always using a known good configuration to develop and run in production.
-
-## Prerequisites
-
-Install [Docker Desktop](https://docs.docker.com/get-docker) for Mac, Windows, or Linux. Docker Desktop includes Docker Compose as part of the installation.
-
-## Development
+## Getting Started
 
 First, run the development server:
 
 ```bash
-# Create a network, which allows containers to communicate
-# with each other, by using their container name as a hostname
-docker network create my_network
-
-# Build dev
-docker compose -f compose.dev.yaml build
-
-# Up dev
-docker compose -f compose.dev.yaml up
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-## Production
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-Multistage builds are highly recommended in production. Combined with the Next [Output Standalone](https://nextjs.org/docs/advanced-features/output-file-tracing#automatically-copying-traced-files) feature, only `node_modules` files required for production are copied into the final Docker image.
+## Learn More
 
-First, run the production server (Final image approximately 110 MB).
+To learn more about Next.js, take a look at the following resources:
 
-```bash
-# Create a network, which allows containers to communicate
-# with each other, by using their container name as a hostname
-docker network create my_network
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-# Build prod
-docker compose -f compose.prod.yaml build
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-# Up prod in detached mode
-docker compose -f compose.prod.yaml up -d
-```
+## Deploy on Vercel
 
-Alternatively, run the production server without multistage builds (Final image approximately 1 GB).
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-```bash
-# Create a network, which allows containers to communicate
-# with each other, by using their container name as a hostname
-docker network create my_network
-
-# Build prod without multistage
-docker compose -f compose.prod-without-multistage.yaml build
-
-# Up prod without multistage in detached mode
-docker compose -f compose.prod-without-multistage.yaml up -d
-```
-
-Open [http://localhost:3000](http://localhost:3000).
-
-## Useful commands
-
-```bash
-# Stop all running containers
-docker kill $(docker ps -aq) && docker rm $(docker ps -aq)
-
-# Free space
-docker system prune -af --volumes
-```
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
