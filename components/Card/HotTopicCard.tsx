@@ -5,6 +5,7 @@ import ProposalBadge from "../Badge/ProposalBadge";
 import { TopicCardProps } from "./TopicCard";
 
 export default function HotTopicCard({
+  id,
   proposer,
   title,
   name,
@@ -13,7 +14,10 @@ export default function HotTopicCard({
   className,
 }: TopicCardProps) {
   return (
-    <div className={`${className} w-60 border-2 h-60 p-5 bg-white rounded-md`}>
+    <div
+      id={id}
+      className={`${className} w-60 border-2 h-60 p-5 bg-white shadow-lg rounded-md`}
+    >
       <div className="flex flex-col justify-between w-full h-full gap-1">
         <ProposalBadge proposer={proposer} />
         <span className="text-base font-medium">{title}</span>

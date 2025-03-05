@@ -20,7 +20,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className={`${pretendard.variable} antialiased `}>
+      <body
+        className={`${pretendard.variable} flex flex-col items-center antialiased `}
+      >
         <Header />
         {children}
       </body>

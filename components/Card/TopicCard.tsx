@@ -4,6 +4,7 @@ import { Calendar, Eye } from "lucide-react";
 import ProposalBadge from "../Badge/ProposalBadge";
 
 export interface TopicCardProps {
+  id?: string;
   proposer: "professor" | "student" | "admin";
   title: string;
   name: string;
@@ -13,6 +14,7 @@ export interface TopicCardProps {
 }
 
 export default function TopicCard({
+  id,
   proposer,
   title,
   name,
@@ -22,7 +24,8 @@ export default function TopicCard({
 }: TopicCardProps) {
   return (
     <div
-      className={`${className} w-[690px] border-2 h-[120px] p-5 bg-white rounded-md`}
+      id={id}
+      className={`${className} w-[690px] border-2 h-[120px] p-5 shadow-lg bg-white rounded-md`}
     >
       <div className="flex flex-col gap-1">
         <ProposalBadge proposer={proposer} />
