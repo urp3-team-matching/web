@@ -1,6 +1,6 @@
 import { Badge } from "../ui/badge";
 
-interface ProposalBadgeProps {
+export interface ProposalBadgeProps {
   proposer: "professor" | "student" | "admin";
 }
 

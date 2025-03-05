@@ -1,8 +1,8 @@
 import { Badge } from "../ui/badge";
-
-interface ApplyStatueBadgeProps {
+export interface ApplyStatueBadgeProps {
   status: "recruiting" | "closingSoon" | "closed";
 }
+
 export default function ApplyStatueBadge({ status }: ApplyStatueBadgeProps) {
   let badgeColor = "";
   let badgeText = "";
