@@ -3,6 +3,9 @@
 @theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-primary: #072b61;
+  --color-secondary: #8dc63f;
+  --color-third: #0e341b;
 }
 
 /*
@@ -44,4 +47,12 @@
     color: var(--foreground);
     background: var(--background);
   }
+}
+
+:root {
+  --font-noto-sans-kr: 'Noto Sans KR', sans-serif;
+}
+
+body {
+  font-family: var(--font-noto-sans-kr); /* 설정된 폰트 변수 사용 */
 }
