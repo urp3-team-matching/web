@@ -21,10 +21,11 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body
-        className={`${pretendard.variable} flex flex-col items-center antialiased `}
+        className={`${pretendard.variable}  flex flex-col items-center antialiased `}
       >
         <Header />
         {children}
+        <div className="w-full h-16 "></div>
       </body>
     </html>
   );

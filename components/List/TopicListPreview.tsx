@@ -1,5 +1,6 @@
 import TopicCard from "../Card/TopicCard";
-import SectionLable from "./SectionLable";
+import SectionLable from "../SectionLable";
+import ShowMoreButton from "../ShowMoreButton";
 
 export function TopicPreviewList() {
   return (
@@ -13,10 +14,11 @@ export function TopicPreviewList() {
             name="김훈모"
             view={1003}
             date={new Date("2025-03-06")}
-            proposer="student"
+            proposer="admin"
           />
         ))}
       </div>
+      <ShowMoreButton href="/topics" />
     </div>
   );
 }

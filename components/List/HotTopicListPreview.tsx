@@ -1,5 +1,5 @@
 import HotTopicCard from "../Card/HotTopicCard";
-import SectionLable from "./SectionLable";
+import SectionLable from "../SectionLable";
 
 export function HotTopicPreviewList() {
   return (
