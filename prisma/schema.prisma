@@ -8,19 +8,72 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-
-model Post {
-  id        Int     @id @default(autoincrement())
-  title     String
-  content   String?
-  published Boolean @default(false)
-  author    User?   @relation(fields: [authorId], references: [id])
-  authorId  Int?
+enum ProposerType {
+  PROFESSOR
+  STUDENT
+  HOST
 }
 
-model User {
+
+model Topic {
+  id        Int     @id @default(autoincrement())
+
+  name     String
+  content   String
+  proposerType ProposerType
+  proposerName String
+  viewCount Int     @default(0)
+
+  createdDatetime DateTime @default(now())
+  updatedDatetime DateTime @default(now())
+  teams Team[]
+
+  passwordHash String @map("password")
+}
+
+model Team {
   id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-  posts Post[]
+
+  topicId Int
+  topic Topic @relation(fields: [topicId], references: [id])
+  applicants Applicant[]
+
+  name String
+  content TeamContent?
+  leaderName String
+  viewCount Int     @default(0)
+  createdDatetime DateTime @default(now())
+  updatedDatetime DateTime @default(now())
+
+  passwordHash String @map("password")
+}
+
+model TeamContent {
+  id    Int     @id @default(autoincrement())
+
+  teamId Int @unique
+  team Team @relation(fields: [teamId], references: [id])
+
+  background String
+  objective String
+  method String
+  result String
+}
+
+model Applicant {
+  id    Int     @id @default(autoincrement())
+
+  teamId Int
+  team Team @relation(fields: [teamId], references: [id])
+
+  nickName String
+  email String
+  phone String
+  content String
+  profileImage String
+
+  createdDatetime DateTime @default(now())
+  updatedDatetime DateTime @default(now())
+
+  passwordHash String @map("password")
 }
