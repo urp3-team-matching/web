@@ -25,7 +25,6 @@ export default function RootLayout({
       >
         <Header />
         {children}
-        <div className="w-full h-16 "></div>
       </body>
     </html>
   );

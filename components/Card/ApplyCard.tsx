@@ -3,7 +3,7 @@ import ApplyBadge from "../Badge/ApplyBadge";
 import ApplyStatueBadge from "../Badge/ApplyStatueBadge";
 
 export interface ApplyCardProps {
-  id?: string;
+  id: string;
   status: "recruiting" | "closingSoon" | "closed";
   title: string;
   active: boolean;
