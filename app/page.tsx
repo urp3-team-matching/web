@@ -1,6 +1,6 @@
-import ApplyListPreview from "@/components/List/ApplyListPreview";
-import { HotTopicPreviewList } from "@/components/List/HotTopicListPreview";
-import { TopicPreviewList } from "@/components/List/TopicListPreview";
+import ApplyListPreview from "@/components/ListPreview/ApplyListPreview";
+import { HotTopicPreviewList } from "@/components/ListPreview/HotTopicListPreview";
+import { TopicPreviewList } from "@/components/ListPreview/TopicListPreview";
 
 export default async function Home() {
   return (
