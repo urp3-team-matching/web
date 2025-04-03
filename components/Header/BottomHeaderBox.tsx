@@ -15,7 +15,7 @@ export default function BottomHeaderBox() {
           </Link>
           <ul className="max-[1080px]:hidden text-xl gap-20 flex  absolute right-0">
             <Link href="/">프로젝트</Link>
-            <Link href="/teams">공지사항</Link>
+            <Link href="/notice">공지사항</Link>
           </ul>
         </div>
       </div>

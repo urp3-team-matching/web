@@ -1,6 +1,6 @@
-import { ApplyStatueMenubar } from "@/components/Project/ApplyStatueMenubar";
-import { ProjectList } from "@/components/Project/ProjectList";
-import SearchCreateRow from "@/components/Project/SearchCreateRow";
+import { ApplyStatueMenubar } from "@/components/Home/ApplyStatueMenubar";
+import { ProjectList } from "@/components/Home/ProjectList";
+import SearchCreateRow from "@/components/Home/SearchCreateRow";
 
 export default async function Home() {
   return (

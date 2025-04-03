@@ -1,4 +1,20 @@
-export const fakeTopics = [
+export type ProjectType = {
+  id: string;
+  title: string;
+  date: Date;
+  name: string;
+  proposer: "professor" | "student" | "admin";
+  view: number;
+  projectType: "research"; // 혹시 나중에 다른 타입 추가되면 union 타입 확장 가능
+  status: "recruiting" | "closingSoon" | "closed";
+  keywords: string[];
+  background: string;
+  goal: string;
+  methodology: string;
+  expectation: string;
+};
+
+export const fakeProjects = [
   {
     id: "1",
     title:
