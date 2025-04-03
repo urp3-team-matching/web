@@ -14,62 +14,61 @@ enum ProposerType {
   HOST
 }
 
+model Project {
+  id Int @id @default(autoincrement())
 
-model Topic {
-  id        Int     @id @default(autoincrement())
-
-  name     String
-  content   String
+  name         String
+  content      String
   proposerType ProposerType
   proposerName String
-  viewCount Int     @default(0)
+  viewCount    Int          @default(0)
 
   createdDatetime DateTime @default(now())
   updatedDatetime DateTime @default(now())
-  teams Team[]
+  teams           Team[]
 
   passwordHash String @map("password")
 }
 
 model Team {
-  id    Int     @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
-  topicId Int
-  topic Topic @relation(fields: [topicId], references: [id])
+  projectId  Int
+  project    Project     @relation(fields: [projectId], references: [id])
   applicants Applicant[]
 
-  name String
-  content TeamContent?
-  leaderName String
-  viewCount Int     @default(0)
-  createdDatetime DateTime @default(now())
-  updatedDatetime DateTime @default(now())
+  name            String
+  content         TeamContent?
+  leaderName      String
+  viewCount       Int          @default(0)
+  createdDatetime DateTime     @default(now())
+  updatedDatetime DateTime     @default(now())
 
   passwordHash String @map("password")
 }
 
 model TeamContent {
-  id    Int     @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
-  teamId Int @unique
-  team Team @relation(fields: [teamId], references: [id])
+  teamId Int  @unique
+  team   Team @relation(fields: [teamId], references: [id])
 
   background String
-  objective String
-  method String
-  result String
+  objective  String
+  method     String
+  result     String
 }
 
 model Applicant {
-  id    Int     @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
   teamId Int
-  team Team @relation(fields: [teamId], references: [id])
+  team   Team @relation(fields: [teamId], references: [id])
 
-  nickName String
-  email String
-  phone String
-  content String
+  nickName     String
+  email        String
+  phone        String
+  content      String
   profileImage String
 
   createdDatetime DateTime @default(now())

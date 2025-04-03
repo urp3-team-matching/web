@@ -1,3 +1,3 @@
-export default function Topics() {
+export default function Projects() {
   return <></>;
 }

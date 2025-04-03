@@ -1,7 +1,7 @@
 export interface ApiError {
   httpStatusCode: (typeof errorCodes)[keyof typeof errorCodes];
   message: string;
-  details?: any;
+  details?: string;
 }
 
 export const errorCodes = {

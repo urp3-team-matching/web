@@ -3,7 +3,7 @@
 import { Calendar, Eye } from "lucide-react";
 import ProposalBadge from "../Badge/ProposalBadge";
 
-export interface TopicCardProps {
+export interface ProjectCardProps {
   id?: string;
   proposer: "professor" | "student" | "admin";
   title: string;
@@ -13,7 +13,7 @@ export interface TopicCardProps {
   className?: string;
 }
 
-export default function TopicCard({
+export default function ProjectCard({
   id,
   proposer,
   title,
@@ -21,7 +21,7 @@ export default function TopicCard({
   date,
   view,
   className,
-}: TopicCardProps) {
+}: ProjectCardProps) {
   return (
     <div
       id={id}

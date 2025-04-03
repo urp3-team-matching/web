@@ -2,9 +2,9 @@
 
 import { Calendar, Eye } from "lucide-react";
 import ProposalBadge from "../Badge/ProposalBadge";
-import { TopicCardProps } from "./TopicCard";
+import { ProjectCardProps } from "./ProjectCard";
 
-export default function HotTopicCard({
+export default function HotProjectCard({
   id,
   proposer,
   title,
@@ -12,7 +12,7 @@ export default function HotTopicCard({
   date,
   view,
   className,
-}: TopicCardProps) {
+}: ProjectCardProps) {
   return (
     <div
       id={id}
