@@ -1,11 +1,11 @@
 import { PrismaClient } from "@prisma/client";
-import * as bcrypt from "bcryptjs";
+import { hash } from "bcryptjs";
 
 const prisma = new PrismaClient();
 
 async function main() {
   // 비밀번호 해싱
-  const passwordHash = await bcrypt.hash("password123", 10);
+  const passwordHash = await hash("password123", 10);
 
   // 예제 토픽 생성
   const project = await prisma.project.upsert({
