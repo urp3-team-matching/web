@@ -3,14 +3,25 @@ import ApplyStatueBadge from "../Badge/ApplyStatueBadge";
 import KeywordBadge from "../Badge/KeywordBadge";
 import ProposalBadge from "../Badge/ProposalBadge";
 import { Calendar, Eye } from "lucide-react";
+import { Switch } from "../ui/switch";
 
 interface ProjectHeaderProps {
+  adminMode: boolean;
+  setAdminMode: React.Dispatch<React.SetStateAction<boolean>>;
   project: ProjectType;
 }
 
-export default function ProjectHeader({ project }: ProjectHeaderProps) {
+export default function ProjectHeader({
+  adminMode,
+  setAdminMode,
+  project,
+}: ProjectHeaderProps) {
   return (
-    <div className="w-full h-auto flex flex-col">
+    <div className="w-full h-auto flex flex-col relative">
+      <div className="absolute flex gap-1 items-center right-0 top-0">
+        <Switch checked={adminMode} onCheckedChange={setAdminMode}></Switch>
+        <span className="text-sm font-medium -translate-y-[1px]">관리자</span>
+      </div>
       <div className="flex  w-full gap-[10px] items-center h-7 ">
         <ApplyStatueBadge status={project.status} />
         <ProposalBadge proposer={project.proposer} />
@@ -28,7 +39,7 @@ export default function ProjectHeader({ project }: ProjectHeaderProps) {
         </div>
         <div className="flex items-center gap-1">
           <Calendar className="size-5 mt-0.5" />
-          <span>{project.date.toLocaleDateString()}</span>
+          <span>{project.date.toLocaleDateString("ko-KR")}</span>
         </div>
       </div>
     </div>

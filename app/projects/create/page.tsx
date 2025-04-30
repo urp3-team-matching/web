@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import Link from "next/link";
 import { useForm, Controller } from "react-hook-form";
 
-type ProjectFormType = {
+export type ProjectFormType = {
   title: string;
   introduction: string;
   background: string;
