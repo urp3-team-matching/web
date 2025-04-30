@@ -7,9 +7,14 @@ interface MajorGraphProps {
 
 export default function MajorGraph({ project }: MajorGraphProps) {
   const majorNumber = project.majors.length;
-  console.log(majorNumber);
+  const majorColor = [
+    "bg-secondary-100",
+    "bg-blue-300",
+    "bg-yellow-300",
+    "bg-fuchsia-400",
+  ];
   return (
-    <div className="w-full h-[152px] shadow-md rounded-lg p-1">
+    <div className="w-full h-auto flex flex-col gap-3 shadow-md rounded-lg p-1">
       <div className="w-full h-auto justify-between flex">
         {[...Array(majorNumber)].map((_, index) => (
           <CircleUser
@@ -44,6 +49,14 @@ export default function MajorGraph({ project }: MajorGraphProps) {
           }  w-full h-full z-10 bg-fuchsia-400  rounded-2xl`}
         ></div>
         <div className="w-full h-full top-0 left-0  -z-10 bg-gray-100 absolute"></div>
+      </div>
+      <div className="w-full flex flex-col gap-1 justify-center h-auto">
+        {project.majors.map((major, i) => (
+          <div className="flex gap-1 items-center" key={i}>
+            <div className={`size-5 rounded-full ${majorColor[i]}`}></div>
+            <div className="w-full text-xs font-normal">{major}</div>
+          </div>
+        ))}
       </div>
     </div>
   );

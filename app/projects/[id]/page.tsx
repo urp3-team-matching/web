@@ -11,8 +11,7 @@ export default function Project({ params }: { params: { id: string } }) {
       <ProjectHeader project={project as ProjectType} />
       <div className="w-full flex h-96 justify-between ">
         <ProjectTextField project={project as ProjectType} />
-
-        <div className="w-[280px] h-full mt-12">
+        <div className="w-[280px] h-auto mt-12">
           <MajorGraph project={project as ProjectType}></MajorGraph>
         </div>
       </div>
