@@ -4,10 +4,12 @@ import KeywordBadge from "@/components/Badge/KeywordBadge";
 import ProposalBadge from "@/components/Badge/ProposalBadge";
 import MajorGraph from "@/components/Project/ProjectField/MajorGraph";
 import ProjectTextArea from "@/components/Project/ProjectField/ProjectTextArea";
+import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 import { fakeProjects, ProjectType } from "@/constants/fakeProject";
-import { Calendar, Eye } from "lucide-react";
-import { useState } from "react";
+import { Calendar, Eye, User } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 type ProjectTextFieldType = {
@@ -21,7 +23,7 @@ type ProjectTextFieldType = {
 export default function Project({ params }: { params: { id: string } }) {
   const project = fakeProjects.find((project) => project.id === params.id);
   const [adminMode, setAdminMode] = useState<boolean>(false);
-
+  const [isManagingRecruitment, setIsManagingRecruitment] = useState(false);
   const {
     handleSubmit,
     control,
@@ -48,6 +50,14 @@ export default function Project({ params }: { params: { id: string } }) {
     { name: "goal", title: "프로젝트 목표" },
     { name: "expectation", title: "프로젝트 기대효과" },
   ] as const;
+
+  useEffect(() => {
+    if (!adminMode) {
+      setIsManagingRecruitment(false);
+    } else {
+      setIsManagingRecruitment(true);
+    }
+  }, [adminMode]);
 
   return (
     <form
@@ -97,7 +107,7 @@ export default function Project({ params }: { params: { id: string } }) {
           </div>
         </div>
       </div>
-      <div className="w-full flex h-auto justify-between">
+      <div className="w-full flex  h-auto justify-between">
         <div className="w-[690px] h-full mt-12 flex flex-col gap-5">
           {fields.map(({ name, title }) => (
             <Controller
@@ -116,8 +126,46 @@ export default function Project({ params }: { params: { id: string } }) {
             />
           ))}
         </div>
-        <div className="w-[280px] h-auto mt-12">
+
+        <div className="w-[280px] flex flex-col gap-5 h-auto mt-12">
           <MajorGraph project={project as ProjectType} />
+          <div className="w-full text-sm font-medium flex flex-col shadow-md rounded-lg  h-[400px]">
+            <div className="w-full *:w-16 *:text-center *:cursor-pointer border-b-2 flex justify-center gap-5 h-10 items-center">
+              <div onClick={() => setIsManagingRecruitment(false)}>대화방</div>
+              <div
+                onClick={() => setIsManagingRecruitment(true)}
+                className={`${adminMode ? "" : "hidden"}`}
+              >
+                모집 관리
+              </div>
+            </div>
+            <div
+              className={`${
+                isManagingRecruitment ? "hidden" : ""
+              } relative w-full h-[360px] `}
+            >
+              <div className="bottom-0 p-1 absolute w-full flex items-center h-[80px] border-t-2">
+                <Textarea className="w-3/4 resize-none h-full text-gray-500 font-medium"></Textarea>
+              </div>
+            </div>
+            <div
+              className={`${
+                isManagingRecruitment ? "" : "hidden"
+              } flex flex-col px-2`}
+            >
+              <div className="my-2 ">확정{`(${project?.majors.length}/4)`}</div>
+              {[...Array(project.majors.length)].map((_, i) => (
+                <div
+                  key={i}
+                  className="rounded-lg flex items-center px-3 shadow-md w-full h-[45px] border"
+                >
+                  <User className="size-6 mr-3" />
+                  <span>Profile ({project?.majors[i]})</span>
+                </div>
+              ))}
+              <div className="my-2">신청</div>
+            </div>
+          </div>
           <button
             className={`w-full h-[50px] bg-blue-500 text-white flex ${
               adminMode ? "hidden" : "block"
@@ -128,7 +176,7 @@ export default function Project({ params }: { params: { id: string } }) {
           <div
             className={`w-full ${
               adminMode ? "" : "hidden"
-            } flex justify-center gap-2 mt-5 h-auto`}
+            } flex justify-center gap-2 h-auto`}
           >
             <button
               onClick={() => {
