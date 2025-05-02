@@ -85,25 +85,25 @@ export default function Project({ params }: { params: { id: string } }) {
           <span className="text-sm font-medium -translate-y-[1px]">관리자</span>
         </div>
         <div className="flex  w-full gap-[10px] items-center h-7 ">
-          <ApplyStatueBadge status={project.status} />
-          <ProposalBadge proposer={project.proposer} />
-          {project.keywords.map((keyword, index) => {
+          <ApplyStatueBadge status={project?.status} />
+          <ProposalBadge proposer={project?.proposer} />
+          {project?.keywords.map((keyword, index) => {
             return <KeywordBadge keyword={keyword} key={index} />;
           })}
         </div>
-        <div className="text-4xl font-medium mb-2">{project.title}</div>
+        <div className="text-4xl font-medium mb-2">{project?.title}</div>
         <div className="w-full h-[1px] bg-black"></div>
         <div className="gap-3 flex h-7 items-center font-medium text-xs">
           <span className="text-slate-500 flex items-center">
-            {project.name}
+            {project?.name}
           </span>
           <div className="flex items-center gap-1">
             <Eye className="size-5 mt-0.5" />
-            <span>{project.view}</span>
+            <span>{project?.view}</span>
           </div>
           <div className="flex items-center gap-1">
             <Calendar className="size-5 mt-0.5" />
-            <span>{project.date.toLocaleDateString("ko-KR")}</span>
+            <span>{project?.date.toLocaleDateString("ko-KR")}</span>
           </div>
         </div>
       </div>
@@ -154,7 +154,7 @@ export default function Project({ params }: { params: { id: string } }) {
               } flex flex-col px-2`}
             >
               <div className="my-2 ">확정{`(${project?.majors.length}/4)`}</div>
-              {[...Array(project.majors.length)].map((_, i) => (
+              {[...Array(project?.majors.length)].map((_, i) => (
                 <div
                   key={i}
                   className="rounded-lg flex items-center px-3 shadow-md w-full h-[45px] border"

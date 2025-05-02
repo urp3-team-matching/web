@@ -8,7 +8,7 @@ export default async function Home() {
       <div className="w-full flex flex-col gap-5 mt-5 justify-between">
         <ApplyStatueMenubar />
         <SearchCreateRow />
-        <div className="flex gap-4">
+        <div className="flex *:cursor-pointer text-[12px] gap-4">
           <span>• 최신순</span>
           <span>• 인기순</span>
         </div>
