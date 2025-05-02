@@ -86,229 +86,238 @@ export default function Project({ params }: { params: { id: string } }) {
   }, [adminMode]);
 
   return (
-    <form
-      onSubmit={handleTextSubmit(edit)}
-      className="min-[1040px]:w-[1040px] my-12 px-5 flex-col flex w-full h-auto"
-    >
-      <div className="w-full h-auto flex flex-col relative">
-        <div className="absolute flex gap-1 items-center right-0 top-0">
-          <Switch
-            checked={adminMode}
-            onClick={() => {
-              if (adminMode) {
-                resetText({
-                  introduction: project?.introduction || "",
-                  background: project?.background || "",
-                  methodology: project?.methodology || "",
-                  goal: project?.goal || "",
-                  expectation: project?.expectation || "",
-                });
-                setAdminMode(false);
-              }
-            }}
-            onCheckedChange={setAdminMode}
-          ></Switch>
-          <span className="text-sm font-medium -translate-y-[1px]">관리자</span>
-        </div>
-        <div className="flex  w-full gap-[10px] items-center h-7 ">
-          <ApplyStatueBadge status={project?.status} />
-          <ProposalBadge proposer={project?.proposer} />
-          {project?.keywords.map((keyword, index) => {
-            return <KeywordBadge keyword={keyword} key={index} />;
-          })}
-        </div>
-        <div className="text-4xl font-medium mb-2">{project?.title}</div>
-        <div className="w-full h-[1px] bg-black"></div>
-        <div className="gap-3 flex h-7 items-center font-medium text-xs">
-          <span className="text-slate-500 flex items-center">
-            {project?.name}
-          </span>
-          <div className="flex items-center gap-1">
-            <Eye className="size-5 mt-0.5" />
-            <span>{project?.view}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Calendar className="size-5 mt-0.5" />
-            <span>{project?.date.toLocaleDateString("ko-KR")}</span>
-          </div>
-        </div>
-      </div>
-      <div className="w-full flex  h-auto justify-between">
-        <div className="w-[690px] h-full mt-12 flex flex-col gap-5">
-          {fields.map(({ name, title }) => (
-            <Controller
-              key={name}
-              name={name}
-              control={controlText}
-              rules={{ required: `${title}을 입력해주세요.` }}
-              render={({ field }) => (
-                <ProjectTextArea
-                  title={title}
-                  value={field.value}
-                  onChange={field.onChange}
-                  adminMode={adminMode}
-                />
-              )}
-            />
-          ))}
-        </div>
-
-        <div className="w-[280px] flex flex-col gap-5 h-auto mt-12">
-          <MajorGraph project={project as ProjectType} />
-          <div className="w-full text-sm font-medium flex flex-col shadow-md rounded-lg  h-[400px]">
-            <div className="w-full *:w-16 *:text-center *:cursor-pointer border-b-2 flex justify-center gap-5 h-10 items-center">
-              <div onClick={() => setIsManagingRecruitment(false)}>대화방</div>
-              <div
-                onClick={() => setIsManagingRecruitment(true)}
-                className={`${adminMode ? "" : "hidden"}`}
-              >
-                모집 관리
-              </div>
-            </div>
-            <div
-              className={`${
-                isManagingRecruitment ? "hidden" : ""
-              } relative w-full h-[360px] `}
-            >
-              <div className="bottom-0 p-1 absolute w-full flex items-center h-[80px] border-t-2">
-                <Textarea className="w-3/4 resize-none h-full text-gray-500 font-medium"></Textarea>
-              </div>
-            </div>
-            <div
-              className={`${
-                isManagingRecruitment ? "" : "hidden"
-              } flex flex-col px-2`}
-            >
-              <div className="my-2 ">확정{`(${project?.majors.length}/4)`}</div>
-              {[...Array(project?.majors.length)].map((_, i) => (
-                <div
-                  key={i}
-                  className="rounded-lg flex items-center px-3 shadow-md w-full h-[45px] border"
-                >
-                  <User className="size-6 mr-3" />
-                  <span>Profile ({project?.majors[i]})</span>
-                </div>
-              ))}
-              <div className="my-2">신청</div>
-            </div>
-          </div>
-          <Dialog>
-            <DialogTrigger>
-              <button
-                className={`w-full h-[50px] bg-blue-500 text-white flex ${
-                  adminMode ? "hidden" : "block"
-                } justify-center cursor-pointer items-center rounded-lg text-base font-medium`}
-              >
-                신청하기
-              </button>
-            </DialogTrigger>
-
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>신청서</DialogTitle>
-                <DialogDescription className="mt-3">
-                  모든 필드를 작성해주세요.
-                </DialogDescription>
-              </DialogHeader>
-              <form onSubmit={handleApplySubmit((data) => console.log(data))}>
-                <div className="flex items-center">
-                  <span className="text-sm text-end font-semibold w-16 mr-3 whitespace-nowrap">
-                    이름
-                  </span>
-                  <Controller
-                    name="name"
-                    control={controlApply}
-                    rules={{ required: "이름을 입력해주세요" }}
-                    render={({ field }) => <Input type="text" {...field} />}
-                  />
-                </div>
-                <div className="flex items-center">
-                  <span className="text-sm text-end font-semibold w-16 mr-3 whitespace-nowrap">
-                    학과
-                  </span>
-                  <Controller
-                    name="majors"
-                    control={controlApply}
-                    rules={{ required: "학과를 입력해주세요" }}
-                    render={({ field }) => <Input type="text" {...field} />}
-                  />
-                </div>
-                <div className="flex items-center">
-                  <span className="text-sm text-end font-semibold w-16 mr-3 whitespace-nowrap">
-                    전화번호
-                  </span>
-                  <Controller
-                    name="phone"
-                    control={controlApply}
-                    rules={{ required: "전화번호를 입력해주세요" }}
-                    render={({ field }) => <Input type="text" {...field} />}
-                  />
-                </div>
-                <div className="flex items-center">
-                  <span className="text-sm text-end font-semibold w-16 mr-3 whitespace-nowrap">
-                    이메일
-                  </span>
-                  <Controller
-                    name="email"
-                    control={controlApply}
-                    rules={{ required: "이메일을 입력해주세요" }}
-                    render={({ field }) => <Input type="text" {...field} />}
-                  />
-                </div>
-                <div className="flex items-center">
-                  <span className="text-sm text-end font-semibold w-16 mr-3 whitespace-nowrap">
-                    자기소개
-                  </span>
-                  <Controller
-                    name="introduction"
-                    control={controlApply}
-                    rules={{ required: "자기소개를 입력해주세요" }}
-                    render={({ field }) => <Input type="text" {...field} />}
-                  />
-                </div>
-                <Button className="text-sm font-normal hover:bg-gray-300 cursor-pointer bg-gray-200 border text-black w-[58px] h-11">
-                  취소
-                </Button>
-                <button
-                  type="submit"
-                  className="w-[58px] text-sm font-normal bg-black rounded-lg text-white cursor-pointer h-11"
-                >
-                  확인
-                </button>
-              </form>
-            </DialogContent>
-          </Dialog>
-
-          <div
-            className={`w-full ${
-              adminMode ? "" : "hidden"
-            } flex justify-center gap-2 h-auto`}
-          >
-            <button
+    <div className="w-auto h-auto relative">
+      <form
+        onSubmit={handleTextSubmit(edit)}
+        className="min-[1040px]:w-[1040px] my-12 px-5 flex-col flex w-full h-auto"
+      >
+        <div className="w-full h-auto flex flex-col relative">
+          <div className="absolute flex gap-1 items-center right-0 top-0">
+            <Switch
+              checked={adminMode}
               onClick={() => {
-                resetText({
-                  introduction: project?.introduction || "",
-                  background: project?.background || "",
-                  methodology: project?.methodology || "",
-                  goal: project?.goal || "",
-                  expectation: project?.expectation || "",
-                });
-                setAdminMode(false);
+                if (adminMode) {
+                  resetText({
+                    introduction: project?.introduction || "",
+                    background: project?.background || "",
+                    methodology: project?.methodology || "",
+                    goal: project?.goal || "",
+                    expectation: project?.expectation || "",
+                  });
+                  setAdminMode(false);
+                }
               }}
-              type="button"
-              className="text-black cursor-pointer text-base font-normal w-[90px] h-10 bg-slate-200 rounded-lg"
-            >
-              취소
-            </button>
-            <button
-              type="submit"
-              className="text-white cursor-pointer text-base font-normal w-[90px] h-10 bg-blue-500 rounded-lg"
-            >
-              저장
-            </button>
+              onCheckedChange={setAdminMode}
+            ></Switch>
+            <span className="text-sm font-medium -translate-y-[1px]">
+              관리자
+            </span>
+          </div>
+          <div className="flex  w-full gap-[10px] items-center h-7 ">
+            <ApplyStatueBadge status={project?.status} />
+            <ProposalBadge proposer={project?.proposer} />
+            {project?.keywords.map((keyword, index) => {
+              return <KeywordBadge keyword={keyword} key={index} />;
+            })}
+          </div>
+          <div className="text-4xl font-medium mb-2">{project?.title}</div>
+          <div className="w-full h-[1px] bg-black"></div>
+          <div className="gap-3 flex h-7 items-center font-medium text-xs">
+            <span className="text-slate-500 flex items-center">
+              {project?.name}
+            </span>
+            <div className="flex items-center gap-1">
+              <Eye className="size-5 mt-0.5" />
+              <span>{project?.view}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Calendar className="size-5 mt-0.5" />
+              <span>{project?.date.toLocaleDateString("ko-KR")}</span>
+            </div>
           </div>
         </div>
+        <div className="w-full flex  h-auto justify-between">
+          <div className="w-[690px] h-full mt-12 flex flex-col gap-5">
+            {fields.map(({ name, title }) => (
+              <Controller
+                key={name}
+                name={name}
+                control={controlText}
+                rules={{ required: `${title}을 입력해주세요.` }}
+                render={({ field }) => (
+                  <ProjectTextArea
+                    title={title}
+                    value={field.value}
+                    onChange={field.onChange}
+                    adminMode={adminMode}
+                  />
+                )}
+              />
+            ))}
+          </div>
+
+          <div className="w-[280px] flex flex-col gap-5 h-auto mt-12">
+            <MajorGraph project={project as ProjectType} />
+            <div className="w-full text-sm font-medium flex flex-col shadow-md rounded-lg  h-[400px]">
+              <div className="w-full *:w-16 *:text-center *:cursor-pointer border-b-2 flex justify-center gap-5 h-10 items-center">
+                <div onClick={() => setIsManagingRecruitment(false)}>
+                  대화방
+                </div>
+                <div
+                  onClick={() => setIsManagingRecruitment(true)}
+                  className={`${adminMode ? "" : "hidden"}`}
+                >
+                  모집 관리
+                </div>
+              </div>
+              <div
+                className={`${
+                  isManagingRecruitment ? "hidden" : ""
+                } relative w-full h-[360px] `}
+              >
+                <div className="bottom-0 p-1 absolute w-full flex items-center h-[80px] border-t-2">
+                  <Textarea className="w-3/4 resize-none h-full text-gray-500 font-medium"></Textarea>
+                </div>
+              </div>
+              <div
+                className={`${
+                  isManagingRecruitment ? "" : "hidden"
+                } flex flex-col px-2`}
+              >
+                <div className="my-2 ">
+                  확정{`(${project?.majors.length}/4)`}
+                </div>
+                {[...Array(project?.majors.length)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="rounded-lg flex items-center px-3 shadow-md w-full h-[45px] border"
+                  >
+                    <User className="size-6 mr-3" />
+                    <span>Profile ({project?.majors[i]})</span>
+                  </div>
+                ))}
+                <div className="my-2">신청</div>
+              </div>
+            </div>
+            <div
+              className={`w-full ${
+                adminMode ? "" : "hidden"
+              } flex justify-center gap-2 h-auto`}
+            >
+              <button
+                onClick={() => {
+                  resetText({
+                    introduction: project?.introduction || "",
+                    background: project?.background || "",
+                    methodology: project?.methodology || "",
+                    goal: project?.goal || "",
+                    expectation: project?.expectation || "",
+                  });
+                  setAdminMode(false);
+                }}
+                type="button"
+                className="text-black cursor-pointer text-base font-normal w-[90px] h-10 bg-slate-200 rounded-lg"
+              >
+                취소
+              </button>
+              <button
+                type="submit"
+                className="text-white cursor-pointer text-base font-normal w-[90px] h-10 bg-blue-500 rounded-lg"
+              >
+                저장
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+      <div className="h-auto w-auto right-5 absolute top-[825px] ">
+        <Dialog>
+          <DialogTrigger>
+            <button
+              className={`w-[280px] h-[50px] bg-blue-500 text-white flex ${
+                adminMode ? "hidden" : "block"
+              } justify-center cursor-pointer items-center rounded-lg text-base font-medium`}
+            >
+              신청하기
+            </button>
+          </DialogTrigger>
+
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>신청서</DialogTitle>
+              <DialogDescription className="mt-3">
+                모든 필드를 작성해주세요.
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleApplySubmit((data) => console.log(data))}>
+              <div className="flex items-center">
+                <span className="text-sm text-end font-semibold w-16 mr-3 whitespace-nowrap">
+                  이름
+                </span>
+                <Controller
+                  name="name"
+                  control={controlApply}
+                  rules={{ required: "이름을 입력해주세요" }}
+                  render={({ field }) => <Input type="text" {...field} />}
+                />
+              </div>
+              <div className="flex items-center">
+                <span className="text-sm text-end font-semibold w-16 mr-3 whitespace-nowrap">
+                  학과
+                </span>
+                <Controller
+                  name="majors"
+                  control={controlApply}
+                  rules={{ required: "학과를 입력해주세요" }}
+                  render={({ field }) => <Input type="text" {...field} />}
+                />
+              </div>
+              <div className="flex items-center">
+                <span className="text-sm text-end font-semibold w-16 mr-3 whitespace-nowrap">
+                  전화번호
+                </span>
+                <Controller
+                  name="phone"
+                  control={controlApply}
+                  rules={{ required: "전화번호를 입력해주세요" }}
+                  render={({ field }) => <Input type="text" {...field} />}
+                />
+              </div>
+              <div className="flex items-center">
+                <span className="text-sm text-end font-semibold w-16 mr-3 whitespace-nowrap">
+                  이메일
+                </span>
+                <Controller
+                  name="email"
+                  control={controlApply}
+                  rules={{ required: "이메일을 입력해주세요" }}
+                  render={({ field }) => <Input type="text" {...field} />}
+                />
+              </div>
+              <div className="flex items-center">
+                <span className="text-sm text-end font-semibold w-16 mr-3 whitespace-nowrap">
+                  자기소개
+                </span>
+                <Controller
+                  name="introduction"
+                  control={controlApply}
+                  rules={{ required: "자기소개를 입력해주세요" }}
+                  render={({ field }) => <Input type="text" {...field} />}
+                />
+              </div>
+              <Button className="text-sm font-normal hover:bg-gray-300 cursor-pointer bg-gray-200 border text-black w-[58px] h-11">
+                취소
+              </Button>
+              <button
+                type="submit"
+                className="w-[58px] text-sm font-normal bg-black rounded-lg text-white cursor-pointer h-11"
+              >
+                확인
+              </button>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
-    </form>
+    </div>
   );
 }
