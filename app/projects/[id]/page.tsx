@@ -4,13 +4,23 @@ import KeywordBadge from "@/components/Badge/KeywordBadge";
 import ProposalBadge from "@/components/Badge/ProposalBadge";
 import MajorGraph from "@/components/Project/ProjectField/MajorGraph";
 import ProjectTextArea from "@/components/Project/ProjectField/ProjectTextArea";
-import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { fakeProjects, ProjectType } from "@/constants/fakeProject";
 import { Calendar, Eye, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 type ProjectTextFieldType = {
   introduction: string;
@@ -20,15 +30,24 @@ type ProjectTextFieldType = {
   expectation: string;
 };
 
+type ProjectApplyType = {
+  name: string;
+  majors: string;
+  phone: string;
+  email: string;
+  introduction: string;
+};
+
 export default function Project({ params }: { params: { id: string } }) {
   const project = fakeProjects.find((project) => project.id === params.id);
   const [adminMode, setAdminMode] = useState<boolean>(false);
   const [isManagingRecruitment, setIsManagingRecruitment] = useState(false);
+  // 프로젝트 정보 폼
   const {
-    handleSubmit,
-    control,
-    formState: { errors },
-    reset,
+    handleSubmit: handleTextSubmit,
+    control: controlText,
+    formState: { errors: errorsText },
+    reset: resetText,
   } = useForm<ProjectTextFieldType>({
     defaultValues: {
       introduction: project?.introduction || "",
@@ -38,6 +57,13 @@ export default function Project({ params }: { params: { id: string } }) {
       expectation: project?.expectation || "",
     },
   });
+
+  // 신청 폼
+  const {
+    handleSubmit: handleApplySubmit,
+    control: controlApply,
+    formState: { errors: errorsApply },
+  } = useForm<ProjectApplyType>();
 
   function edit(data: ProjectTextFieldType) {
     console.log("제출된 데이터:", data);
@@ -61,8 +87,8 @@ export default function Project({ params }: { params: { id: string } }) {
 
   return (
     <form
-      onSubmit={handleSubmit(edit)}
-      className="min-[1040px]:w-[1040px] mt-12 px-5 flex-col flex w-full h-auto"
+      onSubmit={handleTextSubmit(edit)}
+      className="min-[1040px]:w-[1040px] my-12 px-5 flex-col flex w-full h-auto"
     >
       <div className="w-full h-auto flex flex-col relative">
         <div className="absolute flex gap-1 items-center right-0 top-0">
@@ -70,7 +96,7 @@ export default function Project({ params }: { params: { id: string } }) {
             checked={adminMode}
             onClick={() => {
               if (adminMode) {
-                reset({
+                resetText({
                   introduction: project?.introduction || "",
                   background: project?.background || "",
                   methodology: project?.methodology || "",
@@ -113,7 +139,7 @@ export default function Project({ params }: { params: { id: string } }) {
             <Controller
               key={name}
               name={name}
-              control={control}
+              control={controlText}
               rules={{ required: `${title}을 입력해주세요.` }}
               render={({ field }) => (
                 <ProjectTextArea
@@ -166,13 +192,93 @@ export default function Project({ params }: { params: { id: string } }) {
               <div className="my-2">신청</div>
             </div>
           </div>
-          <button
-            className={`w-full h-[50px] bg-blue-500 text-white flex ${
-              adminMode ? "hidden" : "block"
-            } justify-center cursor-pointer items-center mt-5 rounded-lg text-base font-medium`}
-          >
-            신청하기
-          </button>
+          <Dialog>
+            <DialogTrigger>
+              <button
+                className={`w-full h-[50px] bg-blue-500 text-white flex ${
+                  adminMode ? "hidden" : "block"
+                } justify-center cursor-pointer items-center rounded-lg text-base font-medium`}
+              >
+                신청하기
+              </button>
+            </DialogTrigger>
+
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>신청서</DialogTitle>
+                <DialogDescription className="mt-3">
+                  모든 필드를 작성해주세요.
+                </DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handleApplySubmit((data) => console.log(data))}>
+                <div className="flex items-center">
+                  <span className="text-sm text-end font-semibold w-16 mr-3 whitespace-nowrap">
+                    이름
+                  </span>
+                  <Controller
+                    name="name"
+                    control={controlApply}
+                    rules={{ required: "이름을 입력해주세요" }}
+                    render={({ field }) => <Input type="text" {...field} />}
+                  />
+                </div>
+                <div className="flex items-center">
+                  <span className="text-sm text-end font-semibold w-16 mr-3 whitespace-nowrap">
+                    학과
+                  </span>
+                  <Controller
+                    name="majors"
+                    control={controlApply}
+                    rules={{ required: "학과를 입력해주세요" }}
+                    render={({ field }) => <Input type="text" {...field} />}
+                  />
+                </div>
+                <div className="flex items-center">
+                  <span className="text-sm text-end font-semibold w-16 mr-3 whitespace-nowrap">
+                    전화번호
+                  </span>
+                  <Controller
+                    name="phone"
+                    control={controlApply}
+                    rules={{ required: "전화번호를 입력해주세요" }}
+                    render={({ field }) => <Input type="text" {...field} />}
+                  />
+                </div>
+                <div className="flex items-center">
+                  <span className="text-sm text-end font-semibold w-16 mr-3 whitespace-nowrap">
+                    이메일
+                  </span>
+                  <Controller
+                    name="email"
+                    control={controlApply}
+                    rules={{ required: "이메일을 입력해주세요" }}
+                    render={({ field }) => <Input type="text" {...field} />}
+                  />
+                </div>
+                <div className="flex items-center">
+                  <span className="text-sm text-end font-semibold w-16 mr-3 whitespace-nowrap">
+                    자기소개
+                  </span>
+                  <Controller
+                    name="introduction"
+                    control={controlApply}
+                    rules={{ required: "자기소개를 입력해주세요" }}
+                    render={({ field }) => <Input type="text" {...field} />}
+                  />
+                </div>
+                <Button className="text-sm font-normal hover:bg-gray-300 cursor-pointer bg-gray-200 border text-black w-[58px] h-11">
+                  취소
+                </Button>
+                <button
+                  type="submit"
+                  className="w-[58px] text-sm font-normal bg-black rounded-lg text-white cursor-pointer h-11"
+                >
+                  확인
+                </button>
+              </form>
+            </DialogContent>
+          </Dialog>
+
           <div
             className={`w-full ${
               adminMode ? "" : "hidden"
@@ -180,7 +286,7 @@ export default function Project({ params }: { params: { id: string } }) {
           >
             <button
               onClick={() => {
-                reset({
+                resetText({
                   introduction: project?.introduction || "",
                   background: project?.background || "",
                   methodology: project?.methodology || "",
