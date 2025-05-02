@@ -2,8 +2,8 @@
 import ApplyStatueBadge from "@/components/Badge/ApplyStatueBadge";
 import KeywordBadge from "@/components/Badge/KeywordBadge";
 import ProposalBadge from "@/components/Badge/ProposalBadge";
-import MajorGraph from "@/components/Project/ProjectField/MajorGraph";
-import ProjectTextArea from "@/components/Project/ProjectField/ProjectTextArea";
+import MajorGraph from "@/components/Project/MajorGraph";
+import ProjectTextArea from "@/components/Project/ProjectTextArea";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { fakeProjects, ProjectType } from "@/constants/fakeProject";
@@ -70,10 +70,10 @@ export default function Project({ params }: { params: { id: string } }) {
     return new Promise<void>((resolve) => setTimeout(resolve, ms));
   }
 
-  async function edit(data: ProjectTextFieldType) {
+  function edit(data: ProjectTextFieldType) {
     if (!applyOn) {
       console.log("제출된 데이터:", data);
-      await delay(3000);
+      alert("저장되었습니다.");
       window.location.reload();
     }
   }
