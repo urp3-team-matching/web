@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { fakeProjects, ProjectType } from "@/constants/fakeProject";
 import { Calendar, Eye, User } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, set, useForm } from "react-hook-form";
 import {
   Dialog,
   DialogContent,
@@ -41,6 +41,7 @@ export default function Project({ params }: { params: { id: string } }) {
   const project = fakeProjects.find((project) => project.id === params.id);
   const [adminMode, setAdminMode] = useState<boolean>(false);
   const [isManagingRecruitment, setIsManagingRecruitment] = useState(false);
+  const [applyOn, setApplyOn] = useState(false);
 
   // 프로젝트 정보 폼
   const {
@@ -70,9 +71,11 @@ export default function Project({ params }: { params: { id: string } }) {
   }
 
   async function edit(data: ProjectTextFieldType) {
-    console.log("제출된 데이터:", data);
-    await delay(1000);
-    window.location.reload();
+    if (!applyOn) {
+      console.log("제출된 데이터:", data);
+      await delay(3000);
+      window.location.reload();
+    }
   }
 
   const fields = [
@@ -208,6 +211,99 @@ export default function Project({ params }: { params: { id: string } }) {
                 <div className="my-2">신청</div>
               </div>
             </div>
+            <Dialog open={applyOn} onOpenChange={setApplyOn}>
+              <DialogTrigger asChild>
+                <div
+                  onClick={() => setApplyOn(true)}
+                  className={`w-[280px] h-[50px] bg-blue-500 text-white flex ${
+                    adminMode ? "hidden" : "block"
+                  } justify-center cursor-pointer items-center rounded-lg text-base font-medium`}
+                >
+                  신청하기
+                </div>
+              </DialogTrigger>
+
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>신청서</DialogTitle>
+                  <DialogDescription className="mt-3">
+                    모든 필드를 작성해주세요.
+                  </DialogDescription>
+                </DialogHeader>
+                <form
+                  id="apply-form"
+                  onSubmit={handleApplySubmit((data) => console.log(data))}
+                >
+                  <div className="flex items-center">
+                    <span className="text-sm text-end font-semibold w-16 mr-3 whitespace-nowrap">
+                      이름
+                    </span>
+                    <Controller
+                      name="name"
+                      control={controlApply}
+                      rules={{ required: "이름을 입력해주세요" }}
+                      render={({ field }) => <Input type="text" {...field} />}
+                    />
+                  </div>
+                  <div className="flex items-center">
+                    <span className="text-sm text-end font-semibold w-16 mr-3 whitespace-nowrap">
+                      학과
+                    </span>
+                    <Controller
+                      name="majors"
+                      control={controlApply}
+                      rules={{ required: "학과를 입력해주세요" }}
+                      render={({ field }) => <Input type="text" {...field} />}
+                    />
+                  </div>
+                  <div className="flex items-center">
+                    <span className="text-sm text-end font-semibold w-16 mr-3 whitespace-nowrap">
+                      전화번호
+                    </span>
+                    <Controller
+                      name="phone"
+                      control={controlApply}
+                      rules={{ required: "전화번호를 입력해주세요" }}
+                      render={({ field }) => <Input type="text" {...field} />}
+                    />
+                  </div>
+                  <div className="flex items-center">
+                    <span className="text-sm text-end font-semibold w-16 mr-3 whitespace-nowrap">
+                      이메일
+                    </span>
+                    <Controller
+                      name="email"
+                      control={controlApply}
+                      rules={{ required: "이메일을 입력해주세요" }}
+                      render={({ field }) => <Input type="text" {...field} />}
+                    />
+                  </div>
+                  <div className="flex items-center">
+                    <span className="text-sm text-end font-semibold w-16 mr-3 whitespace-nowrap">
+                      자기소개
+                    </span>
+                    <Controller
+                      name="introduction"
+                      control={controlApply}
+                      rules={{ required: "자기소개를 입력해주세요" }}
+                      render={({ field }) => <Input type="text" {...field} />}
+                    />
+                  </div>
+                  <Button className="text-sm font-normal hover:bg-gray-300 cursor-pointer bg-gray-200 border text-black w-[58px] h-11">
+                    취소
+                  </Button>
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      document.getElementById("apply-form")?.requestSubmit();
+                    }}
+                    className="w-[58px] text-sm font-normal bg-black rounded-lg text-white cursor-pointer h-11"
+                  >
+                    확인
+                  </button>
+                </form>
+              </DialogContent>
+            </Dialog>
             <div
               className={`w-full ${
                 adminMode ? "" : "hidden"
@@ -255,94 +351,7 @@ export default function Project({ params }: { params: { id: string } }) {
           </div>
         </div>
       </form>
-      <div className="h-auto w-auto right-5 absolute top-[825px] ">
-        <Dialog>
-          <DialogTrigger asChild>
-            <div
-              className={`w-[280px] h-[50px] bg-blue-500 text-white flex ${
-                adminMode ? "hidden" : "block"
-              } justify-center cursor-pointer items-center rounded-lg text-base font-medium`}
-            >
-              신청하기
-            </div>
-          </DialogTrigger>
-
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>신청서</DialogTitle>
-              <DialogDescription className="mt-3">
-                모든 필드를 작성해주세요.
-              </DialogDescription>
-            </DialogHeader>
-            <form onSubmit={handleApplySubmit((data) => console.log(data))}>
-              <div className="flex items-center">
-                <span className="text-sm text-end font-semibold w-16 mr-3 whitespace-nowrap">
-                  이름
-                </span>
-                <Controller
-                  name="name"
-                  control={controlApply}
-                  rules={{ required: "이름을 입력해주세요" }}
-                  render={({ field }) => <Input type="text" {...field} />}
-                />
-              </div>
-              <div className="flex items-center">
-                <span className="text-sm text-end font-semibold w-16 mr-3 whitespace-nowrap">
-                  학과
-                </span>
-                <Controller
-                  name="majors"
-                  control={controlApply}
-                  rules={{ required: "학과를 입력해주세요" }}
-                  render={({ field }) => <Input type="text" {...field} />}
-                />
-              </div>
-              <div className="flex items-center">
-                <span className="text-sm text-end font-semibold w-16 mr-3 whitespace-nowrap">
-                  전화번호
-                </span>
-                <Controller
-                  name="phone"
-                  control={controlApply}
-                  rules={{ required: "전화번호를 입력해주세요" }}
-                  render={({ field }) => <Input type="text" {...field} />}
-                />
-              </div>
-              <div className="flex items-center">
-                <span className="text-sm text-end font-semibold w-16 mr-3 whitespace-nowrap">
-                  이메일
-                </span>
-                <Controller
-                  name="email"
-                  control={controlApply}
-                  rules={{ required: "이메일을 입력해주세요" }}
-                  render={({ field }) => <Input type="text" {...field} />}
-                />
-              </div>
-              <div className="flex items-center">
-                <span className="text-sm text-end font-semibold w-16 mr-3 whitespace-nowrap">
-                  자기소개
-                </span>
-                <Controller
-                  name="introduction"
-                  control={controlApply}
-                  rules={{ required: "자기소개를 입력해주세요" }}
-                  render={({ field }) => <Input type="text" {...field} />}
-                />
-              </div>
-              <Button className="text-sm font-normal hover:bg-gray-300 cursor-pointer bg-gray-200 border text-black w-[58px] h-11">
-                취소
-              </Button>
-              <button
-                type="submit"
-                className="w-[58px] text-sm font-normal bg-black rounded-lg text-white cursor-pointer h-11"
-              >
-                확인
-              </button>
-            </form>
-          </DialogContent>
-        </Dialog>
-      </div>
+      <div className="h-auto w-auto right-5 absolute top-[825px] "></div>
     </div>
   );
 }
