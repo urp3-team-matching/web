@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { fakeProjects, ProjectType } from "@/constants/fakeProject";
 import { Calendar, Eye, User } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Controller, set, useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import {
   Dialog,
   DialogContent,
@@ -76,6 +76,13 @@ export default function Project({ params }: { params: { id: string } }) {
       await delay(3000);
       window.location.reload();
     }
+  }
+
+  function apply(data: ProjectApplyType) {
+    console.log("신청서 제출된 데이터:", data);
+
+    setApplyOn(false);
+    alert("신청서가 제출되었습니다.");
   }
 
   const fields = [
@@ -230,10 +237,7 @@ export default function Project({ params }: { params: { id: string } }) {
                     모든 필드를 작성해주세요.
                   </DialogDescription>
                 </DialogHeader>
-                <form
-                  id="apply-form"
-                  onSubmit={handleApplySubmit((data) => console.log(data))}
-                >
+                <form id="apply-form" onSubmit={handleApplySubmit(apply)}>
                   <div className="flex items-center">
                     <span className="text-sm text-end font-semibold w-16 mr-3 whitespace-nowrap">
                       이름

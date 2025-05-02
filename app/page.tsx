@@ -1,6 +1,7 @@
 import { ApplyStatueMenubar } from "@/components/Home/ApplyStatueMenubar";
 import { ProjectList } from "@/components/Home/ProjectList";
 import SearchCreateRow from "@/components/Home/SearchCreateRow";
+import { Pagination } from "@/components/ui/pagination";
 
 export default async function Home() {
   return (
@@ -13,6 +14,7 @@ export default async function Home() {
           <span>• 인기순</span>
         </div>
         <ProjectList />
+        <Pagination />
       </div>
     </div>
   );
