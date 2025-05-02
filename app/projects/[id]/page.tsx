@@ -14,7 +14,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -42,6 +41,7 @@ export default function Project({ params }: { params: { id: string } }) {
   const project = fakeProjects.find((project) => project.id === params.id);
   const [adminMode, setAdminMode] = useState<boolean>(false);
   const [isManagingRecruitment, setIsManagingRecruitment] = useState(false);
+
   // 프로젝트 정보 폼
   const {
     handleSubmit: handleTextSubmit,
@@ -65,8 +65,14 @@ export default function Project({ params }: { params: { id: string } }) {
     formState: { errors: errorsApply },
   } = useForm<ProjectApplyType>();
 
-  function edit(data: ProjectTextFieldType) {
+  function delay(ms: number) {
+    return new Promise<void>((resolve) => setTimeout(resolve, ms));
+  }
+
+  async function edit(data: ProjectTextFieldType) {
     console.log("제출된 데이터:", data);
+    await delay(1000);
+    window.location.reload();
   }
 
   const fields = [
@@ -85,9 +91,12 @@ export default function Project({ params }: { params: { id: string } }) {
     }
   }, [adminMode]);
 
+  useEffect(() => {}, []);
+
   return (
     <div className="w-auto h-auto relative">
       <form
+        id="project-form"
         onSubmit={handleTextSubmit(edit)}
         className="min-[1040px]:w-[1040px] my-12 px-5 flex-col flex w-full h-auto"
       >
@@ -220,26 +229,42 @@ export default function Project({ params }: { params: { id: string } }) {
               >
                 취소
               </button>
-              <button
-                type="submit"
-                className="text-white cursor-pointer text-base font-normal w-[90px] h-10 bg-blue-500 rounded-lg"
-              >
-                저장
-              </button>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <div className="text-white flex justify-center items-center cursor-pointer text-base font-normal w-[90px] h-10 bg-blue-500 rounded-lg">
+                    저장
+                  </div>
+                </DialogTrigger>
+                <DialogContent className="w-56">
+                  <DialogTitle>저장하시겠습니까?</DialogTitle>
+                  <DialogDescription></DialogDescription>
+                  <div className="flex ml-16">
+                    <button className="button bg-white text-black">취소</button>
+                    <button
+                      className="button bg-black text-white"
+                      onClick={() =>
+                        document.getElementById("project-form")?.requestSubmit()
+                      }
+                    >
+                      확인
+                    </button>
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
         </div>
       </form>
       <div className="h-auto w-auto right-5 absolute top-[825px] ">
         <Dialog>
-          <DialogTrigger>
-            <button
+          <DialogTrigger asChild>
+            <div
               className={`w-[280px] h-[50px] bg-blue-500 text-white flex ${
                 adminMode ? "hidden" : "block"
               } justify-center cursor-pointer items-center rounded-lg text-base font-medium`}
             >
               신청하기
-            </button>
+            </div>
           </DialogTrigger>
 
           <DialogContent>
