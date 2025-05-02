@@ -146,7 +146,7 @@ export default function Project({ params }: { params: { id: string } }) {
           </div>
         </div>
         <div className="w-full flex  h-auto justify-between">
-          <div className="w-[690px] h-full mt-12 flex flex-col gap-5">
+          <div className="w-[690px] h-full mt-9 flex flex-col gap-5">
             {fields.map(({ name, title }) => (
               <Controller
                 key={name}
