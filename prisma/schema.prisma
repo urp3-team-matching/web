@@ -8,71 +8,81 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+model Project {
+  id Int @id @default(autoincrement())
+
+  applicants Applicant[]
+  proposer   Proposer    @relation("ProjectProposer", fields: [proposerId], references: [id])
+  proposerId Int         @unique
+
+  name      String
+  viewCount Int    @default(0)
+
+  background String
+  method     String
+  objective  String
+  result     String
+
+  attachments String[]
+  tags        String[]
+
+  createdDatetime DateTime @default(now())
+  updatedDatetime DateTime @default(now())
+
+  passwordHash String @map("password")
+}
+
 enum ProposerType {
   PROFESSOR
   STUDENT
   HOST
 }
 
-model Project {
+model Proposer {
   id Int @id @default(autoincrement())
 
+  projectId Int      @unique
+  project   Project? @relation("ProjectProposer")
+
+  type         ProposerType
   name         String
-  content      String
-  proposerType ProposerType
-  proposerName String
-  viewCount    Int          @default(0)
+  email        String
+  major        String
+  phone        String
+  introduction String
 
   createdDatetime DateTime @default(now())
   updatedDatetime DateTime @default(now())
-  teams           Team[]
 
   passwordHash String @map("password")
-}
-
-model Team {
-  id Int @id @default(autoincrement())
-
-  projectId  Int
-  project    Project     @relation(fields: [projectId], references: [id])
-  applicants Applicant[]
-
-  name            String
-  content         TeamContent?
-  leaderName      String
-  viewCount       Int          @default(0)
-  createdDatetime DateTime     @default(now())
-  updatedDatetime DateTime     @default(now())
-
-  passwordHash String @map("password")
-}
-
-model TeamContent {
-  id Int @id @default(autoincrement())
-
-  teamId Int  @unique
-  team   Team @relation(fields: [teamId], references: [id])
-
-  background String
-  objective  String
-  method     String
-  result     String
 }
 
 model Applicant {
   id Int @id @default(autoincrement())
 
-  teamId Int
-  team   Team @relation(fields: [teamId], references: [id])
+  projectId Int
+  project   Project @relation(fields: [projectId], references: [id])
 
-  nickName     String
+  name         String
   email        String
+  major        String
   phone        String
-  content      String
-  profileImage String
+  introduction String
 
   createdDatetime DateTime @default(now())
   updatedDatetime DateTime @default(now())
 
   passwordHash String @map("password")
+}
+
+model Post {
+  id Int @id @default(autoincrement())
+
+  title       String
+  content     String
+  author      String
+  attachments String[]
+
+  createdDatetime DateTime @default(now())
+  updatedDatetime DateTime @default(now())
 }
