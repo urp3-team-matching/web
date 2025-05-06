@@ -1,4 +1,4 @@
-import { RefreshCcw, Search } from "lucide-react";
+import { Search } from "lucide-react";
 
 export default function SearchBar() {
   return (
@@ -8,7 +8,7 @@ export default function SearchBar() {
         placeholder="프로젝트 또는 연구키워드로 검색해보세요"
       ></input>
       <Search className="absolute top-1/2 -translate-y-1/2  left-3" />
-      <RefreshCcw className="absolute top-1/2 -translate-y-1/2  right-3" />
+      {/**  <RefreshCcw className="absolute top-1/2 -translate-y-1/2  right-3" />*/}
     </div>
   );
 }

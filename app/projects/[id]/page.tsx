@@ -5,7 +5,6 @@ import ProposalBadge from "@/components/Badge/ProposalBadge";
 import MajorGraph from "@/components/Project/MajorGraph";
 import ProjectTextArea from "@/components/Project/ProjectTextArea";
 import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
 import { fakeProjects, ProjectType } from "@/constants/fakeProject";
 import { Calendar, Eye, User } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -20,6 +19,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import ChatField from "@/components/Project/Chat/ChatField";
 
 type ProjectTextFieldType = {
   introduction: string;
@@ -104,11 +104,11 @@ export default function Project({ params }: { params: { id: string } }) {
   useEffect(() => {}, []);
 
   return (
-    <div className="w-auto h-auto relative">
+    <div className="min-[1040px]:w-[1040px] w-full h-auto relative">
       <form
         id="project-form"
         onSubmit={handleTextSubmit(edit)}
-        className="min-[1040px]:w-[1040px] my-12 px-5 flex-col flex w-full h-auto"
+        className=" my-12 px-5 flex-col flex w-full h-auto"
       >
         <div className="w-full h-auto flex flex-col relative">
           <div className="absolute flex gap-1 items-center right-0 top-0">
@@ -177,7 +177,7 @@ export default function Project({ params }: { params: { id: string } }) {
 
           <div className="w-[280px] flex flex-col gap-5 h-auto mt-12">
             <MajorGraph project={project as ProjectType} />
-            <div className="w-full text-sm font-medium flex flex-col shadow-md rounded-lg  h-[400px]">
+            <div className="w-full text-sm font-medium flex flex-col shadow-md rounded-lg  h-[500px]">
               <div className="w-full *:w-16 *:text-center *:cursor-pointer border-b-2 flex justify-center gap-5 h-10 items-center">
                 <div onClick={() => setIsManagingRecruitment(false)}>
                   대화방
@@ -192,11 +192,9 @@ export default function Project({ params }: { params: { id: string } }) {
               <div
                 className={`${
                   isManagingRecruitment ? "hidden" : ""
-                } relative w-full h-[360px] `}
+                } relative w-full h-[460px]`}
               >
-                <div className="bottom-0 p-1 absolute w-full flex items-center h-[80px] border-t-2">
-                  <Textarea className="w-3/4 resize-none h-full text-gray-500 font-medium"></Textarea>
-                </div>
+                <ChatField></ChatField>
               </div>
               <div
                 className={`${
@@ -355,7 +353,6 @@ export default function Project({ params }: { params: { id: string } }) {
           </div>
         </div>
       </form>
-      <div className="h-auto w-auto right-5 absolute top-[825px] "></div>
     </div>
   );
 }

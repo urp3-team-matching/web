@@ -32,7 +32,7 @@ export default function Create() {
   return (
     <form
       onSubmit={handleSubmit(doFunction)}
-      className="min-[1100px]:w-[1100px] flex mt-12 gap-5 justify-center w-full h-auto"
+      className="min-[1100px]:w-[1100px] max-[1100px]:p-5  flex mt-12 gap-5 justify-center w-full h-auto"
     >
       <div className="w-[650px] h-auto flex flex-col gap-5">
         {[

@@ -8,7 +8,7 @@ export function ProjectList() {
   return (
     <div className="w-full h-auto">
       <div className="w-full h-auto flex  flex-col">
-        {[...Array(5)].map((_, i) => {
+        {[...Array(10)].map((_, i) => {
           const fakeProject = faker.helpers.arrayElement(fakeProjects);
           return (
             <Link key={i} href={`/projects/${fakeProject.id}`}>
