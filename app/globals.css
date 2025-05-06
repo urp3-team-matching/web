@@ -10,6 +10,9 @@
   --color-third-100: oklch(0.29 0.06 152);  /* Third color */
 }
 
+.button {
+  @apply w-[58px] h-11 text-sm font-normal  rounded-lg cursor-pointer;
+}
 
 /*
   The default border color has changed to `currentColor` in Tailwind CSS v4,
