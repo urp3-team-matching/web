@@ -14,7 +14,7 @@
     "prisma:validate": "prisma validate",
     "prisma:format": "prisma format",
     "prisma:studio": "prisma studio",
-    "prisma:seed": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/seed.ts",
+    "prisma:seed": "prisma db seed",
     "db:push": "prisma db push",
     "db:reset": "prisma migrate reset --force",
     "db:deploy": "prisma migrate deploy"
@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.0.0",
-    "@types/node": "^20",
+    "@types/node": "^20.17.23",
     "@types/react": "19.0.10",
     "@types/react-dom": "19.0.4",
     "eslint": "^8",
@@ -45,10 +45,13 @@
     "prisma": "^6.7.0",
     "tailwindcss": "^4.0.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5"
+    "typescript": "^5.8.2"
   },
   "overrides": {
     "@types/react": "19.0.10",
     "@types/react-dom": "19.0.4"
+  },
+  "prisma": {
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   }
 }

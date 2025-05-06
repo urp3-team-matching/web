@@ -11,9 +11,8 @@ datasource db {
 model Project {
   id Int @id @default(autoincrement())
 
+  proposer   Proposer?
   applicants Applicant[]
-  proposer   Proposer    @relation("ProjectProposer", fields: [proposerId], references: [id])
-  proposerId Int         @unique
 
   name      String
   viewCount Int    @default(0)
@@ -41,8 +40,8 @@ enum ProposerType {
 model Proposer {
   id Int @id @default(autoincrement())
 
-  projectId Int      @unique
-  project   Project? @relation("ProjectProposer")
+  projectId Int     @unique
+  project   Project @relation(fields: [projectId], references: [id])
 
   type         ProposerType
   name         String
