@@ -10,7 +10,7 @@ export default function SearchCreateRow() {
         검색
       </Button>
       <Link href="/projects/create">
-        <Button className="w-24 h-full bg-blue-500 hover:bg-... hover:cursor-pointer">
+        <Button className="w-24 h-full bg-secondary-100 hover:bg-... hover:cursor-pointer">
           생성
         </Button>
       </Link>
