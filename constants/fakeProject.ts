@@ -51,7 +51,7 @@ export const fakeProjects = [
     proposer: "student",
     view: 1342,
     projectType: "research",
-    status: "closingSoon",
+    status: "recruiting",
     keywords: ["자율주행", "사회적 수용성", "윤리적 문제"],
     background:
       "자율주행차는 자동차 산업의 혁신적인 변화를 이끌고 있으며, 그 기술 발전과 사회적 수용성에 대한 논의가 활발히 이루어지고 있다. 자율주행차가 제공하는 안전성, 효율성, 환경 보호 측면에서 큰 가능성을 보여준다. 하지만 기술적인 한계와 법적, 윤리적 문제 등은 자율주행차 상용화의 큰 장벽이 되고 있다.",
@@ -120,7 +120,7 @@ export const fakeProjects = [
     proposer: "student",
     view: 1102,
     projectType: "research",
-    status: "closingSoon",
+    status: "closed",
     keywords: ["5G", "통신 기술", "산업 변화"],
     background:
       "5G 기술은 차세대 이동통신 기술로, 초고속 인터넷, 실시간 통신 및 대규모 IoT 연결이 가능하다. 5G의 상용화는 산업 전반에 큰 영향을 미칠 것으로 예상된다. 5G는 기존의 4G 기술보다 더 높은 속도와 낮은 지연 시간으로 다양한 혁신적인 서비스를 가능하게 한다.",

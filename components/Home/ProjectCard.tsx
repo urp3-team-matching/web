@@ -32,19 +32,15 @@ export default function ProjectCard({
   return (
     <div
       id={id}
-      className={`${className} w-full border-t-[0.5px] min-h-[126px] py-[10px] px-[17px]  bg-white`}
+      className={`${className} w-full border-t-[0.5px] h-auto py-[10px] px-[17px]  bg-white`}
     >
-      <div className="flex flex-col justify-between h-full pt-1">
+      <div className="flex flex-col gap-2 justify-between h-full pt-1">
         <div className="flex gap-[10px]">
           <ApplyStatueBadge status={status} />
           <ProposalBadge proposer={proposer} />
         </div>
         <span className="text-base font-medium pl-1 py-[1px]">{title}</span>
-        <div className="flex gap-1 my-[2px]">
-          {keywords.map((word, index) => (
-            <KeywordBadge key={index} keyword={word} />
-          ))}
-        </div>
+
         <div className="gap-3 flex  font-medium text-xs">
           <span className="text-slate-500 flex items-center">{name}</span>
           <div className="flex items-center gap-1">
@@ -54,6 +50,11 @@ export default function ProjectCard({
           <div className="flex items-center gap-1">
             <Calendar className="size-5 mt-0.5" />
             <span>{formattedDate}</span>
+          </div>
+          <div className="flex gap-1 my-[2px]">
+            {keywords.map((word, index) => (
+              <KeywordBadge key={index} keyword={word} />
+            ))}
           </div>
         </div>
       </div>
