@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev --turbo",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -22,7 +22,6 @@
   "dependencies": {
     "@faker-js/faker": "^9.6.0",
     "@prisma/client": "^6.7.0",
-    "@prisma/client": "^6.4.1",
     "@radix-ui/react-checkbox": "^1.2.3",
     "@radix-ui/react-dialog": "^1.1.11",
     "@radix-ui/react-label": "^2.1.4",
@@ -46,6 +45,7 @@
     "@types/node": "^20.17.23",
     "@types/react": "19.0.10",
     "@types/react-dom": "19.0.4",
+    "bcryptjs": "^3.0.2",
     "eslint": "^8",
     "eslint-config-next": "15.2.1",
     "postcss": "^8",
