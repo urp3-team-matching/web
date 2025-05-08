@@ -4,7 +4,7 @@ export function ApplyStatueMenubar() {
   return (
     <Menubar className="w-44 text-nowrap h-10">
       <MenubarMenu>
-        <MenubarTrigger className="w-1/3 focus:cursor-pointer flex justify-center ">
+        <MenubarTrigger className="w-1/3  focus:cursor-pointer flex justify-center ">
           전체
         </MenubarTrigger>
       </MenubarMenu>
