@@ -1,4 +1,5 @@
 import { ApiError } from "@/services/error";
+import { MaskedType } from "@/services/guard";
 
 interface Pagination {
   total: number;
@@ -6,8 +7,6 @@ interface Pagination {
   limit: number;
   totalPages: number;
 }
-
-type MaskedType<T> = Omit<T, "passwordHash">;
 
 export interface SuccessResponse<T> {
   data: T;
@@ -19,7 +18,7 @@ interface ErrorResponse {
 
 type ApiResponse<T> = SuccessResponse<T> | ErrorResponse;
 type SuccessListResponse<T> = {
-  data: MaskedType<T>[];
+  data: T[];
   pagination: Pagination;
 };
 type ErrorListResponse = {
@@ -30,6 +29,8 @@ type ErrorListResponse = {
 
 export type CreateResponse<T> = ApiResponse<MaskedType<T>>;
 export type RetrieveResponse<T> = ApiResponse<MaskedType<T>>;
-export type ListResponse<T> = SuccessListResponse<T> | ErrorListResponse;
+export type ListResponse<T> =
+  | SuccessListResponse<MaskedType<T>>
+  | ErrorListResponse;
 export type UpdateResponse<T> = ApiResponse<MaskedType<T>>;
 export type DeleteResponse = ApiResponse<null>;

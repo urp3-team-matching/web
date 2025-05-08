@@ -47,11 +47,10 @@ export function buildQueryObject(params: Record<string, any>): QueryParams {
   // 기본 쿼리 객체 생성
   const query: QueryParams = {
     page: params?.page,
-    limit: params?.limit || 10,
-    search: params?.search || "",
-    sort: params?.sort || "createdDatetime",
-    order: (params?.order || "desc") as "asc" | "desc",
-    // 필터 객체 생성
+    limit: params?.limit,
+    search: params?.search,
+    sort: params?.sort,
+    order: params?.order,
     filters: { ...params },
   };
 
@@ -63,6 +62,8 @@ export function buildQueryObject(params: Record<string, any>): QueryParams {
   if (query.filters && Object.keys(query.filters).length === 0) {
     query.filters = undefined;
   }
+
+  console.log("쿼리 객체:", query);
 
   return query;
 }
