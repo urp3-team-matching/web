@@ -1,31 +1,35 @@
 import { ApiError } from "@/services/error";
-import { Pagination } from "@/services/pagination";
+
+interface Pagination {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
 
 type MaskedType<T> = Omit<T, "passwordHash">;
 
 export interface SuccessResponse<T> {
   data: T;
-  error: null;
 }
-export interface ErrorResponse {
+interface ErrorResponse {
   data: null;
   error: ApiError;
 }
 
-export type ApiResponse<T> = SuccessResponse<T> | ErrorResponse;
-
-export type CreateResponse<T> = ApiResponse<MaskedType<T>>;
-export type RetrieveResponse<T> = ApiResponse<MaskedType<T>>;
-export type SuccessListResponse<T> = {
+type ApiResponse<T> = SuccessResponse<T> | ErrorResponse;
+type SuccessListResponse<T> = {
   data: MaskedType<T>[];
   pagination: Pagination;
-  error: null;
 };
-export type ErrorListResponse = {
+type ErrorListResponse = {
   data: null;
   pagination: null;
   error: ApiError;
 };
+
+export type CreateResponse<T> = ApiResponse<MaskedType<T>>;
+export type RetrieveResponse<T> = ApiResponse<MaskedType<T>>;
 export type ListResponse<T> = SuccessListResponse<T> | ErrorListResponse;
 export type UpdateResponse<T> = ApiResponse<MaskedType<T>>;
 export type DeleteResponse = ApiResponse<null>;
