@@ -12,7 +12,7 @@ export default function ProposalBadge({ proposer }: ProposalBadgeProps) {
   } else if (proposer === "student") {
     proposerText = "학생제안";
   } else {
-    proposerText = "융합원제안";
+    proposerText = "성균융합원";
   }
 
   return (

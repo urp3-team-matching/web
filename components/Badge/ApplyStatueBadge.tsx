@@ -13,7 +13,7 @@ export default function ApplyStatueBadge({ status }: ApplyStatueBadgeProps) {
     badgeColor = "bg-red-100";
     badgeText = "마감임박";
   } else {
-    badgeColor = "bg-gray-300";
+    badgeColor = "bg-gray-400";
     badgeText = "모집마감";
   }
   return (
