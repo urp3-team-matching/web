@@ -3,32 +3,30 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
+  provider  = "postgresql" // 또는 사용하시는 DB
   url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  directUrl = env("DIRECT_URL") // 필요시
 }
 
 model Project {
-  id Int @id @default(autoincrement())
-
-  proposer   Proposer?
-  applicants Applicant[]
-
-  name      String
-  viewCount Int    @default(0)
-
-  background String
-  method     String
-  objective  String
-  result     String
-
+  id          Int      @id @default(autoincrement())
+  name        String
+  viewCount   Int      @default(0)
+  background  String
+  method      String
+  objective   String
+  result      String
   attachments String[]
-  tags        String[]
-
-  createdDatetime DateTime @default(now())
-  updatedDatetime DateTime @default(now())
+  keywords    String[]
 
   passwordHash String @map("password")
+
+  createdDatetime DateTime @default(now())
+  updatedDatetime DateTime @updatedAt
+
+  // Relations
+  proposer   Proposer? // 1:1 관계 (Proposer가 projectId를 가짐)
+  applicants Applicant[]
 }
 
 enum ProposerType {
@@ -38,50 +36,49 @@ enum ProposerType {
 }
 
 model Proposer {
-  id Int @id @default(autoincrement())
-
-  projectId Int     @unique
-  project   Project @relation(fields: [projectId], references: [id])
-
+  id           Int          @id @default(autoincrement())
   type         ProposerType
   name         String
   email        String
   major        String
   phone        String
   introduction String
+  passwordHash String       @map("password")
 
   createdDatetime DateTime @default(now())
-  updatedDatetime DateTime @default(now())
+  updatedDatetime DateTime @updatedAt
 
-  passwordHash String @map("password")
+  // Relations
+  projectId Int     @unique // Project와의 1:1 관계를 위해 Proposer가 projectId를 가짐
+  project   Project @relation(fields: [projectId], references: [id])
 }
 
 model Applicant {
-  id Int @id @default(autoincrement())
-
-  projectId Int
-  project   Project @relation(fields: [projectId], references: [id])
-
+  id           Int    @id @default(autoincrement())
   name         String
   email        String
   major        String
   phone        String
   introduction String
+  passwordHash String @map("password")
 
   createdDatetime DateTime @default(now())
-  updatedDatetime DateTime @default(now())
+  updatedDatetime DateTime @updatedAt
 
-  passwordHash String @map("password")
+  // Relations
+  projectId Int
+  project   Project @relation(fields: [projectId], references: [id])
 }
 
 model Post {
-  id Int @id @default(autoincrement())
-
-  title       String
-  content     String
-  author      String
-  attachments String[]
+  id           Int      @id @default(autoincrement())
+  title        String
+  content      String
+  author       String
+  attachments  String[]
+  viewCount    Int      @default(0)
+  passwordHash String   @map("password") // Post에도 비밀번호 추가
 
   createdDatetime DateTime @default(now())
-  updatedDatetime DateTime @default(now())
+  updatedDatetime DateTime @updatedAt
 }
