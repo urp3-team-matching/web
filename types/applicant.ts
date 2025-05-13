@@ -1,9 +1,7 @@
-// types/applicantTypes.ts
-import { Applicant, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { z } from "zod";
 
 export const CreateApplicantSchema = z.object({
-  // projectId는 URL 경로에서 주입
   name: z.string().min(1, "Name is required."),
   email: z.string().email("Invalid email format."),
   major: z.string().min(1, "Major is required."),
@@ -23,8 +21,6 @@ export const UpdateApplicantSchema = z.object({
   password: z.string().min(6).optional(),
 });
 export type UpdateApplicantInput = z.infer<typeof UpdateApplicantSchema>;
-
-export type PublicApplicant = Omit<Applicant, "passwordHash">;
 
 export const applicantPublicSelection: Prisma.ApplicantSelect = {
   id: true,

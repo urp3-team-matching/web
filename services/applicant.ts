@@ -7,18 +7,20 @@ import { prisma } from "@/lib/prisma";
 import {
   applicantPublicSelection,
   CreateApplicantInput, // types에서 import
-  PublicApplicant,
   UpdateApplicantInput,
 } from "@/types/applicant";
+import { PasswordOmittedType } from "@/types/utils";
+import { Applicant } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 const SALT_ROUNDS = 10;
+type PasswordOmittedApplicant = PasswordOmittedType<Applicant>;
 
 // 지원자 생성 (비밀번호 해싱)
 export async function createApplicant(
   projectId: number,
   data: CreateApplicantInput
-): Promise<PublicApplicant> {
+): Promise<PasswordOmittedApplicant> {
   const { password: plainTextPassword, ...applicantData } = data;
   const passwordHash = await bcrypt.hash(plainTextPassword, SALT_ROUNDS);
 
@@ -40,26 +42,26 @@ export async function createApplicant(
     },
     select: applicantPublicSelection, // passwordHash 제외 확인
   });
-  return createdApplicant as PublicApplicant;
+  return createdApplicant;
 }
 
 // 특정 프로젝트의 모든 지원자 조회
 export async function getApplicantsByProjectId(
   projectId: number
-): Promise<PublicApplicant[]> {
+): Promise<PasswordOmittedApplicant[]> {
   const applicants = await prisma.applicant.findMany({
     where: { projectId },
     select: applicantPublicSelection, // passwordHash 제외 확인
     orderBy: { createdDatetime: "asc" },
   });
-  return applicants as PublicApplicant[];
+  return applicants;
 }
 
 // 특정 프로젝트의 특정 지원자 조회
 export async function getApplicantByIdForProject(
   applicantId: number,
   projectId: number
-): Promise<PublicApplicant | null> {
+): Promise<PasswordOmittedApplicant | null> {
   const applicant = await prisma.applicant.findUnique({
     where: {
       id: applicantId,
@@ -67,7 +69,7 @@ export async function getApplicantByIdForProject(
     },
     select: applicantPublicSelection, // passwordHash 제외 확인
   });
-  return applicant as PublicApplicant | null;
+  return applicant;
 }
 
 // 지원자 정보 수정 (비밀번호 검증)
@@ -75,7 +77,7 @@ export async function updateApplicant(
   applicantId: number,
   projectId: number,
   data: UpdateApplicantInput
-): Promise<PublicApplicant> {
+): Promise<PasswordOmittedApplicant> {
   const {
     currentPassword,
     password: newPlainTextPassword,
@@ -117,7 +119,7 @@ export async function updateApplicant(
     },
     select: applicantPublicSelection, // passwordHash 제외 확인
   });
-  return updatedApplicant as PublicApplicant;
+  return updatedApplicant;
 }
 
 // 지원자 삭제 (비밀번호 검증)
@@ -125,7 +127,7 @@ export async function deleteApplicant(
   applicantId: number,
   projectId: number,
   currentPassword?: string
-): Promise<PublicApplicant> {
+): Promise<PasswordOmittedApplicant> {
   if (!currentPassword) {
     throw new UnauthorizedError(
       "Current password is required to delete this applicant."
@@ -160,5 +162,5 @@ export async function deleteApplicant(
     },
     select: applicantPublicSelection, // passwordHash 제외 확인
   });
-  return deletedApplicant as PublicApplicant;
+  return deletedApplicant;
 }

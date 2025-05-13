@@ -7,12 +7,11 @@ import { prisma } from "@/lib/prisma";
 import {
   CreateProposerInput,
   GetProposersQueryInput,
-  PaginatedProposersResponse, // 독립적 생성 시 사용 (덜 일반적)
   proposerPublicSelection, // types에서 import
-  PublicProposer,
   UpdateProposerInput,
 } from "@/types/proposer";
-import { Prisma } from "@prisma/client";
+import { PaginatedType } from "@/types/utils";
+import { Prisma, Proposer } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 const SALT_ROUNDS = 10;
@@ -20,7 +19,7 @@ const SALT_ROUNDS = 10;
 // 모든 제안자 조회 (페이지네이션, 필터링)
 export async function getAllProposers(
   query: GetProposersQueryInput
-): Promise<PaginatedProposersResponse> {
+): Promise<PaginatedType<Proposer>> {
   const { page, limit, type, name, email, major } = query;
   const skip = (page - 1) * limit;
   const take = limit;
@@ -43,7 +42,7 @@ export async function getAllProposers(
   ]);
 
   return {
-    data: proposers as PublicProposer[], // 타입 캐스팅 주의
+    data: proposers, // 타입 캐스팅 주의
     totalItems,
     totalPages: Math.ceil(totalItems / limit),
     currentPage: page,
@@ -52,21 +51,19 @@ export async function getAllProposers(
 }
 
 // ID로 특정 제안자 조회
-export async function getProposerById(
-  id: number
-): Promise<PublicProposer | null> {
+export async function getProposerById(id: number): Promise<Proposer | null> {
   const proposer = await prisma.proposer.findUnique({
     where: { id },
     select: proposerPublicSelection, // passwordHash 제외 확인
   });
-  return proposer as PublicProposer | null;
+  return proposer;
 }
 
 // 독립적인 제안자 수정 (비밀번호 검증) - Project 수정과 분리된 경우
 export async function updateProposer(
   id: number,
   data: UpdateProposerInput
-): Promise<PublicProposer> {
+): Promise<Proposer> {
   const {
     currentPassword,
     password: newPlainTextPassword,
@@ -98,14 +95,14 @@ export async function updateProposer(
     },
     select: proposerPublicSelection, // passwordHash 제외 확인
   });
-  return updatedProposer as PublicProposer;
+  return updatedProposer;
 }
 
 // 제안자 삭제 (비밀번호 검증)
 export async function deleteProposer(
   id: number,
   currentPassword?: string
-): Promise<PublicProposer> {
+): Promise<Proposer> {
   if (!currentPassword) {
     throw new UnauthorizedError(
       "Current password is required to delete this proposer."
@@ -135,13 +132,13 @@ export async function deleteProposer(
     where: { id },
     select: proposerPublicSelection, // passwordHash 제외 확인
   });
-  return deletedProposer as PublicProposer;
+  return deletedProposer;
 }
 
 // 독립적인 제안자 생성 (일반적이지 않음, Project 생성 시 함께 만드는 것이 일반적)
 export async function createStandaloneProposer(
   data: CreateProposerInput
-): Promise<PublicProposer> {
+): Promise<Proposer> {
   const { password: plainTextPassword, projectId, ...proposerData } = data;
   const passwordHash = await bcrypt.hash(plainTextPassword, SALT_ROUNDS);
 
@@ -173,5 +170,5 @@ export async function createStandaloneProposer(
     },
     select: proposerPublicSelection,
   });
-  return createdProposer as PublicProposer;
+  return createdProposer;
 }

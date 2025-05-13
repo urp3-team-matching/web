@@ -7,18 +7,20 @@ import { prisma } from "@/lib/prisma";
 import {
   CreatePostInput,
   GetPostsQueryInput,
-  PaginatedPostsResponse,
   postPublicSelection,
-  PublicPost,
   UpdatePostInput,
 } from "@/types/post";
-import { Prisma } from "@prisma/client";
+import { PaginatedType, PasswordOmittedType } from "@/types/utils";
+import { Post, Prisma } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 const SALT_ROUNDS = 10;
+type PasswordOmittedPost = PasswordOmittedType<Post>;
 
 // 포스트 생성 (비밀번호 해싱)
-export async function createPost(data: CreatePostInput): Promise<PublicPost> {
+export async function createPost(
+  data: CreatePostInput
+): Promise<PasswordOmittedPost> {
   const { password: plainTextPassword, ...postData } = data;
   const passwordHash = await bcrypt.hash(plainTextPassword, SALT_ROUNDS);
 
@@ -29,13 +31,13 @@ export async function createPost(data: CreatePostInput): Promise<PublicPost> {
     },
     select: postPublicSelection, // passwordHash 제외 확인
   });
-  return createdPost as PublicPost;
+  return createdPost;
 }
 
 // 모든 포스트 조회 (페이지네이션, 필터링, 정렬)
 export async function getAllPosts(
   query: GetPostsQueryInput
-): Promise<PaginatedPostsResponse> {
+): Promise<PaginatedType<PasswordOmittedPost>> {
   const { page, limit, sortBy, sortOrder, title, author } = query;
   const skip = (page - 1) * limit;
   const take = limit;
@@ -61,7 +63,7 @@ export async function getAllPosts(
   ]);
 
   return {
-    data: posts as PublicPost[],
+    data: posts,
     totalItems,
     totalPages: Math.ceil(totalItems / limit),
     currentPage: page,
@@ -70,7 +72,9 @@ export async function getAllPosts(
 }
 
 // ID로 특정 포스트 조회 (조회수 증가)
-export async function getPostById(id: number): Promise<PublicPost | null> {
+export async function getPostById(
+  id: number
+): Promise<PasswordOmittedPost | null> {
   const post = await prisma.post.findUnique({
     where: { id },
     select: postPublicSelection, // passwordHash 제외 확인
@@ -84,10 +88,10 @@ export async function getPostById(id: number): Promise<PublicPost | null> {
         data: { viewCount: { increment: 1 } },
         select: postPublicSelection,
       });
-      return updatedPost as PublicPost;
+      return updatedPost;
     } catch (error) {
       console.error(`Failed to increment view count for post ${id}:`, error);
-      return post as PublicPost; // 에러 발생해도 원래 조회된 포스트 반환
+      return post; // 에러 발생해도 원래 조회된 포스트 반환
     }
   }
   return null;
@@ -97,7 +101,7 @@ export async function getPostById(id: number): Promise<PublicPost | null> {
 export async function updatePost(
   id: number,
   data: UpdatePostInput
-): Promise<PublicPost> {
+): Promise<PasswordOmittedPost> {
   const {
     currentPassword,
     password: newPlainTextPassword,
@@ -133,14 +137,14 @@ export async function updatePost(
     },
     select: postPublicSelection, // passwordHash 제외 확인
   });
-  return updatedPost as PublicPost;
+  return updatedPost;
 }
 
 // 포스트 삭제 (비밀번호 검증)
 export async function deletePost(
   id: number,
   currentPassword?: string
-): Promise<PublicPost> {
+): Promise<PasswordOmittedPost> {
   if (!currentPassword) {
     throw new UnauthorizedError(
       "Current password is required to delete this post."
@@ -168,5 +172,5 @@ export async function deletePost(
     where: { id },
     select: postPublicSelection, // passwordHash 제외 확인
   });
-  return deletedPost as PublicPost;
+  return deletedPost;
 }

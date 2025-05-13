@@ -1,12 +1,11 @@
-// types/postTypes.ts
-import { Post, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { z } from "zod";
 
 export const CreatePostSchema = z.object({
   title: z.string().min(1, "Title is required."),
   content: z.string().min(1, "Content is required."),
   author: z.string().min(1, "Author is required."),
-  attachments: z.array(z.string()).optional().default([]),
+  attachments: z.array(z.string()).default([]).optional(),
   password: z.string().min(6, "Password is required (min 6 chars)."),
 });
 export type CreatePostInput = z.infer<typeof CreatePostSchema>;
@@ -33,16 +32,6 @@ export const GetPostsQuerySchema = z.object({
   author: z.string().optional(),
 });
 export type GetPostsQueryInput = z.infer<typeof GetPostsQuerySchema>;
-
-export type PublicPost = Omit<Post, "passwordHash">;
-
-export interface PaginatedPostsResponse {
-  data: PublicPost[];
-  totalItems: number;
-  totalPages: number;
-  currentPage: number;
-  itemsPerPage: number;
-}
 
 export const postPublicSelection: Prisma.PostSelect = {
   id: true,

@@ -5,24 +5,31 @@ import {
 } from "@/lib/authUtils";
 import { prisma } from "@/lib/prisma";
 import {
+  ApplicantForProject,
   CreateProjectInput,
   GetProjectsQueryInput,
-  PaginatedProjectsResponse,
   projectPublicSelection,
-  PublicApplicantForProject, // types에서 import
-  PublicProject,
-  PublicProposerForProject,
+  ProposerForProject,
   UpdateProjectInput,
 } from "@/types/project";
-import { Prisma } from "@prisma/client";
+import { PaginatedType, PasswordOmittedType } from "@/types/utils";
+import { Prisma, Project } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 const SALT_ROUNDS = 10;
+type PasswordOmittedProject = PasswordOmittedType<Project>;
+type ProjectWithProposer = Project & {
+  proposer: ProposerForProject;
+};
+type ProjectWithForeignKeys = Project & {
+  proposer: ProposerForProject;
+  applicants: ApplicantForProject[];
+};
 
 // 프로젝트 생성 (Proposer 포함 가능)
 export async function createProject(
   data: CreateProjectInput
-): Promise<PublicProject & { proposer?: PublicProposerForProject | null }> {
+): Promise<ProjectWithProposer> {
   const {
     proposer: proposerInput,
     password: projectPlainTextPassword,
@@ -58,15 +65,13 @@ export async function createProject(
     },
     select: projectPublicSelection, // passwordHash 제외 확인
   });
-  return createdProject as PublicProject & {
-    proposer?: PublicProposerForProject | null;
-  };
+  return createdProject;
 }
 
 // 모든 프로젝트 조회 (페이지네이션, 필터링, 정렬)
 export async function getAllProjects(
   query: GetProjectsQueryInput
-): Promise<PaginatedProjectsResponse> {
+): Promise<PaginatedType<PasswordOmittedProject>> {
   const {
     page,
     limit,
@@ -123,12 +128,7 @@ export async function getAllProjects(
   ]);
 
   return {
-    data: projects as Array<
-      PublicProject & {
-        proposer?: PublicProposerForProject | null;
-        applicants?: PublicApplicantForProject[];
-      }
-    >,
+    data: projects,
     totalItems,
     totalPages: Math.ceil(totalItems / limit),
     currentPage: page,
@@ -139,13 +139,7 @@ export async function getAllProjects(
 // ID로 특정 프로젝트 조회 (조회수 증가)
 export async function getProjectById(
   id: number
-): Promise<
-  | (PublicProject & {
-      proposer?: PublicProposerForProject | null;
-      applicants?: PublicApplicantForProject[];
-    })
-  | null
-> {
+): Promise<ProjectWithForeignKeys | null> {
   const project = await prisma.project.findUnique({
     where: { id },
     select: projectPublicSelection, // passwordHash 제외 확인
@@ -158,21 +152,14 @@ export async function getProjectById(
         where: { id },
         data: { viewCount: { increment: 1 } },
       });
-      // 타입캐스팅 주의: Public 타입 반환 보장
       return {
         ...project,
         viewCount: project.viewCount + 1,
-      } as PublicProject & {
-        proposer?: PublicProposerForProject | null;
-        applicants?: PublicApplicantForProject[];
       };
     } catch (error) {
       console.error(`Failed to increment view count for project ${id}:`, error);
       // 에러 발생해도 조회된 프로젝트 정보는 반환
-      return project as PublicProject & {
-        proposer?: PublicProposerForProject | null;
-        applicants?: PublicApplicantForProject[];
-      };
+      return project;
     }
   }
   return null;
@@ -182,7 +169,7 @@ export async function getProjectById(
 export async function updateProject(
   id: number,
   data: UpdateProjectInput
-): Promise<PublicProject & { proposer?: PublicProposerForProject | null }> {
+): Promise<ProjectWithProposer> {
   const {
     currentPassword,
     password: newPlainTextPassword,
@@ -293,9 +280,7 @@ export async function updateProject(
     select: projectPublicSelection, // passwordHash 제외 확인
   });
 
-  return updatedProject as PublicProject & {
-    proposer?: PublicProposerForProject | null;
-  };
+  return updatedProject;
 }
 
 // 프로젝트 삭제 (비밀번호 검증, 관련 Applicant/Proposer 동시 삭제)

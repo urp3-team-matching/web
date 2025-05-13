@@ -1,4 +1,3 @@
-// app/api/projects/route.ts
 import { parseAndValidateRequestBody } from "@/lib/routeUtils";
 import { createProject, getAllProjects } from "@/services/project";
 import { CreateProjectSchema, GetProjectsQuerySchema } from "@/types/project";

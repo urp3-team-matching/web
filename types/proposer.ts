@@ -1,11 +1,7 @@
-// types/proposerTypes.ts
-import { Prisma, Proposer, ProposerType } from "@prisma/client";
+import { Prisma, ProposerType } from "@prisma/client";
 import { z } from "zod";
 
-export type PublicProposer = Omit<Proposer, "passwordHash">;
-
 export const CreateProposerSchema = z.object({
-  // 독립적 Proposer 생성 시 (Project에 연결 필수)
   projectId: z.number().int().positive(),
   type: z.nativeEnum(ProposerType),
   name: z.string().min(1),
@@ -38,14 +34,6 @@ export const GetProposersQuerySchema = z.object({
   major: z.string().optional(),
 });
 export type GetProposersQueryInput = z.infer<typeof GetProposersQuerySchema>;
-
-export interface PaginatedProposersResponse {
-  data: PublicProposer[];
-  totalItems: number;
-  totalPages: number;
-  currentPage: number;
-  itemsPerPage: number;
-}
 
 export const proposerPublicSelection: Prisma.ProposerSelect = {
   id: true,

@@ -1,10 +1,5 @@
-import {
-  Applicant,
-  Prisma,
-  Project,
-  Proposer,
-  ProposerType,
-} from "@prisma/client";
+import { PublicType } from "@/types/utils";
+import { Applicant, Prisma, Proposer, ProposerType } from "@prisma/client";
 import { z } from "zod";
 
 // ProposerDataSchema는 Project 생성/수정 시 중첩 입력용
@@ -66,29 +61,14 @@ export const GetProjectsQuerySchema = z.object({
 });
 export type GetProjectsQueryInput = z.infer<typeof GetProjectsQuerySchema>;
 
-// passwordHash를 제외한 Project 타입 (응답용)
-export type PublicProject = Omit<Project, "passwordHash">;
-export type PublicProposerForProject = Omit<
-  Proposer,
-  "passwordHash" | "projectId" | "project"
+export type ProposerForProject = Omit<
+  PublicType<Proposer>,
+  "projectId" | "project"
 >; // Proposer의 project 필드는 순환 참조 가능성
-export type PublicApplicantForProject = Omit<
-  Applicant,
-  "passwordHash" | "projectId" | "project"
+export type ApplicantForProject = Omit<
+  PublicType<Applicant>,
+  "projectId" | "project"
 >;
-
-export interface PaginatedProjectsResponse {
-  data: Array<
-    PublicProject & {
-      proposer?: PublicProposerForProject | null;
-      applicants?: PublicApplicantForProject[];
-    }
-  >;
-  totalItems: number;
-  totalPages: number;
-  currentPage: number;
-  itemsPerPage: number;
-}
 
 // Prisma Select 객체 (passwordHash 제외)
 export const projectPublicSelection: Prisma.ProjectSelect = {
