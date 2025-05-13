@@ -48,7 +48,7 @@ export default function Home() {
           </div>
         </div>
         <SearchCreateRow />
-        <div className="flex *:cursor-pointer text-[12px] gap-4">
+        <div className="flex *:cursor-pointer text-[14px] gap-4">
           <span>• 최신순</span>
           <span>• 인기순</span>
         </div>

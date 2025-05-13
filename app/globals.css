@@ -15,7 +15,7 @@
 }
 
 .headerWidth {
-  @apply min-[1240px]:w-[1240px] 
+  @apply w-[1240px]
 }
 
 
