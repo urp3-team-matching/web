@@ -104,7 +104,7 @@ export default function Project({ params }: { params: { id: string } }) {
   useEffect(() => {}, []);
 
   return (
-    <div className="min-[1040px]:w-[1040px] w-full h-auto relative">
+    <div className="w-full pageWidth h-auto relative">
       <form
         id="project-form"
         onSubmit={handleTextSubmit(edit)}
@@ -156,7 +156,7 @@ export default function Project({ params }: { params: { id: string } }) {
           </div>
         </div>
         <div className="w-full flex  h-auto justify-between">
-          <div className="w-[690px] h-full mt-9 flex flex-col gap-5">
+          <div className="w-2/3 h-full mt-9 flex flex-col gap-5">
             {fields.map(({ name, title }) => (
               <Controller
                 key={name}
@@ -175,7 +175,7 @@ export default function Project({ params }: { params: { id: string } }) {
             ))}
           </div>
 
-          <div className="w-[280px] flex flex-col gap-5 h-auto mt-12">
+          <div className="w-[30%] flex flex-col gap-5 h-auto mt-12">
             <MajorGraph project={project as ProjectType} />
             <div className="w-full text-sm font-medium flex flex-col shadow-md rounded-lg  h-[500px]">
               <div className="w-full *:w-16 *:text-center *:cursor-pointer border-b-2 flex justify-center gap-5 h-10 items-center">
@@ -220,7 +220,7 @@ export default function Project({ params }: { params: { id: string } }) {
               <DialogTrigger asChild>
                 <div
                   onClick={() => setApplyOn(true)}
-                  className={`w-[280px] h-[50px] bg-blue-500 text-white flex ${
+                  className={`w-full h-[50px] bg-secondary-100 text-white flex ${
                     adminMode ? "hidden" : "block"
                   } justify-center cursor-pointer items-center rounded-lg text-base font-medium`}
                 >

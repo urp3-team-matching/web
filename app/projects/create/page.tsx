@@ -32,9 +32,9 @@ export default function Create() {
   return (
     <form
       onSubmit={handleSubmit(doFunction)}
-      className="min-[1100px]:w-[1100px] max-[1100px]:p-5  flex mt-12 gap-5 justify-center w-full h-auto"
+      className="pageWidth max-[1100px]:p-5  flex mt-12 gap-5 justify-center w-full h-auto"
     >
-      <div className="w-[650px] h-auto flex flex-col gap-5">
+      <div className="w-2/3 h-auto flex flex-col gap-5">
         {[
           { name: "title", label: "프로젝트 제목*" },
           { name: "introduction", label: "프로젝트 소개*" },
@@ -57,7 +57,7 @@ export default function Create() {
         ))}
       </div>
 
-      <div className="w-[320px] text-lg font-semibold flex flex-col gap-5">
+      <div className="w-[30%] text-lg font-semibold flex flex-col gap-5">
         <div>프로젝트 제안자</div>
         <div className="w-full p-5 flex flex-col gap-3 border rounded-lg h-auto">
           <div className="flex items-center">
