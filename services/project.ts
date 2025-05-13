@@ -59,9 +59,7 @@ export async function createProject(
     data: {
       ...projectDataRest,
       passwordHash: projectPasswordHash,
-      proposer: proposerCreatePayload
-        ? { create: proposerCreatePayload }
-        : undefined,
+      proposer: { create: proposerCreatePayload },
     },
     select: projectPublicSelection, // passwordHash 제외 확인
   });
@@ -315,7 +313,7 @@ export async function deleteProject(
   try {
     await prisma.$transaction([
       prisma.applicant.deleteMany({ where: { projectId: id } }),
-      prisma.proposer.deleteMany({ where: { projectId: id } }), // Proposer도 projectId를 가지므로 삭제 가능
+      prisma.proposer.deleteMany({ where: { id: projectToDelete.proposerId } }), // Proposer도 projectId를 가지므로 삭제 가능
       prisma.project.delete({ where: { id } }),
     ]);
   } catch (error) {

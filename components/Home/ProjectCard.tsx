@@ -1,11 +1,11 @@
 import ProposalBadge from "@/components/Badge/ProposalBadge";
-import { ProjectWithForeignKeys } from "@/types/project";
+import { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
 import { ProposerType } from "@prisma/client";
 import { Calendar, Eye } from "lucide-react";
 import KeywordBadge from "../Badge/KeywordBadge";
 
 export interface ProjectCardProps {
-  project: ProjectWithForeignKeys;
+  project: PublicProjectWithForeignKeys;
   className?: string;
 }
 

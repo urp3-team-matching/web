@@ -24,22 +24,24 @@ import type {
 import { PaginatedType, PublicType } from "@/types/utils";
 import { Applicant, Post, Project, Proposer } from "@prisma/client";
 
-type PublicApplicant = PublicType<Applicant>;
-type PublicPost = PublicType<Post>;
-type PublicProject = PublicType<Project>;
-type PublicProposer = PublicType<Proposer>;
-type PublicProposerForProject = PublicType<ProposerForProject>;
-type PublicProjectWithProposer = PublicProject & {
+export type PublicApplicant = PublicType<Applicant>;
+export type PublicPost = PublicType<Post>;
+export type PublicProject = PublicType<Project>;
+export type PublicProposer = PublicType<Proposer>;
+export type PublicProposerForProject = PublicType<ProposerForProject>;
+export type PublicProjectWithProposer = PublicProject & {
   proposer: PublicProposerForProject;
 };
-type ProjectWithForeignKeys = Project & {
+export type ProjectWithForeignKeys = Project & {
   proposer: ProposerForProject;
   applicants: ApplicantForProject[];
 };
+export type PublicProjectWithForeignKeys = PublicType<ProjectWithForeignKeys>;
 
-type PaginatedPostsResponse = PaginatedType<PublicPost>;
-type PaginatedProposersResponse = PaginatedType<PublicProposer>;
-type PaginatedProjectsResponse = PaginatedType<ProjectWithForeignKeys>;
+export type PaginatedPosts = PaginatedType<PublicPost>;
+export type PaginatedProposers = PaginatedType<PublicProposer>;
+export type PaginatedPublicProjects =
+  PaginatedType<PublicProjectWithForeignKeys>;
 
 interface ApiClientConfig {
   baseUrl: string; // 예: "http://localhost:3000", "https://api.yourdomain.com"
@@ -144,20 +146,23 @@ class ApiClient {
   // --- Project API Methods ---
   public getProjects(
     params?: GetProjectsQueryInput
-  ): Promise<PaginatedProjectsResponse> {
+  ): Promise<PaginatedPublicProjects> {
     const query = params
       ? new URLSearchParams(
           Object.entries(params).filter(([, v]) => v !== undefined) as any
         ).toString()
       : "";
-    return this._request<PaginatedProjectsResponse>(
+    return this._request<PaginatedPublicProjects>(
       `/api/projects?${query}`,
       "GET"
     );
   }
 
-  public getProjectById(id: number): Promise<ProjectWithForeignKeys> {
-    return this._request<ProjectWithForeignKeys>(`/api/projects/${id}`, "GET");
+  public getProjectById(id: number): Promise<PublicProjectWithForeignKeys> {
+    return this._request<PublicProjectWithForeignKeys>(
+      `/api/projects/${id}`,
+      "GET"
+    );
   }
 
   public createProject(
@@ -188,15 +193,13 @@ class ApiClient {
   }
 
   // --- Post API Methods ---
-  public getPosts(
-    params?: GetPostsQueryInput
-  ): Promise<PaginatedPostsResponse> {
+  public getPosts(params?: GetPostsQueryInput): Promise<PaginatedPosts> {
     const query = params
       ? new URLSearchParams(
           Object.entries(params).filter(([, v]) => v !== undefined) as any
         ).toString()
       : "";
-    return this._request<PaginatedPostsResponse>(`/api/posts?${query}`, "GET");
+    return this._request<PaginatedPosts>(`/api/posts?${query}`, "GET");
   }
 
   public getPostById(id: number): Promise<PublicPost> {
@@ -273,16 +276,13 @@ class ApiClient {
   // --- Proposer API Methods ---
   public getProposers(
     params?: GetProposersQueryInput
-  ): Promise<PaginatedProposersResponse> {
+  ): Promise<PaginatedProposers> {
     const query = params
       ? new URLSearchParams(
           Object.entries(params).filter(([, v]) => v !== undefined) as any
         ).toString()
       : "";
-    return this._request<PaginatedProposersResponse>(
-      `/api/proposers?${query}`,
-      "GET"
-    );
+    return this._request<PaginatedProposers>(`/api/proposers?${query}`, "GET");
   }
 
   public getProposerById(id: number): Promise<PublicProposer> {

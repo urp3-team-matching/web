@@ -1,12 +1,12 @@
-import { ProjectType } from "@/constants/fakeProject";
+import { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
 import { CircleUser } from "lucide-react";
 
 interface MajorGraphProps {
-  project: ProjectType;
+  project: PublicProjectWithForeignKeys;
 }
 
 export default function MajorGraph({ project }: MajorGraphProps) {
-  const majorNumber = project.majors.length;
+  const majorNumber = project.applicants.length;
   const majorColor = [
     "bg-secondary-100",
     "bg-blue-300",
@@ -51,10 +51,10 @@ export default function MajorGraph({ project }: MajorGraphProps) {
         <div className="w-full h-full top-0 left-0  -z-10 bg-gray-100 absolute"></div>
       </div>
       <div className="w-full flex flex-col gap-1 justify-center h-auto">
-        {project.majors.map((major, i) => (
-          <div className="flex gap-1 items-center" key={i}>
+        {project.applicants.map((applicant, i) => (
+          <div className="flex gap-1 items-center" key={applicant.id}>
             <div className={`size-5 rounded-full ${majorColor[i]}`}></div>
-            <div className="w-full text-xs font-normal">{major}</div>
+            <div className="w-full text-xs font-normal">{applicant.major}</div>
           </div>
         ))}
       </div>

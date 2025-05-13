@@ -154,7 +154,7 @@ export async function createStandaloneProposer(
 
   // Proposer는 unique projectId를 가져야 함. 이미 해당 projectId로 Proposer가 있는지 확인 필요.
   const existingProposer = await prisma.proposer.findUnique({
-    where: { projectId },
+    where: { id: projectId },
   });
   if (existingProposer) {
     throw new Error(
@@ -166,7 +166,7 @@ export async function createStandaloneProposer(
     data: {
       ...proposerData,
       passwordHash,
-      projectId, // 또는 project: { connect: { id: projectId } }
+      id: projectId, // 또는 project: { connect: { id: projectId } }
     },
     select: proposerPublicSelection,
   });

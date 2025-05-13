@@ -45,7 +45,6 @@ export const proposerPublicSelection: Prisma.ProposerSelect = {
   introduction: true,
   createdDatetime: true,
   updatedDatetime: true,
-  projectId: true, // 어떤 프로젝트의 제안자인지 표시
   project: {
     // 관련 프로젝트 간략 정보
     select: { id: true, name: true },

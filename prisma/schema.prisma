@@ -25,7 +25,8 @@ model Project {
   updatedDatetime DateTime @updatedAt
 
   // Relations
-  proposer   Proposer? // 1:1 관계 (Proposer가 projectId를 가짐)
+  proposerId Int         @unique
+  proposer   Proposer    @relation(fields: [proposerId], references: [id])
   applicants Applicant[]
 }
 
@@ -49,8 +50,7 @@ model Proposer {
   updatedDatetime DateTime @updatedAt
 
   // Relations
-  projectId Int     @unique // Project와의 1:1 관계를 위해 Proposer가 projectId를 가짐
-  project   Project @relation(fields: [projectId], references: [id])
+  project Project?
 }
 
 model Applicant {

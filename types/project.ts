@@ -1,4 +1,3 @@
-import { PublicType } from "@/types/utils";
 import { Applicant, Prisma, Proposer, ProposerType } from "@prisma/client";
 import { z } from "zod";
 
@@ -61,14 +60,8 @@ export const GetProjectsQuerySchema = z.object({
 });
 export type GetProjectsQueryInput = z.infer<typeof GetProjectsQuerySchema>;
 
-export type ProposerForProject = Omit<
-  PublicType<Proposer>,
-  "projectId" | "project"
->; // Proposer의 project 필드는 순환 참조 가능성
-export type ApplicantForProject = Omit<
-  PublicType<Applicant>,
-  "projectId" | "project"
->;
+export type ProposerForProject = Omit<Proposer, "projectId" | "project">; // Proposer의 project 필드는 순환 참조 가능성
+export type ApplicantForProject = Omit<Applicant, "projectId" | "project">;
 
 // Prisma Select 객체 (passwordHash 제외)
 export const projectPublicSelection: Prisma.ProjectSelect = {
