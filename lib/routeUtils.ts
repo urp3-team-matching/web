@@ -17,7 +17,7 @@ export async function extractPasswordForDelete(
   let body;
   try {
     body = await request.json();
-  } catch (e) {
+  } catch {
     return {
       errorResponse: NextResponse.json(
         { error: "Invalid JSON body" },
@@ -58,7 +58,7 @@ export async function parseAndValidateRequestBody<T>(
   let body;
   try {
     body = await request.json();
-  } catch (e) {
+  } catch {
     return {
       errorResponse: NextResponse.json(
         { error: "Invalid JSON body" },

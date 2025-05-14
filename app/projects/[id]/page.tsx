@@ -24,9 +24,9 @@ import { Controller, useForm } from "react-hook-form";
 type ProjectTextFieldType = {
   introduction: string;
   background: string;
-  methodology: string;
-  goal: string;
-  expectation: string;
+  method: string;
+  objective: string;
+  result: string;
 };
 
 type ProjectApplyType = {
@@ -89,9 +89,9 @@ export default function Project({ params }: { params: { id: string } }) {
   const fields = [
     { name: "introduction", title: "프로젝트 소개" },
     { name: "background", title: "프로젝트 추진배경" },
-    { name: "methodology", title: "프로젝트 실행방법" },
-    { name: "goal", title: "프로젝트 목표" },
-    { name: "expectation", title: "프로젝트 기대효과" },
+    { name: "method", title: "프로젝트 실행방법" },
+    { name: "objective", title: "프로젝트 목표" },
+    { name: "result", title: "프로젝트 기대효과" },
   ] as const;
 
   useEffect(() => {
@@ -122,11 +122,10 @@ export default function Project({ params }: { params: { id: string } }) {
               onClick={() => {
                 if (adminMode) {
                   resetText({
-                    introduction: project?.introduction || "",
                     background: project?.background || "",
-                    methodology: project?.methodology || "",
-                    goal: project?.goal || "",
-                    expectation: project?.expectation || "",
+                    method: project?.method || "",
+                    objective: project?.objective || "",
+                    result: project?.result || "",
                   });
                   setAdminMode(false);
                 }
@@ -322,11 +321,10 @@ export default function Project({ params }: { params: { id: string } }) {
               <button
                 onClick={() => {
                   resetText({
-                    introduction: project?.introduction || "",
                     background: project?.background || "",
-                    methodology: project?.methodology || "",
-                    goal: project?.goal || "",
-                    expectation: project?.expectation || "",
+                    method: project?.method || "",
+                    objective: project?.objective || "",
+                    result: project?.result || "",
                   });
                   setAdminMode(false);
                 }}

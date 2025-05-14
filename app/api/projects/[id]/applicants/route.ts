@@ -1,4 +1,3 @@
-// app/api/projects/[projectId]/applicants/route.ts
 import { NotFoundError } from "@/lib/authUtils"; // Project ID 관련 에러 처리용
 import { parseAndValidateRequestBody } from "@/lib/routeUtils";
 import {

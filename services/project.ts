@@ -102,9 +102,18 @@ export async function getAllProjects(
   if (sortBy) {
     if (sortBy.includes(".")) {
       const [relation, field] = sortBy.split(".");
-      orderByConditions[
-        relation as keyof Prisma.ProjectOrderByWithRelationInput
-      ] = { [field]: sortOrder };
+
+      // 관계형 필드 정렬을 위한 적절한 객체 구조 생성
+      if (relation === "proposer") {
+        orderByConditions.proposer = { [field]: sortOrder };
+      } else if (relation === "applicants") {
+        orderByConditions.applicants = { [field]: sortOrder };
+      } else {
+        // 다른 관계가 있다면 여기에 추가
+        console.warn(`Unsupported relation for sorting: ${relation}`);
+        // 기본값 설정
+        orderByConditions.createdDatetime = "desc";
+      }
     } else {
       orderByConditions[
         sortBy as keyof Prisma.ProjectOrderByWithRelationInput

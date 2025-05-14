@@ -8,19 +8,19 @@ export const ProposerDataSchema = z.object({
   email: z.string().email("Invalid email format for proposer."),
   major: z.string().min(1, "Proposer major is required."),
   phone: z.string().min(1, "Proposer phone number is required."),
-  introduction: z.string().optional().default(""),
+  introduction: z.string(),
   password: z.string().min(6, "Proposer password is required (min 6 chars)."),
 });
 export type ProposerDataInput = z.infer<typeof ProposerDataSchema>;
 
 export const CreateProjectSchema = z.object({
   name: z.string().min(1, "Project name is required."),
-  background: z.string().optional().default(""),
-  method: z.string().optional().default(""),
-  objective: z.string().optional().default(""),
-  result: z.string().optional().default(""),
-  attachments: z.array(z.string()).optional().default([]),
-  keywords: z.array(z.string()).optional().default([]),
+  background: z.string(),
+  method: z.string(),
+  objective: z.string(),
+  result: z.string(),
+  attachments: z.array(z.string()),
+  keywords: z.array(z.string()),
   password: z.string().min(6, "Project password is required (min 6 chars)."),
   proposer: ProposerDataSchema.optional(),
 });

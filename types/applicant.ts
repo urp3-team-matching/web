@@ -6,7 +6,7 @@ export const CreateApplicantSchema = z.object({
   email: z.string().email("Invalid email format."),
   major: z.string().min(1, "Major is required."),
   phone: z.string().min(1, "Phone number is required."),
-  introduction: z.string().optional().default(""),
+  introduction: z.string(),
   password: z.string().min(6, "Password is required (min 6 chars)."),
 });
 export type CreateApplicantInput = z.infer<typeof CreateApplicantSchema>;
