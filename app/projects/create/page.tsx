@@ -68,7 +68,7 @@ export default function Create() {
                 control={control}
                 rules={{ required: `${label}을 입력해주세요.` }}
                 render={({ field }) => (
-                  <Textarea {...field} className="w-full h-10" />
+                  <Textarea {...field} className="w-full resize-none h-10" />
                 )}
               />
             </div>

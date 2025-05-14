@@ -23,10 +23,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import ChatField from "@/components/Project/Chat/ChatField";
-import { KeywordInput } from "@/components/Project/KeywordInput";
-import { TagsInput } from "@/components/ui/tags-input";
+import { DialogClose } from "@radix-ui/react-dialog";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 type ProjectTextFieldType = {
+  name: string;
+  proposer: "professor" | "student" | "admin";
+  password: string;
+  majors: string;
   keywords: string[];
   title: string;
   introduction: string;
@@ -59,6 +63,11 @@ export default function Project({ params }: { params: { id: string } }) {
     reset: resetText,
   } = useForm<ProjectTextFieldType>({
     defaultValues: {
+      name: project?.name || "",
+      proposer:
+        (project?.proposer as "professor" | "student" | "admin") || "student",
+      password: project?.password || "",
+      majors: project?.majors[0] || "",
       keywords: project?.keywords || [],
       title: project?.title || "",
       introduction: project?.introduction || "",
@@ -82,7 +91,7 @@ export default function Project({ params }: { params: { id: string } }) {
 
   function edit(data: ProjectTextFieldType) {
     if (!applyOn) {
-      console.log("제출된 데이터:", data);
+      console.log("제출된 데이터:", JSON.stringify(data));
       alert("저장되었습니다.");
       window.location.reload();
     }
@@ -90,7 +99,6 @@ export default function Project({ params }: { params: { id: string } }) {
 
   function apply(data: ProjectApplyType) {
     console.log("신청서 제출된 데이터:", data);
-
     setApplyOn(false);
     alert("신청서가 제출되었습니다.");
   }
@@ -101,6 +109,14 @@ export default function Project({ params }: { params: { id: string } }) {
     { name: "methodology", title: "프로젝트 실행방법" },
     { name: "goal", title: "프로젝트 목표" },
     { name: "expectation", title: "프로젝트 기대효과" },
+  ] as const;
+
+  const applyFields = [
+    { name: "name", title: "이름" },
+    { name: "majors", title: "학과" },
+    { name: "phone", title: "전화번호" },
+    { name: "email", title: "이메일" },
+    { name: "introduction", title: "자기소개" },
   ] as const;
 
   useEffect(() => {
@@ -120,6 +136,8 @@ export default function Project({ params }: { params: { id: string } }) {
         onSubmit={handleTextSubmit(edit)}
         className=" my-12 px-5 flex-col flex w-full h-auto"
       >
+        {/* 프로젝트 머리 부분 */}
+
         <div className="w-full h-auto flex flex-col relative">
           <div className="absolute flex gap-1 items-center right-0 top-0">
             <Switch
@@ -158,14 +176,14 @@ export default function Project({ params }: { params: { id: string } }) {
             </div>
           </div>
 
-          <div className="h-16  border-b-[1px] border-black">
+          <div className="h-16 flex flex-col justify-end border-b-[1px] border-black">
             <input
               defaultValue={project?.title}
               readOnly={!adminMode}
               placeholder="제목을 입력하세요"
               className={`text-4xl ${
                 adminMode ? "bg-gray-100" : ""
-              } font-medium  text-black w-full h-full rounded-lg p-1 py-1`}
+              } font-medium  text-black w-full h-14   p-1 py-1`}
               {...registerText("title", {
                 required: "제목을 입력해주세요",
               })}
@@ -186,7 +204,10 @@ export default function Project({ params }: { params: { id: string } }) {
           </div>
         </div>
 
+        {/* 프로젝트 필드 부분 */}
+
         <div className="w-full flex  h-auto justify-between">
+          {/* 프로젝트 필드 좌측 부분 */}
           <div className="w-2/3 h-full mt-9 flex flex-col gap-5">
             <div className={`${adminMode ? "" : "hidden"}`}>
               <Controller
@@ -195,11 +216,40 @@ export default function Project({ params }: { params: { id: string } }) {
                 defaultValue={project?.keywords || []}
                 rules={{ required: "키워드를 입력해주세요." }}
                 render={({ field }) => (
-                  <KeywordInput
-                    onChange={field.onChange}
-                    keywords={field.value}
-                    title="키워드"
-                  ></KeywordInput>
+                  <TagsInput.Root
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    className={`flex w-full flex-col gap-2`}
+                    editable
+                  >
+                    <TagsInput.Label className=" text-lg font-semibold  leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                      키워드
+                    </TagsInput.Label>
+                    <div
+                      className={`flex min-h-10  flex-wrap items-center gap-1.5 rounded-md border border-input bg-background px-3 py-2 text-sm focus-within:ring-1 focus-within:ring-zinc-500 disabled:cursor-not-allowed disabled:opacity-50 dark:focus-within:ring-zinc-400`}
+                    >
+                      {field.value.map((trick) => (
+                        <TagsInput.Item
+                          key={trick}
+                          value={trick}
+                          className="inline-flex max-w-[calc(100%-8px)] items-center gap-1.5 rounded border bg-transparent px-2.5 py-1 text-sm focus:outline-hidden data-disabled:cursor-not-allowed data-editable:select-none data-editing:bg-transparent data-disabled:opacity-50 data-editing:ring-1 data-editing:ring-zinc-500 dark:data-editing:ring-zinc-400 [&:not([data-editing])]:pr-1.5 [&[data-highlighted]:not([data-editing])]:bg-zinc-200 [&[data-highlighted]:not([data-editing])]:text-black dark:[&[data-highlighted]:not([data-editing])]:bg-zinc-800 dark:[&[data-highlighted]:not([data-editing])]:text-white"
+                        >
+                          <TagsInput.ItemText className="truncate" />
+                          <TagsInput.ItemDelete className="h-4 w-4 shrink-0 rounded-sm opacity-70 ring-offset-zinc-950 transition-opacity hover:opacity-100">
+                            <X className="h-3.5 w-3.5" />
+                          </TagsInput.ItemDelete>
+                        </TagsInput.Item>
+                      ))}
+                      <TagsInput.Input
+                        placeholder="키워드를 콤마로 구분하여 입력해주세요"
+                        className="flex-1 bg-transparent outline-hidden placeholder:text-zinc-500 disabled:cursor-not-allowed disabled:opacity-50 dark:placeholder:text-zinc-400"
+                      />
+                    </div>
+                    <TagsInput.Clear className="flex h-9 items-center justify-center gap-2 rounded-sm border border-input bg-transparent text-zinc-800 shadow-xs hover:bg-zinc-100/80 dark:text-zinc-300 dark:hover:bg-zinc-900/80">
+                      <RefreshCcw className="h-4 w-4" />
+                      모두 지우기
+                    </TagsInput.Clear>
+                  </TagsInput.Root>
                 )}
               />
             </div>
@@ -221,8 +271,99 @@ export default function Project({ params }: { params: { id: string } }) {
             ))}
           </div>
 
+          {/* 프로젝트 필드 우측 부분 */}
           <div className="w-[30%] flex flex-col gap-5 h-auto mt-12">
-            <MajorGraph project={project as ProjectType} />
+            <MajorGraph
+              className={`${adminMode ? "hidden" : ""}`}
+              project={project as ProjectType}
+            />
+            {/* 프로젝트 제안자 입력 */}
+            <div
+              className={`w-full p-5 flex flex-col gap-3 border rounded-lg h-auto ${
+                adminMode ? "" : "hidden"
+              }`}
+            >
+              <div className="flex items-center">
+                <span className="text-sm text-end font-semibold w-16 mr-3">
+                  이름
+                </span>
+                <Controller
+                  name="name"
+                  control={controlText}
+                  rules={{ required: "제안자 이름을 입력해주세요" }}
+                  render={({ field }) => <Input {...field} />}
+                />
+              </div>
+
+              <div className="flex items-center">
+                <span className="text-sm text-end font-semibold w-16 mr-3">
+                  구분
+                </span>
+                <Controller
+                  name="proposer"
+                  control={controlText}
+                  rules={{ required: "제안자 구분을 선택해주세요" }}
+                  render={({ field }) => (
+                    <RadioGroup
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      className="w-full flex gap-4"
+                    >
+                      <div className="flex gap-1 items-center">
+                        <RadioGroupItem
+                          value="student"
+                          className="rounded-full"
+                        />
+                        <span className="font-medium text-[14px]">학생</span>
+                      </div>
+                      <div className="flex gap-1 items-center">
+                        <RadioGroupItem
+                          value="professor"
+                          className="rounded-full"
+                        />
+                        <span className="font-medium text-[14px]">교수</span>
+                      </div>
+                      <div className="flex gap-1 items-center">
+                        <RadioGroupItem
+                          value="admin"
+                          className="rounded-full"
+                        />
+                        <span className="font-medium text-[14px]">
+                          성균융합원
+                        </span>
+                      </div>
+                    </RadioGroup>
+                  )}
+                />
+              </div>
+
+              <div className="flex items-center">
+                <span className="text-sm text-end font-semibold w-16 mr-3 whitespace-nowrap">
+                  비밀번호
+                </span>
+                <Controller
+                  name="password"
+                  control={controlText}
+                  rules={{ required: "비밀번호를 입력해주세요" }}
+                  render={({ field }) => <Input type="text" {...field} />}
+                />
+              </div>
+
+              <div className="flex items-center">
+                <span className="text-sm text-end font-semibold w-16 mr-3">
+                  전공
+                </span>
+                <Controller
+                  name="majors"
+                  control={controlText}
+                  rules={{ required: "전공을 입력해주세요" }}
+                  render={({ field }) => (
+                    <Input {...field} className="w-full h-10" />
+                  )}
+                />
+              </div>
+            </div>
+            {/* 프로젝트 대화방 및 모집관리 */}
             <div className="w-full text-sm font-medium flex flex-col shadow-md rounded-lg  h-[500px]">
               <div className="w-full *:w-16 *:text-center *:cursor-pointer border-b-2 flex justify-center gap-5 h-10 items-center">
                 <div onClick={() => setIsManagingRecruitment(false)}>
@@ -262,6 +403,7 @@ export default function Project({ params }: { params: { id: string } }) {
                 <div className="my-2">신청</div>
               </div>
             </div>
+            {/* 프로젝트 신청 버튼 */}
             <Dialog open={applyOn} onOpenChange={setApplyOn}>
               <DialogTrigger asChild>
                 <div
@@ -282,76 +424,45 @@ export default function Project({ params }: { params: { id: string } }) {
                   </DialogDescription>
                 </DialogHeader>
                 <form id="apply-form" onSubmit={handleApplySubmit(apply)}>
-                  <div className="flex items-center">
-                    <span className="text-sm text-end font-semibold w-16 mr-3 whitespace-nowrap">
-                      이름
-                    </span>
-                    <Controller
-                      name="name"
-                      control={controlApply}
-                      rules={{ required: "이름을 입력해주세요" }}
-                      render={({ field }) => <Input type="text" {...field} />}
-                    />
+                  {applyFields.map(({ name, title }, i) => (
+                    <div key={name} className="flex items-center my-3">
+                      <span className="text-sm text-end   font-semibold w-16 mr-3 whitespace-nowrap">
+                        {title}
+                      </span>
+                      <Controller
+                        name={name}
+                        control={controlApply}
+                        rules={{ required: `${title}을 입력해주세요` }}
+                        render={({ field }) => (
+                          <Input
+                            className={`${
+                              i === applyFields.length - 1 ? "h-32" : ""
+                            }`}
+                            type="text"
+                            {...field}
+                          />
+                        )}
+                      />
+                    </div>
+                  ))}
+                  <div className="w-full h-auto flex justify-end gap-2 mt-5">
+                    <DialogClose className="text-sm font-normal rounded-md hover:bg-gray-300 cursor-pointer bg-gray-200 border text-black w-[58px] h-11">
+                      취소
+                    </DialogClose>
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        document.getElementById("apply-form")?.requestSubmit();
+                      }}
+                      className="w-[58px] text-sm font-normal bg-black rounded-lg text-white cursor-pointer h-11"
+                    >
+                      확인
+                    </button>
                   </div>
-                  <div className="flex items-center">
-                    <span className="text-sm text-end font-semibold w-16 mr-3 whitespace-nowrap">
-                      학과
-                    </span>
-                    <Controller
-                      name="majors"
-                      control={controlApply}
-                      rules={{ required: "학과를 입력해주세요" }}
-                      render={({ field }) => <Input type="text" {...field} />}
-                    />
-                  </div>
-                  <div className="flex items-center">
-                    <span className="text-sm text-end font-semibold w-16 mr-3 whitespace-nowrap">
-                      전화번호
-                    </span>
-                    <Controller
-                      name="phone"
-                      control={controlApply}
-                      rules={{ required: "전화번호를 입력해주세요" }}
-                      render={({ field }) => <Input type="text" {...field} />}
-                    />
-                  </div>
-                  <div className="flex items-center">
-                    <span className="text-sm text-end font-semibold w-16 mr-3 whitespace-nowrap">
-                      이메일
-                    </span>
-                    <Controller
-                      name="email"
-                      control={controlApply}
-                      rules={{ required: "이메일을 입력해주세요" }}
-                      render={({ field }) => <Input type="text" {...field} />}
-                    />
-                  </div>
-                  <div className="flex items-center">
-                    <span className="text-sm text-end font-semibold w-16 mr-3 whitespace-nowrap">
-                      자기소개
-                    </span>
-                    <Controller
-                      name="introduction"
-                      control={controlApply}
-                      rules={{ required: "자기소개를 입력해주세요" }}
-                      render={({ field }) => <Input type="text" {...field} />}
-                    />
-                  </div>
-                  <Button className="text-sm font-normal hover:bg-gray-300 cursor-pointer bg-gray-200 border text-black w-[58px] h-11">
-                    취소
-                  </Button>
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      document.getElementById("apply-form")?.requestSubmit();
-                    }}
-                    className="w-[58px] text-sm font-normal bg-black rounded-lg text-white cursor-pointer h-11"
-                  >
-                    확인
-                  </button>
                 </form>
               </DialogContent>
             </Dialog>
+            {/* 프로젝트 저장 및 취소 버튼 */}
             <div
               className={`w-full ${
                 adminMode ? "" : "hidden"
@@ -371,13 +482,13 @@ export default function Project({ params }: { params: { id: string } }) {
                   setAdminMode(false);
                 }}
                 type="button"
-                className="text-black cursor-pointer text-base font-normal w-[90px] h-10 bg-slate-200 rounded-lg"
+                className="text-black cursor-pointer text-base font-normal w-[100px] h-10 bg-slate-200 rounded-lg"
               >
                 취소
               </button>
               <Dialog>
                 <DialogTrigger asChild>
-                  <div className="text-white flex justify-center items-center cursor-pointer text-base font-normal w-[90px] h-10 bg-blue-500 rounded-lg">
+                  <div className="text-white flex justify-center items-center cursor-pointer text-base font-normal w-[280px] h-10 bg-secondary-100 rounded-lg">
                     저장
                   </div>
                 </DialogTrigger>
@@ -385,7 +496,9 @@ export default function Project({ params }: { params: { id: string } }) {
                   <DialogTitle>저장하시겠습니까?</DialogTitle>
                   <DialogDescription></DialogDescription>
                   <div className="flex ml-16">
-                    <button className="button bg-white text-black">취소</button>
+                    <DialogClose className="button bg-white text-black">
+                      취소
+                    </DialogClose>
                     <button
                       className="button bg-black text-white"
                       onClick={() =>

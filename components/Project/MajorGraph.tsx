@@ -3,9 +3,10 @@ import { CircleUser } from "lucide-react";
 
 interface MajorGraphProps {
   project: ProjectType;
+  className?: string;
 }
 
-export default function MajorGraph({ project }: MajorGraphProps) {
+export default function MajorGraph({ project, className }: MajorGraphProps) {
   const majorNumber = project.majors.length;
   const majorColor = [
     "bg-secondary-100",
@@ -14,7 +15,9 @@ export default function MajorGraph({ project }: MajorGraphProps) {
     "bg-fuchsia-400",
   ];
   return (
-    <div className="w-full h-auto flex flex-col gap-3 shadow-md rounded-lg p-1">
+    <div
+      className={`w-full h-auto flex flex-col gap-3 shadow-md rounded-lg p-1 ${className}`}
+    >
       <div className="w-full h-auto justify-between flex">
         {[...Array(majorNumber)].map((_, index) => (
           <CircleUser
