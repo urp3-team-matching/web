@@ -1,4 +1,7 @@
 "use client";
+import * as TagsInput from "@diceui/tags-input";
+import { RefreshCcw, X } from "lucide-react";
+import * as React from "react";
 import ApplyStatueBadge from "@/components/Badge/ApplyStatueBadge";
 import KeywordBadge from "@/components/Badge/KeywordBadge";
 import ProposalBadge from "@/components/Badge/ProposalBadge";
@@ -20,8 +23,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import ChatField from "@/components/Project/Chat/ChatField";
+import { KeywordInput } from "@/components/Project/KeywordInput";
+import { TagsInput } from "@/components/ui/tags-input";
 
 type ProjectTextFieldType = {
+  keywords: string[];
+  title: string;
   introduction: string;
   background: string;
   methodology: string;
@@ -45,12 +52,15 @@ export default function Project({ params }: { params: { id: string } }) {
 
   // 프로젝트 정보 폼
   const {
+    register: registerText,
     handleSubmit: handleTextSubmit,
     control: controlText,
     formState: { errors: errorsText },
     reset: resetText,
   } = useForm<ProjectTextFieldType>({
     defaultValues: {
+      keywords: project?.keywords || [],
+      title: project?.title || "",
       introduction: project?.introduction || "",
       background: project?.background || "",
       methodology: project?.methodology || "",
@@ -117,6 +127,8 @@ export default function Project({ params }: { params: { id: string } }) {
               onClick={() => {
                 if (adminMode) {
                   resetText({
+                    keywords: project?.keywords || [],
+                    title: project?.title || "",
                     introduction: project?.introduction || "",
                     background: project?.background || "",
                     methodology: project?.methodology || "",
@@ -135,12 +147,30 @@ export default function Project({ params }: { params: { id: string } }) {
           <div className="flex  w-full gap-[10px] items-center h-7 ">
             <ApplyStatueBadge status={project?.status} />
             <ProposalBadge proposer={project?.proposer} />
-            {project?.keywords.map((keyword, index) => {
-              return <KeywordBadge keyword={keyword} key={index} />;
-            })}
+            <div
+              className={`${
+                adminMode ? "hidden" : ""
+              } w-auto h-full flex gap-1 items-center`}
+            >
+              {project?.keywords.map((keyword, index) => {
+                return <KeywordBadge keyword={keyword} key={index} />;
+              })}
+            </div>
           </div>
-          <div className="text-4xl font-medium mb-2">{project?.title}</div>
-          <div className="w-full h-[1px] bg-black"></div>
+
+          <div className="h-16  border-b-[1px] border-black">
+            <input
+              defaultValue={project?.title}
+              readOnly={!adminMode}
+              placeholder="제목을 입력하세요"
+              className={`text-4xl ${
+                adminMode ? "bg-gray-100" : ""
+              } font-medium  text-black w-full h-full rounded-lg p-1 py-1`}
+              {...registerText("title", {
+                required: "제목을 입력해주세요",
+              })}
+            ></input>
+          </div>
           <div className="gap-3 flex h-7 items-center font-medium text-xs">
             <span className="text-slate-500 flex items-center">
               {project?.name}
@@ -155,8 +185,24 @@ export default function Project({ params }: { params: { id: string } }) {
             </div>
           </div>
         </div>
+
         <div className="w-full flex  h-auto justify-between">
           <div className="w-2/3 h-full mt-9 flex flex-col gap-5">
+            <div className={`${adminMode ? "" : "hidden"}`}>
+              <Controller
+                name="keywords"
+                control={controlText}
+                defaultValue={project?.keywords || []}
+                rules={{ required: "키워드를 입력해주세요." }}
+                render={({ field }) => (
+                  <KeywordInput
+                    onChange={field.onChange}
+                    keywords={field.value}
+                    title="키워드"
+                  ></KeywordInput>
+                )}
+              />
+            </div>
             {fields.map(({ name, title }) => (
               <Controller
                 key={name}
@@ -314,6 +360,8 @@ export default function Project({ params }: { params: { id: string } }) {
               <button
                 onClick={() => {
                   resetText({
+                    keywords: project?.keywords || [],
+                    title: project?.title || "",
                     introduction: project?.introduction || "",
                     background: project?.background || "",
                     methodology: project?.methodology || "",

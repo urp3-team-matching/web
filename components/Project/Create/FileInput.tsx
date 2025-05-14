@@ -57,7 +57,7 @@ export function FileInput() {
       onFileReject={onFileReject}
       accept="image/*"
       maxFiles={2}
-      className="w-full "
+      className="w-full px-5"
       multiple
     >
       <FileUploadDropzone>

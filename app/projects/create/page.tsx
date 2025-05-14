@@ -1,6 +1,6 @@
 "use client";
 import { FileInput } from "@/components/Project/Create/FileInput";
-import { KeywordInput } from "@/components/Project/Create/KeywordInput";
+import { KeywordInput } from "@/components/Project/KeywordInput";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
@@ -40,7 +40,6 @@ export default function Create() {
       onSubmit={handleSubmit(doFunction)}
       className="pageWidth max-[1100px]:px-5 pb-16  flex flex-col mt-12 gap-5 justify-center w-full h-auto"
     >
-      <FileInput></FileInput>
       <div className=" mx-5 h-16  border-b-[1px] border-black">
         <input
           placeholder="제목을 입력하세요"
@@ -50,9 +49,11 @@ export default function Create() {
           })}
         ></input>
       </div>
+
+      <FileInput></FileInput>
       <div className="w-full mt-5 flex justify-center">
         <div className="w-2/3 h-auto flex flex-col gap-5">
-          <KeywordInput></KeywordInput>
+          <KeywordInput title="키워드*"></KeywordInput>
           {[
             { name: "introduction", label: "프로젝트 소개*" },
             { name: "background", label: "프로젝트 추진배경*" },

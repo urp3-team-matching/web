@@ -33,7 +33,7 @@ export default function ChatField() {
         <ChatBubble ChatExample={ChatExample}></ChatBubble>
       </div>
       <div className="w-full p-2 h-[80px] flex relative items-center ">
-        <Textarea className="w-56 resize-none text-gray-500 font-medium"></Textarea>
+        <Textarea className="w-[70%] sm:w-[80%] lg:w-[90%]  resize-none text-gray-500 font-medium"></Textarea>
         <Send className="size-6 cursor-pointer absolute right-3 bottom-3" />
       </div>
     </div>

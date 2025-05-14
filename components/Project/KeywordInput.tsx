@@ -4,20 +4,33 @@ import * as TagsInput from "@diceui/tags-input";
 import { RefreshCcw, X } from "lucide-react";
 import * as React from "react";
 
-export function KeywordInput() {
-  const [tricks, setTricks] = React.useState<string[]>([]);
+
+export function KeywordInput({
+  className,
+  title,
+  keywords,
+  onChange,
+}: {
+  className?: string;
+  title?: string;
+  keywords?: string[];
+  onChange?: (value: string[]) => void;
+}) {
+  const [tricks, setTricks] = React.useState<string[]>(keywords || []);
 
   return (
     <TagsInput.Root
       value={tricks}
       onValueChange={setTricks}
-      className="flex w-full flex-col gap-2"
+      className={`flex w-full flex-col gap-2`}
       editable
     >
       <TagsInput.Label className=" text-lg font-semibold  leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-        키워드*
+        {title}
       </TagsInput.Label>
-      <div className="flex min-h-10 w-full flex-wrap items-center gap-1.5 rounded-md border border-input bg-background px-3 py-2 text-sm focus-within:ring-1 focus-within:ring-zinc-500 disabled:cursor-not-allowed disabled:opacity-50 dark:focus-within:ring-zinc-400">
+      <div
+        className={`flex min-h-10 ${className} flex-wrap items-center gap-1.5 rounded-md border border-input bg-background px-3 py-2 text-sm focus-within:ring-1 focus-within:ring-zinc-500 disabled:cursor-not-allowed disabled:opacity-50 dark:focus-within:ring-zinc-400`}
+      >
         {tricks.map((trick) => (
           <TagsInput.Item
             key={trick}

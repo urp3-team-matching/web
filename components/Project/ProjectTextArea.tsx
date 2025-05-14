@@ -17,8 +17,8 @@ export default function ProjectTextArea({
     <div className="w-full h-auto">
       <div className="w-full text-lg font-semibold">{title}</div>
       <Textarea
-        className={`w-full mt-2 border p-2 rounded ${
-          adminMode ? "bg-white" : "bg-gray-100"
+        className={`w-full resize-none mt-2 border p-2 rounded  ${
+          adminMode ? " bg-gray-100" : "bg-white"
         }`}
         value={value}
         onChange={adminMode ? onChange : undefined}
