@@ -14,6 +14,7 @@ export type ProjectType = {
   methodology: string;
   expectation: string;
   majors: string[];
+  files: File[];
 };
 
 export const fakeProjects = [
@@ -40,6 +41,7 @@ export const fakeProjects = [
     majors: ["컴퓨터공학", "의료정보학"],
     password: "1234",
     phone: "010-1234-5678",
+    files: [],
   },
   {
     id: "2",
@@ -63,6 +65,7 @@ export const fakeProjects = [
     majors: ["전기전자공학", "정보통신"],
     password: "1234",
     phone: "010-1234-5678",
+    files: [],
   },
   {
     id: "3",
@@ -86,6 +89,7 @@ export const fakeProjects = [
     majors: ["정보보호학", "금융공학"],
     password: "1234",
     phone: "010-1234-5678",
+    files: [],
   },
   {
     id: "4",
@@ -109,6 +113,7 @@ export const fakeProjects = [
     majors: ["전기전자공학", "정보통신", "사회복지학과", "성학과"],
     password: "1234",
     phone: "010-1234-5678",
+    files: [],
   },
   {
     id: "5",
@@ -132,5 +137,6 @@ export const fakeProjects = [
     majors: ["산업공학과"],
     password: "1234",
     phone: "010-1234-5678",
+    files: [],
   },
 ];

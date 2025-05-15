@@ -23,7 +23,8 @@ import ChatField from "@/components/Project/Chat/ChatField";
 import { DialogClose } from "@radix-ui/react-dialog";
 
 import { KeywordInput } from "@/components/Project/KeywordInput";
-import { GroupChecker } from "@/components/Project/GroupChecker";
+import ProposerField from "@/components/Project/ProposerField";
+import { FileInput } from "@/components/Project/FileInput";
 
 type ProjectTextFieldType = {
   name: string;
@@ -37,6 +38,7 @@ type ProjectTextFieldType = {
   methodology: string;
   goal: string;
   expectation: string;
+  files: File[];
 };
 
 type ProjectApplyType = {
@@ -46,6 +48,22 @@ type ProjectApplyType = {
   email: string;
   introduction: string;
 };
+
+const fields = [
+  { name: "introduction", title: "프로젝트 소개" },
+  { name: "background", title: "프로젝트 추진배경" },
+  { name: "methodology", title: "프로젝트 실행방법" },
+  { name: "goal", title: "프로젝트 목표" },
+  { name: "expectation", title: "프로젝트 기대효과" },
+] as const;
+
+const applyFields = [
+  { name: "name", title: "이름" },
+  { name: "majors", title: "학과" },
+  { name: "phone", title: "전화번호" },
+  { name: "email", title: "이메일" },
+  { name: "introduction", title: "자기소개" },
+] as const;
 
 export default function Project({ params }: { params: { id: string } }) {
   const project = fakeProjects.find((project) => project.id === params.id);
@@ -64,10 +82,15 @@ export default function Project({ params }: { params: { id: string } }) {
     defaultValues: {
       ...project,
       majors: project?.majors?.[0] || "",
+      files: project?.files || [],
       proposer:
         (project?.proposer as "professor" | "student" | "admin") || "student",
     },
   });
+
+  React.useEffect(() => {
+    console.log("프로젝트 수정 폼 에러 발생:", errorsText);
+  }, [errorsText]);
 
   // 신청 폼
   const {
@@ -76,35 +99,35 @@ export default function Project({ params }: { params: { id: string } }) {
     formState: { errors: errorsApply },
   } = useForm<ProjectApplyType>();
 
+  React.useEffect(() => {
+    console.log("지원 폼 에러 발생:", errorsApply);
+  }, [errorsApply]);
+
+  // 프로젝트 수정 시 호출 함수
   function edit(data: ProjectTextFieldType) {
     if (!applyOn) {
-      console.log("제출된 데이터:", JSON.stringify(data));
+      console.log("첨부된 파일:");
+      if (data.files.length === 0) {
+        console.log("  (첨부된 파일이 없습니다)");
+      } else {
+        data.files.forEach((f, i) => {
+          console.log(
+            `  ${i + 1}. ${f.name} (${(f.size / 1024).toFixed(1)} KB)`
+          );
+        });
+      }
+      console.log("🔍 전체 데이터 객체:", data);
       alert("저장되었습니다.");
       window.location.reload();
     }
   }
 
+  // 프로젝트 지원 시 호출 함수
   function apply(data: ProjectApplyType) {
     console.log("신청서 제출된 데이터:", data);
     setApplyOn(false);
     alert("신청서가 제출되었습니다.");
   }
-
-  const fields = [
-    { name: "introduction", title: "프로젝트 소개" },
-    { name: "background", title: "프로젝트 추진배경" },
-    { name: "methodology", title: "프로젝트 실행방법" },
-    { name: "goal", title: "프로젝트 목표" },
-    { name: "expectation", title: "프로젝트 기대효과" },
-  ] as const;
-
-  const applyFields = [
-    { name: "name", title: "이름" },
-    { name: "majors", title: "학과" },
-    { name: "phone", title: "전화번호" },
-    { name: "email", title: "이메일" },
-    { name: "introduction", title: "자기소개" },
-  ] as const;
 
   useEffect(() => {
     if (!adminMode) {
@@ -207,239 +230,210 @@ export default function Project({ params }: { params: { id: string } }) {
 
         {/* 프로젝트 필드 부분 */}
 
-        <div className="w-full flex  h-auto justify-between">
+        <div className="w-full flex flex-col h-auto justify-between">
           {/* 프로젝트 필드 좌측 부분 */}
-          <div className="w-2/3 h-full mt-9 flex flex-col gap-5">
-            <div className={`${adminMode ? "" : "hidden"}`}>
-              <Controller
-                name="keywords"
-                control={controlText}
-                defaultValue={project?.keywords || []}
-                rules={{ required: "키워드를 입력해주세요." }}
-                render={({ field }) => (
-                  <KeywordInput value={field.value} onChange={field.onChange} />
-                )}
-              />
-            </div>
-            {fields.map(({ name, title }) => (
-              <Controller
-                key={name}
-                name={name}
-                control={controlText}
-                rules={{ required: `${title}을 입력해주세요.` }}
-                render={({ field }) => (
-                  <ProjectTextArea
-                    title={title}
-                    value={field.value}
-                    onChange={field.onChange}
-                    adminMode={adminMode}
-                  />
-                )}
-              />
-            ))}
-          </div>
-
-          {/* 프로젝트 필드 우측 부분 */}
-          <div className="w-[30%] flex flex-col gap-5 h-auto mt-12">
-            <MajorGraph
-              className={`${adminMode ? "hidden" : ""}`}
-              project={project as ProjectType}
-            />
-            {/* 프로젝트 제안자 입력 */}
-            <div
-              className={`w-full p-5 flex flex-col gap-3 border rounded-lg h-auto ${
-                adminMode ? "" : "hidden"
-              }`}
-            >
-              <div className="flex items-center">
-                <span className="text-sm text-end font-semibold w-16 mr-3">
-                  이름
-                </span>
-                <Controller
-                  name="name"
-                  control={controlText}
-                  rules={{ required: "제안자 이름을 입력해주세요" }}
-                  render={({ field }) => <Input {...field} />}
+          <div className={`${adminMode ? "" : "hidden"} w-full h-auto`}>
+            <Controller
+              name="files"
+              control={controlText}
+              defaultValue={project?.files ?? []} // nullish 병합으로 안전하게
+              render={({ field }) => (
+                <FileInput
+                  className="mt-5"
+                  value={field.value}
+                  onChange={(files) => {
+                    console.log("파일 변경됨", files); // 로그 꼭 찍어보기
+                    field.onChange(files); // 직접 연결
+                  }}
                 />
-              </div>
-
-              <div className="flex items-center">
-                <span className="text-sm text-end font-semibold w-16 mr-3">
-                  구분
-                </span>
+              )}
+            />
+          </div>
+          <div className="w-full h-auto flex justify-between">
+            <div className="w-2/3 h-full mt-9 flex flex-col gap-5">
+              <div className={`${adminMode ? "" : "hidden"}`}>
                 <Controller
-                  name="proposer"
+                  name="keywords"
                   control={controlText}
-                  rules={{ required: "제안자 구분을 선택해주세요" }}
+                  defaultValue={project?.keywords || []}
+                  rules={{ required: "키워드를 입력해주세요." }}
                   render={({ field }) => (
-                    <GroupChecker
+                    <KeywordInput
                       value={field.value}
                       onChange={field.onChange}
                     />
                   )}
                 />
               </div>
-              <div className="flex items-center">
-                <span className="text-sm text-end font-semibold w-16 mr-3 whitespace-nowrap">
-                  비밀번호
-                </span>
+              {fields.map(({ name, title }) => (
                 <Controller
-                  name="password"
+                  key={name}
+                  name={name}
                   control={controlText}
-                  rules={{ required: "비밀번호를 입력해주세요" }}
-                  render={({ field }) => <Input type="text" {...field} />}
-                />
-              </div>
-              <div className="flex items-center">
-                <span className="text-sm text-end font-semibold w-16 mr-3">
-                  전공
-                </span>
-                <Controller
-                  name="majors"
-                  control={controlText}
-                  rules={{ required: "전공을 입력해주세요" }}
+                  rules={{ required: `${title}을 입력해주세요.` }}
                   render={({ field }) => (
-                    <Input {...field} className="w-full h-10" />
+                    <ProjectTextArea
+                      title={title}
+                      value={field.value}
+                      onChange={field.onChange}
+                      adminMode={adminMode}
+                    />
                   )}
                 />
-              </div>
+              ))}
             </div>
-            {/* 프로젝트 대화방 및 모집관리 */}
-            <div className="w-full text-sm font-medium flex flex-col shadow-md rounded-lg  h-[500px]">
-              <div className="w-full *:w-16 *:text-center *:cursor-pointer border-b-2 flex justify-center gap-5 h-10 items-center">
-                <div onClick={() => setIsManagingRecruitment(false)}>
-                  대화방
-                </div>
-                <div
-                  onClick={() => setIsManagingRecruitment(true)}
-                  className={`${adminMode ? "" : "hidden"}`}
-                >
-                  모집 관리
-                </div>
-              </div>
-              <div
-                className={`${
-                  isManagingRecruitment ? "hidden" : ""
-                } relative w-full h-[460px]`}
-              >
-                <ChatField></ChatField>
-              </div>
-              <div
-                className={`${
-                  isManagingRecruitment ? "" : "hidden"
-                } flex flex-col px-2`}
-              >
-                <div className="my-2 ">
-                  확정{`(${project?.majors.length}/4)`}
-                </div>
-                {[...Array(project?.majors.length)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="rounded-lg flex items-center px-3 shadow-md w-full h-[45px] border"
-                  >
-                    <User className="size-6 mr-3" />
-                    <span>Profile ({project?.majors[i]})</span>
-                  </div>
-                ))}
-                <div className="my-2">신청</div>
-              </div>
-            </div>
-            {/* 프로젝트 신청 버튼 */}
-            <Dialog open={applyOn} onOpenChange={setApplyOn}>
-              <DialogTrigger asChild>
-                <div
-                  onClick={() => setApplyOn(true)}
-                  className={`w-full h-[50px] bg-secondary-100 text-white flex ${
-                    adminMode ? "hidden" : "block"
-                  } justify-center cursor-pointer items-center rounded-lg text-base font-medium`}
-                >
-                  신청하기
-                </div>
-              </DialogTrigger>
 
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>신청서</DialogTitle>
-                  <DialogDescription className="mt-3">
-                    모든 필드를 작성해주세요.
-                  </DialogDescription>
-                </DialogHeader>
-                <form id="apply-form" onSubmit={handleApplySubmit(apply)}>
-                  {applyFields.map(({ name, title }, i) => (
-                    <div key={name} className="flex items-center my-3">
-                      <span className="text-sm text-end   font-semibold w-16 mr-3 whitespace-nowrap">
-                        {title}
-                      </span>
-                      <Controller
-                        name={name}
-                        control={controlApply}
-                        rules={{ required: `${title}을 입력해주세요` }}
-                        render={({ field }) => (
-                          <Input
-                            className={`${
-                              i === applyFields.length - 1 ? "h-32" : ""
-                            }`}
-                            type="text"
-                            {...field}
-                          />
-                        )}
-                      />
+            {/* 프로젝트 필드 우측 부분 */}
+            <div className="w-[30%] flex flex-col gap-5 h-auto mt-12">
+              <MajorGraph
+                className={`${adminMode ? "hidden" : ""}`}
+                project={project as ProjectType}
+              />
+              {/* 프로젝트 제안자 입력 */}
+              <div
+                className={`w-full p-5 flex flex-col gap-3 border rounded-lg h-auto ${
+                  adminMode ? "" : "hidden"
+                }`}
+              >
+                <ProposerField control={controlText}></ProposerField>
+              </div>
+              {/* 프로젝트 대화방 및 모집관리 */}
+              <div className="w-full text-sm font-medium flex flex-col shadow-md rounded-lg  h-[500px]">
+                <div className="w-full *:w-16 *:text-center *:cursor-pointer border-b-2 flex justify-center gap-5 h-10 items-center">
+                  <div onClick={() => setIsManagingRecruitment(false)}>
+                    대화방
+                  </div>
+                  <div
+                    onClick={() => setIsManagingRecruitment(true)}
+                    className={`${adminMode ? "" : "hidden"}`}
+                  >
+                    모집 관리
+                  </div>
+                </div>
+                <div
+                  className={`${
+                    isManagingRecruitment ? "hidden" : ""
+                  } relative w-full h-[460px]`}
+                >
+                  <ChatField></ChatField>
+                </div>
+                <div
+                  className={`${
+                    isManagingRecruitment ? "" : "hidden"
+                  } flex flex-col px-2`}
+                >
+                  <div className="my-2 ">
+                    확정{`(${project?.majors.length}/4)`}
+                  </div>
+                  {[...Array(project?.majors.length)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="rounded-lg flex items-center px-3 shadow-md w-full h-[45px] border"
+                    >
+                      <User className="size-6 mr-3" />
+                      <span>Profile ({project?.majors[i]})</span>
                     </div>
                   ))}
-                  <div className="w-full h-auto flex justify-end gap-2 mt-5">
-                    <DialogClose className="text-sm font-normal rounded-md hover:bg-gray-300 cursor-pointer bg-gray-200 border text-black w-[58px] h-11">
-                      취소
-                    </DialogClose>
-                    <button className="w-[58px] text-sm font-normal bg-secondary-100 rounded-lg text-white cursor-pointer h-11">
-                      확인
-                    </button>
-                  </div>
-                </form>
-              </DialogContent>
-            </Dialog>
-            {/* 프로젝트 저장 및 취소 버튼 */}
-            <div
-              className={`w-full ${
-                adminMode ? "" : "hidden"
-              } flex justify-center gap-2 h-auto`}
-            >
-              <button
-                onClick={() => {
-                  resetProjectText();
-                  setAdminMode(false);
-                }}
-                type="button"
-                className="text-black cursor-pointer text-base font-normal w-[100px] h-10 bg-slate-200 rounded-lg"
-              >
-                취소
-              </button>
-              <Dialog>
+                  <div className="my-2">신청</div>
+                </div>
+              </div>
+              {/* 프로젝트 신청 버튼 */}
+              <Dialog open={applyOn} onOpenChange={setApplyOn}>
                 <DialogTrigger asChild>
-                  <div className="text-white flex justify-center items-center cursor-pointer text-base font-normal w-[280px] h-10 bg-secondary-100 rounded-lg">
-                    저장
+                  <div
+                    onClick={() => setApplyOn(true)}
+                    className={`w-full h-[50px] bg-secondary-100 text-white flex ${
+                      adminMode ? "hidden" : "block"
+                    } justify-center cursor-pointer items-center rounded-lg text-base font-medium`}
+                  >
+                    신청하기
                   </div>
                 </DialogTrigger>
-                <DialogContent className="w-56">
-                  <DialogTitle>저장하시겠습니까?</DialogTitle>
-                  <DialogDescription></DialogDescription>
-                  <div className="flex ml-16">
-                    <DialogClose className="button bg-white text-black">
-                      취소
-                    </DialogClose>
-                    <button
-                      className="button bg-black text-white"
-                      onClick={
-                        () =>
-                          document
-                            .getElementById("project-form")
-                            ?.requestSubmit() // form 태그 안에 들어가 있는 것처럼 보이지만, DOM 상에서는 form 태그 밖에 있는 상태여서 어쩔 수 없이 사용
-                      }
-                    >
-                      확인
-                    </button>
-                  </div>
+
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>신청서</DialogTitle>
+                    <DialogDescription className="mt-3">
+                      모든 필드를 작성해주세요.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <form id="apply-form" onSubmit={handleApplySubmit(apply)}>
+                    {applyFields.map(({ name, title }, i) => (
+                      <div key={name} className="flex items-center my-3">
+                        <span className="text-sm text-end   font-semibold w-16 mr-3 whitespace-nowrap">
+                          {title}
+                        </span>
+                        <Controller
+                          name={name}
+                          control={controlApply}
+                          rules={{ required: `${title}을 입력해주세요` }}
+                          render={({ field }) => (
+                            <Input
+                              className={`${
+                                i === applyFields.length - 1 ? "h-32" : ""
+                              }`}
+                              type="text"
+                              {...field}
+                            />
+                          )}
+                        />
+                      </div>
+                    ))}
+                    <div className="w-full h-auto flex justify-end gap-2 mt-5">
+                      <DialogClose className="text-sm font-normal rounded-md hover:bg-gray-300 cursor-pointer bg-gray-200 border text-black w-[58px] h-11">
+                        취소
+                      </DialogClose>
+                      <button className="w-[58px] text-sm font-normal bg-secondary-100 rounded-lg text-white cursor-pointer h-11">
+                        확인
+                      </button>
+                    </div>
+                  </form>
                 </DialogContent>
               </Dialog>
+              {/* 프로젝트 저장 및 취소 버튼 */}
+              <div
+                className={`w-full ${
+                  adminMode ? "" : "hidden"
+                } flex justify-center gap-2 h-auto`}
+              >
+                <button
+                  onClick={() => {
+                    resetProjectText();
+                    setAdminMode(false);
+                  }}
+                  type="button"
+                  className="text-black cursor-pointer text-base font-normal w-[100px] h-10 bg-slate-200 rounded-lg"
+                >
+                  취소
+                </button>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <div className="text-white flex justify-center items-center cursor-pointer text-base font-normal w-[280px] h-10 bg-secondary-100 rounded-lg">
+                      저장
+                    </div>
+                  </DialogTrigger>
+                  <DialogContent className="w-56">
+                    <DialogTitle>저장하시겠습니까?</DialogTitle>
+                    <DialogDescription></DialogDescription>
+                    <div className="flex ml-16">
+                      <DialogClose className="button bg-white text-black">
+                        취소
+                      </DialogClose>
+                      <button
+                        className="button bg-black text-white"
+                        onClick={
+                          () =>
+                            document
+                              .getElementById("project-form")
+                              ?.requestSubmit() // form 태그 안에 들어가 있는 것처럼 보이지만, DOM 상에서는 form 태그 밖에 있는 상태여서 어쩔 수 없이 사용
+                        }
+                      >
+                        확인
+                      </button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
             </div>
           </div>
         </div>

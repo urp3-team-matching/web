@@ -14,13 +14,15 @@ import {
 import { Upload, X } from "lucide-react";
 import * as React from "react";
 import { toast } from "sonner";
-// FileInput.tsx
+
 export function FileInput({
   value,
   onChange,
+  className,
 }: {
   value: File[];
   onChange: (files: File[]) => void;
+  className?: string;
 }) {
   const onFileValidate = React.useCallback(
     (file: File): string | null => {
@@ -49,7 +51,7 @@ export function FileInput({
       onFileReject={onFileReject}
       accept="image/*"
       maxFiles={2}
-      className="w-full px-5"
+      className={`${className}`}
       multiple
     >
       <FileUploadDropzone>
@@ -89,4 +91,3 @@ export function FileInput({
     </FileUpload>
   );
 }
-
