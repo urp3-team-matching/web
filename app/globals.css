@@ -7,7 +7,7 @@
   --color-foreground: var(--foreground);
   --color-primary-100: oklch(0.3 0.10 259);  /* Primary color */
   --color-secondary-100: oklch(0.76 0.17 123);  /* Secondary color */
-  --color-third-100: oklch(0.29 0.06 152);  /* Third color */
+  --color-third-100: #03492b;  /* Third color */
 }
 
 .pageWidth {

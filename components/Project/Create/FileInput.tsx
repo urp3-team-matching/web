@@ -14,31 +14,23 @@ import {
 import { Upload, X } from "lucide-react";
 import * as React from "react";
 import { toast } from "sonner";
-
-export function FileInput() {
-  const [files, setFiles] = React.useState<File[]>([]);
-
+// FileInput.tsx
+export function FileInput({
+  value,
+  onChange,
+}: {
+  value: File[];
+  onChange: (files: File[]) => void;
+}) {
   const onFileValidate = React.useCallback(
     (file: File): string | null => {
-      // Validate max files
-      if (files.length >= 2) {
-        return "You can only upload up to 2 files";
-      }
-
-      // Validate file type (only images)
-      if (!file.type.startsWith("image/")) {
+      if (value.length >= 2) return "You can only upload up to 2 files";
+      if (!file.type.startsWith("image/"))
         return "Only image files are allowed";
-      }
-
-      // Validate file size (max 2MB)
-      const MAX_SIZE = 2 * 1024 * 1024; // 2MB
-      if (file.size > MAX_SIZE) {
-        return `File size must be less than ${MAX_SIZE / (1024 * 1024)}MB`;
-      }
-
+      if (file.size > 2 * 1024 * 1024) return "File size must be under 2MB";
       return null;
     },
-    [files]
+    [value]
   );
 
   const onFileReject = React.useCallback((file: File, message: string) => {
@@ -51,8 +43,8 @@ export function FileInput() {
 
   return (
     <FileUpload
-      value={files}
-      onValueChange={setFiles}
+      value={value}
+      onValueChange={onChange}
       onFileValidate={onFileValidate}
       onFileReject={onFileReject}
       accept="image/*"
@@ -77,12 +69,17 @@ export function FileInput() {
         </FileUploadTrigger>
       </FileUploadDropzone>
       <FileUploadList>
-        {files.map((file) => (
+        {value.map((file) => (
           <FileUploadItem key={file.name} value={file}>
             <FileUploadItemPreview />
             <FileUploadItemMetadata />
             <FileUploadItemDelete asChild>
-              <Button variant="ghost" size="icon" className="size-7">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="size-7"
+                onClick={() => onChange(value.filter((f) => f !== file))}
+              >
                 <X />
               </Button>
             </FileUploadItemDelete>
@@ -92,3 +89,4 @@ export function FileInput() {
     </FileUpload>
   );
 }
+

@@ -63,18 +63,7 @@ export default function Project({ params }: { params: { id: string } }) {
     reset: resetText,
   } = useForm<ProjectTextFieldType>({
     defaultValues: {
-      name: project?.name || "",
-      proposer:
-        (project?.proposer as "professor" | "student" | "admin") || "student",
-      password: project?.password || "",
-      majors: project?.majors[0] || "",
-      keywords: project?.keywords || [],
-      title: project?.title || "",
-      introduction: project?.introduction || "",
-      background: project?.background || "",
-      methodology: project?.methodology || "",
-      goal: project?.goal || "",
-      expectation: project?.expectation || "",
+      ...project,
     },
   });
 
@@ -449,13 +438,7 @@ export default function Project({ params }: { params: { id: string } }) {
                     <DialogClose className="text-sm font-normal rounded-md hover:bg-gray-300 cursor-pointer bg-gray-200 border text-black w-[58px] h-11">
                       취소
                     </DialogClose>
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        document.getElementById("apply-form")?.requestSubmit();
-                      }}
-                      className="w-[58px] text-sm font-normal bg-black rounded-lg text-white cursor-pointer h-11"
-                    >
+                    <button className="w-[58px] text-sm font-normal bg-black rounded-lg text-white cursor-pointer h-11">
                       확인
                     </button>
                   </div>

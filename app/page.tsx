@@ -19,7 +19,7 @@ export default function Home() {
     "all" | "recruiting" | "closed"
   >("all");
   return (
-    <div className={`pageWidth px-5 flex-col flex w-full h-auto`}>
+    <div className={`pageWidth px-5 pt-3 flex-col flex w-full h-auto`}>
       <div className="w-full flex flex-col  gap-5 mt-5 justify-between">
         <div className="w-full h-10 *:cursor-pointer *:border-b-black *:justify-center *:items-center *:flex border-b-[1px] border-b-black  flex ">
           <div
