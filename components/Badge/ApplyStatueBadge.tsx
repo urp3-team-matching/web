@@ -1,6 +1,6 @@
 import { Badge } from "../ui/badge";
 export interface ApplyStatueBadgeProps {
-  status: "recruiting" | "closingSoon" | "closed";
+  status: "recruiting" | "closed";
 }
 
 export default function ApplyStatueBadge({ status }: ApplyStatueBadgeProps) {
@@ -9,9 +9,6 @@ export default function ApplyStatueBadge({ status }: ApplyStatueBadgeProps) {
   if (status === "recruiting") {
     badgeColor = "bg-secondary-100";
     badgeText = "모집중";
-  } else if (status === "closingSoon") {
-    badgeColor = "bg-red-100";
-    badgeText = "마감임박";
   } else {
     badgeColor = "bg-gray-400";
     badgeText = "모집마감";
