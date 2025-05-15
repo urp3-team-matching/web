@@ -1,15 +1,10 @@
 "use client";
-import ApplyStatueBadge from "@/components/Badge/ApplyStatueBadge";
+
 import KeywordBadge from "@/components/Badge/KeywordBadge";
 import ProposalBadge from "@/components/Badge/ProposalBadge";
 import MajorGraph from "@/components/Project/MajorGraph";
 import ProjectTextArea from "@/components/Project/ProjectTextArea";
-import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
-import { fakeProjects, ProjectType } from "@/constants/fakeProject";
-import { Calendar, Eye, User } from "lucide-react";
-import { useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -18,15 +13,20 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
+import apiClient, { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
+import { Calendar, Eye, User } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 
 type ProjectTextFieldType = {
   introduction: string;
   background: string;
-  methodology: string;
-  goal: string;
-  expectation: string;
+  method: string;
+  objective: string;
+  result: string;
 };
 
 type ProjectApplyType = {
@@ -38,7 +38,20 @@ type ProjectApplyType = {
 };
 
 export default function Project({ params }: { params: { id: string } }) {
-  const project = fakeProjects.find((project) => project.id === params.id);
+  const projectId = parseInt(params.id);
+  const [project, setProject] = useState<PublicProjectWithForeignKeys>();
+  useEffect(() => {
+    async function fetchProject() {
+      const response = await apiClient.getProjectById(projectId);
+      if (response) {
+        setProject(response);
+      } else {
+        console.error("Failed to fetch project data.");
+      }
+    }
+    fetchProject();
+  }, [projectId]);
+
   const [adminMode, setAdminMode] = useState<boolean>(false);
   const [isManagingRecruitment, setIsManagingRecruitment] = useState(false);
   const [applyOn, setApplyOn] = useState(false);
@@ -49,15 +62,7 @@ export default function Project({ params }: { params: { id: string } }) {
     control: controlText,
     formState: { errors: errorsText },
     reset: resetText,
-  } = useForm<ProjectTextFieldType>({
-    defaultValues: {
-      introduction: project?.introduction || "",
-      background: project?.background || "",
-      methodology: project?.methodology || "",
-      goal: project?.goal || "",
-      expectation: project?.expectation || "",
-    },
-  });
+  } = useForm<ProjectTextFieldType>();
 
   // 신청 폼
   const {
@@ -65,10 +70,6 @@ export default function Project({ params }: { params: { id: string } }) {
     control: controlApply,
     formState: { errors: errorsApply },
   } = useForm<ProjectApplyType>();
-
-  function delay(ms: number) {
-    return new Promise<void>((resolve) => setTimeout(resolve, ms));
-  }
 
   function edit(data: ProjectTextFieldType) {
     if (!applyOn) {
@@ -88,9 +89,9 @@ export default function Project({ params }: { params: { id: string } }) {
   const fields = [
     { name: "introduction", title: "프로젝트 소개" },
     { name: "background", title: "프로젝트 추진배경" },
-    { name: "methodology", title: "프로젝트 실행방법" },
-    { name: "goal", title: "프로젝트 목표" },
-    { name: "expectation", title: "프로젝트 기대효과" },
+    { name: "method", title: "프로젝트 실행방법" },
+    { name: "objective", title: "프로젝트 목표" },
+    { name: "result", title: "프로젝트 기대효과" },
   ] as const;
 
   useEffect(() => {
@@ -102,6 +103,10 @@ export default function Project({ params }: { params: { id: string } }) {
   }, [adminMode]);
 
   useEffect(() => {}, []);
+
+  if (!project) {
+    return <div>프로젝트를 찾을 수 없습니다!</div>;
+  }
 
   return (
     <div className="w-auto h-auto relative">
@@ -117,11 +122,10 @@ export default function Project({ params }: { params: { id: string } }) {
               onClick={() => {
                 if (adminMode) {
                   resetText({
-                    introduction: project?.introduction || "",
                     background: project?.background || "",
-                    methodology: project?.methodology || "",
-                    goal: project?.goal || "",
-                    expectation: project?.expectation || "",
+                    method: project?.method || "",
+                    objective: project?.objective || "",
+                    result: project?.result || "",
                   });
                   setAdminMode(false);
                 }
@@ -133,13 +137,14 @@ export default function Project({ params }: { params: { id: string } }) {
             </span>
           </div>
           <div className="flex  w-full gap-[10px] items-center h-7 ">
-            <ApplyStatueBadge status={project?.status} />
-            <ProposalBadge proposer={project?.proposer} />
+            {/* TODO: status 계산 로직 추가 */}
+            {/* <ApplyStatueBadge status={project?.status} /> */}
+            <ProposalBadge proposerType={project.proposer.type} />
             {project?.keywords.map((keyword, index) => {
               return <KeywordBadge keyword={keyword} key={index} />;
             })}
           </div>
-          <div className="text-4xl font-medium mb-2">{project?.title}</div>
+          <div className="text-4xl font-medium mb-2">{project.name}</div>
           <div className="w-full h-[1px] bg-black"></div>
           <div className="gap-3 flex h-7 items-center font-medium text-xs">
             <span className="text-slate-500 flex items-center">
@@ -147,11 +152,11 @@ export default function Project({ params }: { params: { id: string } }) {
             </span>
             <div className="flex items-center gap-1">
               <Eye className="size-5 mt-0.5" />
-              <span>{project?.view}</span>
+              <span>{project.viewCount}</span>
             </div>
             <div className="flex items-center gap-1">
               <Calendar className="size-5 mt-0.5" />
-              <span>{project?.date.toLocaleDateString("ko-KR")}</span>
+              <span>{project.createdDatetime}</span>
             </div>
           </div>
         </div>
@@ -176,7 +181,7 @@ export default function Project({ params }: { params: { id: string } }) {
           </div>
 
           <div className="w-[280px] flex flex-col gap-5 h-auto mt-12">
-            <MajorGraph project={project as ProjectType} />
+            <MajorGraph project={project} />
             <div className="w-full text-sm font-medium flex flex-col shadow-md rounded-lg  h-[400px]">
               <div className="w-full *:w-16 *:text-center *:cursor-pointer border-b-2 flex justify-center gap-5 h-10 items-center">
                 <div onClick={() => setIsManagingRecruitment(false)}>
@@ -204,15 +209,15 @@ export default function Project({ params }: { params: { id: string } }) {
                 } flex flex-col px-2`}
               >
                 <div className="my-2 ">
-                  확정{`(${project?.majors.length}/4)`}
+                  확정{`(${project.applicants.length}/4)`}
                 </div>
-                {[...Array(project?.majors.length)].map((_, i) => (
+                {project.applicants.map((applicant) => (
                   <div
-                    key={i}
+                    key={applicant.id}
                     className="rounded-lg flex items-center px-3 shadow-md w-full h-[45px] border"
                   >
                     <User className="size-6 mr-3" />
-                    <span>Profile ({project?.majors[i]})</span>
+                    <span>Profile ({applicant.name})</span>
                   </div>
                 ))}
                 <div className="my-2">신청</div>
@@ -316,11 +321,10 @@ export default function Project({ params }: { params: { id: string } }) {
               <button
                 onClick={() => {
                   resetText({
-                    introduction: project?.introduction || "",
                     background: project?.background || "",
-                    methodology: project?.methodology || "",
-                    goal: project?.goal || "",
-                    expectation: project?.expectation || "",
+                    method: project?.method || "",
+                    objective: project?.objective || "",
+                    result: project?.result || "",
                   });
                   setAdminMode(false);
                 }}

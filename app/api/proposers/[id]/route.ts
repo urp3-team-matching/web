@@ -1,15 +1,14 @@
-// app/api/projects/[id]/route.ts
 import { NotFoundError, UnauthorizedError } from "@/lib/authUtils";
 import {
   extractPasswordForDelete,
   parseAndValidateRequestBody,
 } from "@/lib/routeUtils";
 import {
-  deleteProject,
-  getProjectById,
-  updateProject,
-} from "@/services/project";
-import { UpdateProjectSchema } from "@/types/project";
+  deleteProposer,
+  getProposerById,
+  updateProposer,
+} from "@/services/proposer";
+import { UpdateProposerSchema } from "@/types/proposer";
 import { NextRequest, NextResponse } from "next/server";
 
 interface RouteContext {
@@ -18,40 +17,41 @@ interface RouteContext {
 
 export async function GET(request: NextRequest, { params }: RouteContext) {
   try {
-    const projectId = parseInt(params.id, 10);
-    if (isNaN(projectId))
+    const proposerId = parseInt(params.id, 10);
+    if (isNaN(proposerId))
       return NextResponse.json(
-        { error: "Invalid project ID format" },
+        { error: "Invalid proposer ID format" },
         { status: 400 }
       );
 
-    const project = await getProjectById(projectId); // 서비스에서 NotFound 에러 throw 가능성
-    if (!project) {
-      return NextResponse.json({ error: "Project not found" }, { status: 404 });
-    }
-    return NextResponse.json(project);
+    const proposer = await getProposerById(proposerId);
+    if (!proposer)
+      return NextResponse.json(
+        { error: "Proposer not found" },
+        { status: 404 }
+      );
+    return NextResponse.json(proposer);
   } catch (error) {
-    if (error instanceof NotFoundError)
-      return NextResponse.json({ error: error.message }, { status: 404 });
-    console.error(`Error fetching project ${params.id}:`, error);
+    console.error(`Error fetching proposer ${params.id}:`, error);
     return NextResponse.json(
-      { error: "Failed to fetch project" },
+      { error: "Failed to fetch proposer" },
       { status: 500 }
     );
   }
 }
 
+// 독립적인 Proposer 업데이트 API (필요한 경우)
 export async function PUT(request: NextRequest, { params }: RouteContext) {
   try {
-    const projectId = parseInt(params.id, 10);
-    if (isNaN(projectId))
+    const proposerId = parseInt(params.id, 10);
+    if (isNaN(proposerId))
       return NextResponse.json(
-        { error: "Invalid project ID format" },
+        { error: "Invalid proposer ID format" },
         { status: 400 }
       );
 
     const { data: validatedData, errorResponse } =
-      await parseAndValidateRequestBody(request, UpdateProjectSchema);
+      await parseAndValidateRequestBody(request, UpdateProposerSchema);
     if (errorResponse) return errorResponse;
     if (!validatedData)
       throw new Error("Validated data is unexpectedly undefined.");
@@ -66,29 +66,22 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
       );
     }
 
-    const updatedProject = await updateProject(projectId, validatedData);
-    return NextResponse.json(updatedProject, { status: 200 });
+    const proposer = await updateProposer(proposerId, validatedData);
+    return NextResponse.json(proposer);
   } catch (error) {
     if (error instanceof UnauthorizedError)
       return NextResponse.json({ error: error.message }, { status: 403 });
     if (error instanceof NotFoundError)
       return NextResponse.json({ error: error.message }, { status: 404 });
-    console.error(`Error updating project ${params.id}:`, error);
+    console.error(`Error updating proposer ${params.id}:`, error);
     if (error instanceof Error && error.message.includes("integrity error")) {
       return NextResponse.json(
-        { error: "Server integrity error while updating project." },
+        { error: "Server integrity error while updating proposer." },
         { status: 500 }
       );
     }
-    if (
-      error instanceof Error &&
-      error.message.includes("Failed to delete project and associated data")
-    ) {
-      // 트랜잭션 에러
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
     return NextResponse.json(
-      { error: "Failed to update project" },
+      { error: "Failed to update proposer" },
       { status: 500 }
     );
   }
@@ -96,10 +89,10 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
 
 export async function DELETE(request: NextRequest, { params }: RouteContext) {
   try {
-    const projectId = parseInt(params.id, 10);
-    if (isNaN(projectId))
+    const proposerId = parseInt(params.id, 10);
+    if (isNaN(proposerId))
       return NextResponse.json(
-        { error: "Invalid project ID format" },
+        { error: "Invalid proposer ID format" },
         { status: 400 }
       );
 
@@ -110,29 +103,22 @@ export async function DELETE(request: NextRequest, { params }: RouteContext) {
     if (!currentPassword)
       throw new UnauthorizedError("Current password is required for deletion.");
 
-    await deleteProject(projectId, currentPassword);
+    await deleteProposer(proposerId, currentPassword);
     return NextResponse.json(null, { status: 204 });
   } catch (error) {
     if (error instanceof UnauthorizedError)
       return NextResponse.json({ error: error.message }, { status: 403 });
     if (error instanceof NotFoundError)
       return NextResponse.json({ error: error.message }, { status: 404 });
-    console.error(`Error deleting project ${params.id}:`, error);
+    console.error(`Error deleting proposer ${params.id}:`, error);
     if (error instanceof Error && error.message.includes("integrity error")) {
       return NextResponse.json(
-        { error: "Server integrity error while deleting project." },
+        { error: "Server integrity error while deleting proposer." },
         { status: 500 }
       );
     }
-    if (
-      error instanceof Error &&
-      error.message.includes("Failed to delete project and associated data")
-    ) {
-      // 트랜잭션 에러
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
     return NextResponse.json(
-      { error: "Failed to delete project" },
+      { error: "Failed to delete proposer" },
       { status: 500 }
     );
   }

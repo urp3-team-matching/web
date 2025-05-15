@@ -1,0 +1,319 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { NotFoundError, UnauthorizedError } from "@/lib/authUtils"; // 커스텀 에러 클래스
+
+import type {
+  CreateApplicantInput,
+  UpdateApplicantInput,
+} from "@/types/applicant";
+import type {
+  CreatePostInput,
+  GetPostsQueryInput,
+  UpdatePostInput,
+} from "@/types/post";
+import type {
+  ApplicantForProject,
+  CreateProjectInput,
+  GetProjectsQueryInput,
+  ProposerForProject,
+  UpdateProjectInput,
+} from "@/types/project";
+import type {
+  GetProposersQueryInput,
+  UpdateProposerInput,
+} from "@/types/proposer";
+import { PaginatedType, PublicType } from "@/types/utils";
+import { Applicant, Post, Project, Proposer } from "@prisma/client";
+
+export type PublicApplicant = PublicType<Applicant>;
+export type PublicPost = PublicType<Post>;
+export type PublicProject = PublicType<Project>;
+export type PublicProposer = PublicType<Proposer>;
+export type PublicProposerForProject = PublicType<ProposerForProject>;
+export type PublicProjectWithProposer = PublicProject & {
+  proposer: PublicProposerForProject;
+};
+export type ProjectWithForeignKeys = Project & {
+  proposer: ProposerForProject;
+  applicants: ApplicantForProject[];
+};
+export type PublicProjectWithForeignKeys = PublicType<ProjectWithForeignKeys>;
+
+export type PaginatedPosts = PaginatedType<PublicPost>;
+export type PaginatedProposers = PaginatedType<PublicProposer>;
+export type PaginatedPublicProjects =
+  PaginatedType<PublicProjectWithForeignKeys>;
+
+interface ApiClientConfig {
+  baseUrl: string; // 예: "http://localhost:3000", "https://api.yourdomain.com"
+}
+
+class ApiClient {
+  private static instance: ApiClient | null = null;
+  private baseUrl: string;
+
+  // 생성자는 private으로 선언하여 외부에서 직접 인스턴스 생성 방지
+  private constructor(config: ApiClientConfig) {
+    // baseUrl이 '/'로 끝나면 제거하여 일관성 유지
+    this.baseUrl = config.baseUrl.endsWith("/")
+      ? config.baseUrl.slice(0, -1)
+      : config.baseUrl;
+  }
+
+  /**
+   * ApiClient 싱글톤 인스턴스를 초기화합니다.
+   * 이미 초기화된 경우 오류를 발생시킵니다.
+   * @param config ApiClient 설정 객체 (baseUrl 포함)
+   */
+  public static initialize(config: ApiClientConfig): void {
+    if (ApiClient.instance) {
+      console.warn("ApiClient has already been initialized.");
+      // 또는 throw new Error("ApiClient has already been initialized.");
+      return;
+    }
+    ApiClient.instance = new ApiClient(config);
+    console.log(
+      `ApiClient initialized with baseUrl: ${ApiClient.instance.baseUrl}`
+    ); // 초기화 로그 (개발 시 유용)
+  }
+
+  /**
+   * ApiClient 싱글톤 인스턴스를 반환합니다.
+   * 초기화되지 않은 경우 오류를 발생시킵니다.
+   * @returns ApiClient 인스턴스
+   */
+  public static getInstance(): ApiClient {
+    if (!ApiClient.instance) {
+      throw new Error(
+        "ApiClient has not been initialized. Call ApiClient.initialize(config) first."
+      );
+    }
+    return ApiClient.instance;
+  }
+
+  /**
+   * 내부 API 요청 헬퍼 메소드
+   */
+  private async _request<T = any>(
+    endpoint: string, // 예: "/api/posts", "/api/projects/1" (항상 '/'로 시작 가정)
+    method: "GET" | "POST" | "PUT" | "DELETE",
+    body?: any
+  ): Promise<T> {
+    const options: RequestInit = {
+      method,
+      headers: {},
+    };
+
+    const url = `${this.baseUrl}${endpoint}`; // baseUrl과 엔드포인트 결합
+
+    if (
+      body &&
+      (method === "POST" || method === "PUT" || method === "DELETE")
+    ) {
+      options.headers = { "Content-Type": "application/json" };
+      options.body = JSON.stringify(body);
+    }
+
+    const response = await fetch(url, options);
+
+    if (!response.ok) {
+      let errorData = {
+        message: `API Error: ${response.status} ${response.statusText} on ${method} ${endpoint}`,
+      };
+      const jsonError = await response.json();
+      errorData = { ...errorData, ...jsonError };
+
+      if (response.status === 401 || response.status === 403)
+        throw new UnauthorizedError(errorData.message);
+      if (response.status === 404) throw new NotFoundError(errorData.message);
+      throw new Error(errorData.message);
+    }
+
+    if (response.status === 204) {
+      return undefined as T;
+    }
+
+    try {
+      const data: T = await response.json();
+      return data;
+    } catch (e) {
+      console.error("Failed to parse JSON response:", e);
+      throw new Error(
+        `API Response Error: Failed to parse JSON response from ${method} ${endpoint}`
+      );
+    }
+  }
+
+  // --- Project API Methods ---
+  public getProjects(
+    params?: GetProjectsQueryInput
+  ): Promise<PaginatedPublicProjects> {
+    const query = params
+      ? new URLSearchParams(
+          Object.entries(params).filter(([, v]) => v !== undefined) as any
+        ).toString()
+      : "";
+    return this._request<PaginatedPublicProjects>(
+      `/api/projects?${query}`,
+      "GET"
+    );
+  }
+
+  public getProjectById(id: number): Promise<PublicProjectWithForeignKeys> {
+    return this._request<PublicProjectWithForeignKeys>(
+      `/api/projects/${id}`,
+      "GET"
+    );
+  }
+
+  public createProject(
+    data: CreateProjectInput
+  ): Promise<PublicProjectWithProposer> {
+    return this._request<PublicProjectWithProposer>(
+      `/api/projects`,
+      "POST",
+      data
+    );
+  }
+
+  public updateProject(
+    id: number,
+    data: UpdateProjectInput
+  ): Promise<PublicProjectWithProposer> {
+    return this._request<PublicProjectWithProposer>(
+      `/api/projects/${id}`,
+      "PUT",
+      data
+    );
+  }
+
+  public deleteProject(id: number, currentPassword: string): Promise<void> {
+    return this._request<void>(`/api/projects/${id}`, "DELETE", {
+      currentPassword,
+    });
+  }
+
+  // --- Post API Methods ---
+  public getPosts(params?: GetPostsQueryInput): Promise<PaginatedPosts> {
+    const query = params
+      ? new URLSearchParams(
+          Object.entries(params).filter(([, v]) => v !== undefined) as any
+        ).toString()
+      : "";
+    return this._request<PaginatedPosts>(`/api/posts?${query}`, "GET");
+  }
+
+  public getPostById(id: number): Promise<PublicPost> {
+    return this._request<PublicPost>(`/api/posts/${id}`, "GET");
+  }
+
+  public createPost(data: CreatePostInput): Promise<PublicPost> {
+    return this._request<PublicPost>("/api/posts", "POST", data);
+  }
+
+  public updatePost(id: number, data: UpdatePostInput): Promise<PublicPost> {
+    return this._request<PublicPost>(`/api/posts/${id}`, "PUT", data);
+  }
+
+  public deletePost(id: number, currentPassword: string): Promise<void> {
+    return this._request<void>(`/api/posts/${id}`, "DELETE", {
+      currentPassword,
+    });
+  }
+
+  // --- Applicant API Methods ---
+  public getApplicants(projectId: number): Promise<PublicApplicant[]> {
+    return this._request<PublicApplicant[]>(
+      `/api/projects/${projectId}/applicants`,
+      "GET"
+    );
+  }
+
+  public getApplicantById(
+    projectId: number,
+    applicantId: number
+  ): Promise<PublicApplicant> {
+    return this._request<PublicApplicant>(
+      `/api/projects/${projectId}/applicants/${applicantId}`,
+      "GET"
+    );
+  }
+
+  public createApplicant(
+    projectId: number,
+    data: CreateApplicantInput
+  ): Promise<PublicApplicant> {
+    return this._request<PublicApplicant>(
+      `/api/projects/${projectId}/applicants`,
+      "POST",
+      data
+    );
+  }
+
+  public updateApplicant(
+    projectId: number,
+    applicantId: number,
+    data: UpdateApplicantInput
+  ): Promise<PublicApplicant> {
+    return this._request<PublicApplicant>(
+      `/api/projects/${projectId}/applicants/${applicantId}`,
+      "PUT",
+      data
+    );
+  }
+
+  public deleteApplicant(
+    projectId: number,
+    applicantId: number,
+    currentPassword: string
+  ): Promise<void> {
+    return this._request<void>(
+      `/api/projects/${projectId}/applicants/${applicantId}`,
+      "DELETE",
+      { currentPassword }
+    );
+  }
+
+  // --- Proposer API Methods ---
+  public getProposers(
+    params?: GetProposersQueryInput
+  ): Promise<PaginatedProposers> {
+    const query = params
+      ? new URLSearchParams(
+          Object.entries(params).filter(([, v]) => v !== undefined) as any
+        ).toString()
+      : "";
+    return this._request<PaginatedProposers>(`/api/proposers?${query}`, "GET");
+  }
+
+  public getProposerById(id: number): Promise<PublicProposer> {
+    return this._request<PublicProposer>(`/api/proposers/${id}`, "GET");
+  }
+
+  // 독립적 Proposer 수정 (API 라우트 존재 시)
+  public updateProposer(
+    id: number,
+    data: UpdateProposerInput
+  ): Promise<PublicProposer> {
+    return this._request<PublicProposer>(`/api/proposers/${id}`, "PUT", data);
+  }
+
+  // 독립적 Proposer 삭제 (API 라우트 존재 시)
+  public deleteProposer(id: number, currentPassword: string): Promise<void> {
+    return this._request<void>(`/api/proposers/${id}`, "DELETE", {
+      currentPassword,
+    });
+  }
+}
+
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000"; // "/api"를 사용하지 않고 다른 도메인이라면 설정
+
+// 애플리케이션 로드 시 한번만 호출되도록 처리
+try {
+  ApiClient.initialize({ baseUrl: API_BASE_URL });
+} catch (error) {
+  console.error("Failed to initialize ApiClient:", error);
+}
+
+const apiClient = ApiClient.getInstance(); // 싱글톤 인스턴스 가져오기
+export default apiClient;

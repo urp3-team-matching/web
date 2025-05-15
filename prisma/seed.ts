@@ -40,7 +40,7 @@ async function main() {
       objective: "프로젝트 연구 목표 설명",
       result: "프로젝트 예상 결과 설명",
       attachments: ["/attachments/sample1.pdf", "/attachments/sample2.docx"],
-      tags: ["AI", "머신러닝", "데이터과학"],
+      keywords: ["AI", "머신러닝", "데이터과학"],
       passwordHash: passwordHash,
       proposer: {
         create: {
@@ -89,6 +89,7 @@ async function main() {
       content: "프로젝트 팀원을 모집합니다.",
       author: "관리자",
       attachments: [],
+      passwordHash,
     },
   });
   console.log("Post created:", post);
