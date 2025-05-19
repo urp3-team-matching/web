@@ -1,14 +1,6 @@
 "use client";
-import { ProjectList } from "@/components/Home/ProjectList";
 import SearchCreateRow from "@/components/Home/SearchCreateRow";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+import CustomPagination from "@/components/Pagination";
 
 import { useState } from "react";
 
@@ -52,27 +44,10 @@ export default function Home() {
           <span>• 최신순</span>
           <span>• 인기순</span>
         </div>
-        <ProjectList />
+        {/* <ProjectList /> */}
       </div>
-      <Pagination className="my-8">
-        <PaginationContent>
-          <PaginationItem>
-            <PaginationPrevious href="#" />
-          </PaginationItem>
 
-          {[...Array(pageNum)].map((_, index) => {
-            return (
-              <PaginationItem key={index}>
-                <PaginationLink href="#">{index + 1}</PaginationLink>
-              </PaginationItem>
-            );
-          })}
-
-          <PaginationItem>
-            <PaginationNext href="#" />
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
+      <CustomPagination totalPages={pageNum} />
     </div>
   );
 }

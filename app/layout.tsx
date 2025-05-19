@@ -1,3 +1,5 @@
+import { NuqsAdapter } from "nuqs/adapters/next/app";
+
 import Header from "@/components/Header";
 import type { Metadata } from "next";
 import { Noto_Sans_KR } from "next/font/google";
@@ -22,8 +24,10 @@ export default function RootLayout({
       <body
         className={`${pretendard.variable}  flex flex-col items-center antialiased `}
       >
-        <Header />
-        {children}
+        <NuqsAdapter>
+          <Header />
+          {children}
+        </NuqsAdapter>
       </body>
     </html>
   );
