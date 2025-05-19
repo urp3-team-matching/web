@@ -1,18 +1,26 @@
+import { ProposerType } from "@prisma/client";
 import { Badge } from "../ui/badge";
 
-export interface ProposalBadgeProps {
-  proposer: "professor" | "student" | "admin";
+interface ProposalBadgeProps {
+  proposerType: ProposerType;
 }
 
-export default function ProposalBadge({ proposer }: ProposalBadgeProps) {
+export default function ProposalBadge({ proposerType }: ProposalBadgeProps) {
   let proposerText = "";
 
-  if (proposer === "professor") {
-    proposerText = "교수제안";
-  } else if (proposer === "student") {
-    proposerText = "학생제안";
-  } else {
-    proposerText = "성균융합원";
+  switch (proposerType) {
+    case ProposerType.PROFESSOR:
+      proposerText = "교수제안";
+      break;
+    case ProposerType.STUDENT:
+      proposerText = "학생제안";
+      break;
+    case ProposerType.HOST:
+      proposerText = "융합원제안";
+      break;
+    default:
+      proposerText = "제안자 없음";
+      break;
   }
 
   return (

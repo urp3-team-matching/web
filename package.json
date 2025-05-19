@@ -3,15 +3,26 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbo",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "prisma:generate": "prisma generate",
+    "prisma:push": "prisma db push",
+    "prisma:migrate:dev": "prisma migrate dev",
+    "prisma:migrate:reset": "prisma migrate reset",
+    "prisma:validate": "prisma validate",
+    "prisma:format": "prisma format",
+    "prisma:studio": "prisma studio",
+    "prisma:seed": "prisma db seed",
+    "db:push": "prisma db push",
+    "db:reset": "prisma migrate reset --force",
+    "db:deploy": "prisma migrate deploy"
   },
   "dependencies": {
     "@diceui/tags-input": "^0.7.2",
     "@faker-js/faker": "^9.6.0",
-    "@prisma/client": "^6.4.1",
+    "@prisma/client": "^6.7.0",
     "@radix-ui/react-checkbox": "^1.2.3",
     "@radix-ui/react-dialog": "^1.1.11",
     "@radix-ui/react-label": "^2.1.4",
@@ -29,17 +40,28 @@
     "react-hook-form": "^7.56.1",
     "sonner": "^2.0.3",
     "tailwind-merge": "^3.0.2",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "zod": "^3.24.4"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.0.0",
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
+    "@types/node": "^20.17.23",
+    "@types/react": "19.0.10",
+    "@types/react-dom": "19.0.4",
+    "bcryptjs": "^3.0.2",
     "eslint": "^8",
-    "eslint-config-next": "14.2.24",
+    "eslint-config-next": "15.2.1",
     "postcss": "^8",
+    "prisma": "^6.7.0",
     "tailwindcss": "^4.0.0",
-    "typescript": "^5"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.2"
+  },
+  "overrides": {
+    "@types/react": "19.0.10",
+    "@types/react-dom": "19.0.4"
+  },
+  "prisma": {
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   }
 }

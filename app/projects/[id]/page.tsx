@@ -1,17 +1,17 @@
 "use client";
-import * as React from "react";
+
 import ApplyStatueBadge from "@/components/Badge/ApplyStatueBadge";
 import KeywordBadge from "@/components/Badge/KeywordBadge";
 import ProposalBadge from "@/components/Badge/ProposalBadge";
+import ChatField from "@/components/Project/Chat/ChatField";
+import { FileInput } from "@/components/Project/FileInput";
+import { KeywordInput } from "@/components/Project/KeywordInput";
 import MajorGraph from "@/components/Project/MajorGraph";
 import ProjectTextArea from "@/components/Project/ProjectTextArea";
-import { Switch } from "@/components/ui/switch";
-import { fakeProjects, ProjectType } from "@/constants/fakeProject";
-import { Calendar, Eye, User } from "lucide-react";
-import { useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import ProposerField from "@/components/Project/ProposerField";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -19,12 +19,11 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import ChatField from "@/components/Project/Chat/ChatField";
-import { DialogClose } from "@radix-ui/react-dialog";
-
-import { KeywordInput } from "@/components/Project/KeywordInput";
-import ProposerField from "@/components/Project/ProposerField";
-import { FileInput } from "@/components/Project/FileInput";
+import apiClient, { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
+import { Switch } from "@radix-ui/react-switch";
+import { Calendar, Eye, User } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 
 type ProjectTextFieldType = {
   name: string;
@@ -35,10 +34,9 @@ type ProjectTextFieldType = {
   title: string;
   introduction: string;
   background: string;
-  methodology: string;
-  goal: string;
-  expectation: string;
-  files: File[];
+  method: string;
+  objective: string;
+  result: string;
 };
 
 type ProjectApplyType = {
@@ -66,7 +64,20 @@ const applyFields = [
 ] as const;
 
 export default function Project({ params }: { params: { id: string } }) {
-  const project = fakeProjects.find((project) => project.id === params.id);
+  const projectId = parseInt(params.id);
+  const [project, setProject] = useState<PublicProjectWithForeignKeys>();
+  useEffect(() => {
+    async function fetchProject() {
+      const response = await apiClient.getProjectById(projectId);
+      if (response) {
+        setProject(response);
+      } else {
+        console.error("Failed to fetch project data.");
+      }
+    }
+    fetchProject();
+  }, [projectId]);
+
   const [adminMode, setAdminMode] = useState<boolean>(false);
   const [isManagingRecruitment, setIsManagingRecruitment] = useState(false);
   const [applyOn, setApplyOn] = useState(false);
@@ -78,19 +89,7 @@ export default function Project({ params }: { params: { id: string } }) {
     control: controlText,
     formState: { errors: errorsText },
     reset: resetText,
-  } = useForm<ProjectTextFieldType>({
-    defaultValues: {
-      ...project,
-      majors: project?.majors?.[0] || "",
-      files: project?.files || [],
-      proposer:
-        (project?.proposer as "professor" | "student" | "admin") || "student",
-    },
-  });
-
-  React.useEffect(() => {
-    console.log("프로젝트 수정 폼 에러 발생:", errorsText);
-  }, [errorsText]);
+  } = useForm<ProjectTextFieldType>();
 
   // 신청 폼
   const {
@@ -99,18 +98,13 @@ export default function Project({ params }: { params: { id: string } }) {
     formState: { errors: errorsApply },
   } = useForm<ProjectApplyType>();
 
-  React.useEffect(() => {
-    console.log("지원 폼 에러 발생:", errorsApply);
-  }, [errorsApply]);
-
-  // 프로젝트 수정 시 호출 함수
   function edit(data: ProjectTextFieldType) {
     if (!applyOn) {
       console.log("첨부된 파일:");
-      if (data.files.length === 0) {
+      if (data.attachments.length === 0) {
         console.log("  (첨부된 파일이 없습니다)");
       } else {
-        data.files.forEach((f, i) => {
+        data.attachments.forEach((f, i) => {
           console.log(
             `  ${i + 1}. ${f.name} (${(f.size / 1024).toFixed(1)} KB)`
           );
@@ -137,26 +131,12 @@ export default function Project({ params }: { params: { id: string } }) {
     }
   }, [adminMode]);
 
-  const resetProjectText = () => {
-    resetText({
-      keywords: project?.keywords || [],
-      title: project?.title || "",
-      introduction: project?.introduction || "",
-      background: project?.background || "",
-      methodology: project?.methodology || "",
-      goal: project?.goal || "",
-      expectation: project?.expectation || "",
-      name: project?.name || "",
-      proposer:
-        project?.proposer === "student" ||
-        project?.proposer === "professor" ||
-        project?.proposer === "admin"
-          ? project.proposer
-          : "student",
-      password: "",
-      majors: project?.majors?.[0] || "",
-    });
-  };
+  useEffect(() => {}, []);
+
+  if (!project) {
+    return <div>프로젝트를 찾을 수 없습니다!</div>;
+  }
+
   return (
     <div className="w-full pageWidth h-auto relative">
       <form
@@ -219,11 +199,11 @@ export default function Project({ params }: { params: { id: string } }) {
             </span>
             <div className="flex items-center gap-1">
               <Eye className="size-5 mt-0.5" />
-              <span>{project?.view}</span>
+              <span>{project.viewCount}</span>
             </div>
             <div className="flex items-center gap-1">
               <Calendar className="size-5 mt-0.5" />
-              <span>{project?.date.toLocaleDateString("ko-KR")}</span>
+              <span>{project.createdDatetime}</span>
             </div>
           </div>
         </div>
@@ -234,16 +214,16 @@ export default function Project({ params }: { params: { id: string } }) {
           {/* 프로젝트 필드 좌측 부분 */}
           <div className={`${adminMode ? "" : "hidden"} w-full h-auto`}>
             <Controller
-              name="files"
+              name="attachments"
               control={controlText}
-              defaultValue={project?.files ?? []} // nullish 병합으로 안전하게
+              defaultValue={project?.attachments ?? []} // nullish 병합으로 안전하게
               render={({ field }) => (
                 <FileInput
                   className="mt-5"
                   value={field.value}
-                  onChange={(files) => {
-                    console.log("파일 변경됨", files); // 로그 꼭 찍어보기
-                    field.onChange(files); // 직접 연결
+                  onChange={(attachments) => {
+                    console.log("파일 변경됨", attachments); // 로그 꼭 찍어보기
+                    field.onChange(attachments); // 직접 연결
                   }}
                 />
               )}
@@ -287,7 +267,7 @@ export default function Project({ params }: { params: { id: string } }) {
             <div className="w-[30%] flex flex-col gap-5 h-auto mt-12">
               <MajorGraph
                 className={`${adminMode ? "hidden" : ""}`}
-                project={project as ProjectType}
+                project={project}
               />
               {/* 프로젝트 제안자 입력 */}
               <div

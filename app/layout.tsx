@@ -1,7 +1,7 @@
+import Header from "@/components/Header";
 import type { Metadata } from "next";
 import { Noto_Sans_KR } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/Header";
 
 export const pretendard = Noto_Sans_KR({
   variable: "--font-noto-sans-kr",
