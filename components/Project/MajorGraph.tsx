@@ -1,11 +1,13 @@
 import { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
+import { cn } from "@/lib/utils";
 import { CircleUser } from "lucide-react";
 
 interface MajorGraphProps {
   project: PublicProjectWithForeignKeys;
+  className?: string;
 }
 
-export default function MajorGraph({ project }: MajorGraphProps) {
+export default function MajorGraph({ project, className }: MajorGraphProps) {
   const majorNumber = project.applicants.length;
   const majorColor = [
     "bg-secondary-100",
@@ -14,7 +16,12 @@ export default function MajorGraph({ project }: MajorGraphProps) {
     "bg-fuchsia-400",
   ];
   return (
-    <div className="w-full h-auto flex flex-col gap-3 shadow-md rounded-lg p-1">
+    <div
+      className={cn(
+        "w-full h-auto flex flex-col gap-3 shadow-md rounded-lg p-1",
+        className
+      )}
+    >
       <div className="w-full h-auto justify-between flex">
         {[...Array(majorNumber)].map((_, index) => (
           <CircleUser

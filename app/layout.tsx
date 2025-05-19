@@ -12,7 +12,6 @@ export const metadata: Metadata = {
   title: "융합연구학점제 팀 모집 플랫폼",
   description: "성균관대학교 융합연구학점제 팀 모집 플랫폼",
 };
-
 export default function RootLayout({
   children,
 }: Readonly<{

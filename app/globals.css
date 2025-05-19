@@ -7,8 +7,17 @@
   --color-foreground: var(--foreground);
   --color-primary-100: oklch(0.3 0.10 259);  /* Primary color */
   --color-secondary-100: oklch(0.76 0.17 123);  /* Secondary color */
-  --color-third-100: oklch(0.29 0.06 152);  /* Third color */
+  --color-third-100: #03492b;  /* Third color */
 }
+
+.pageWidth {
+  @apply min-[1280px]:w-[1280px] 
+}
+
+.headerWidth {
+  @apply w-[1240px]
+}
+
 
 .button {
   @apply w-[58px] h-11 text-sm font-normal  rounded-lg cursor-pointer;
@@ -54,6 +63,7 @@
     background: var(--background);
   }
 }
+
 
 :root {
   --font-noto-sans-kr: 'Noto Sans KR', sans-serif;

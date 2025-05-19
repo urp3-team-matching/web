@@ -15,7 +15,7 @@ export default function ProjectCard({ project, className }: ProjectCardProps) {
       id={project.id.toString()}
       className={`${className} w-full border-[1px] h-[126px] my-[1px] py-[10px] px-[17px] shadow-[0px_4px_4px_0px_rgba(174,174,174,0.25)] bg-white rounded-[6px]`}
     >
-      <div className="flex flex-col justify-between h-full pt-1">
+      <div className="flex flex-col gap-2 justify-between h-full pt-1">
         <div className="flex gap-[10px]">
           {/* TODO: status 계산 로직 추가 */}
           {/* <ApplyStatueBadge status={status} /> */}
