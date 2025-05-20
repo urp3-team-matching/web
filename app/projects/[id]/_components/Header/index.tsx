@@ -57,15 +57,14 @@ const ProjectHeader = ({
               readOnly={!adminMode}
               className={`text-4xl ${
                 adminMode ? "bg-gray-100" : ""
-              } font-medium  text-black w-full h-14   p-1 py-1`}
+              } font-medium text-black w-full h-14 p-1 py-1`}
             />
           )}
         />
       </div>
 
-      {/* 하단 헤더: 프로젝트 이름, 조회수, 생성 일시 */}
+      {/* 하단 헤더: 프로젝트 조회수, 생성 일시 */}
       <div className="gap-3 flex h-7 items-center font-medium text-xs">
-        <span className="text-slate-500 flex items-center">{project.name}</span>
         <div className="flex items-center gap-1">
           <Eye className="size-5 mt-0.5" />
           <span>{project.viewCount}</span>

@@ -73,7 +73,7 @@ class ApiClient {
     ApiClient.instance = new ApiClient(config);
     console.log(
       `ApiClient initialized with baseUrl: ${ApiClient.instance.baseUrl}`
-    ); // 초기화 로그 (개발 시 유용)
+    );
   }
 
   /**

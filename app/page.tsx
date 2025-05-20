@@ -1,5 +1,5 @@
 import Filter from "@/components/Filter";
-import { ProjectList } from "@/components/Home/ProjectList";
+import ProjectList from "@/components/Home/ProjectList";
 import ProjectSort from "@/components/Home/ProjectSort";
 import SearchCreateRow from "@/components/Home/SearchCreateRow";
 

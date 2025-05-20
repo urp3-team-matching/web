@@ -11,22 +11,33 @@ export default function Project({ params }: { params: { id: string } }) {
   const projectId = parseInt(params.id);
   const [project, setProject] = useState<PublicProjectWithForeignKeys>();
   useEffect(() => {
-    async function fetchProject() {
+    (async () => {
       const response = await apiClient.getProjectById(projectId);
       if (response) {
         setProject(response);
       } else {
         console.error("Failed to fetch project data.");
       }
-    }
-    fetchProject();
+    })();
   }, [projectId]);
 
   const [adminMode, setAdminMode] = useState<boolean>(false);
 
   // 프로젝트 정보 폼
   const { handleSubmit: handleTextSubmit, control: projectFormControl } =
-    useForm<UpdateProjectInput>();
+    useForm<UpdateProjectInput>({
+      values: {
+        name: project?.name,
+        background: project?.background,
+        method: project?.method,
+        objective: project?.objective,
+        result: project?.result,
+        // TODO: 첨부파일 처리 로직 추가
+        // attachments: project?.attachments,
+        keywords: project?.keywords,
+        currentPassword: "",
+      },
+    });
 
   function edit(data: UpdateProjectInput) {
     if (!data.attachments || data.attachments.length === 0) {
