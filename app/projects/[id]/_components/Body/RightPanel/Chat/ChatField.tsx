@@ -1,6 +1,6 @@
 import { Textarea } from "@/components/ui/textarea";
-import ChatBubble from "./ChatBubble";
 import { Send } from "lucide-react";
+import ChatBubble from "./ChatBubble";
 
 const ChatExample = [
   {
@@ -26,12 +26,13 @@ export default function ChatField() {
   return (
     <div className="w-full h-full">
       <div className="h-[380px] p-2  overflow-y-auto">
-        <ChatBubble ChatExample={ChatExample}></ChatBubble>
-        <ChatBubble ChatExample={ChatExample}></ChatBubble>
-        <ChatBubble ChatExample={ChatExample}></ChatBubble>
-        <ChatBubble ChatExample={ChatExample}></ChatBubble>
-        <ChatBubble ChatExample={ChatExample}></ChatBubble>
+        <ChatBubble ChatExample={ChatExample} />
+        <ChatBubble ChatExample={ChatExample} />
+        <ChatBubble ChatExample={ChatExample} />
+        <ChatBubble ChatExample={ChatExample} />
+        <ChatBubble ChatExample={ChatExample} />
       </div>
+
       <div className="w-full p-2 h-[80px] flex relative items-center ">
         <Textarea className="w-[70%] sm:w-[80%] lg:w-[90%]  resize-none text-gray-500 font-medium"></Textarea>
         <Send className="size-6 cursor-pointer absolute right-3 bottom-3" />

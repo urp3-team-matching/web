@@ -1,5 +1,5 @@
-import { RefreshCcw, X } from "lucide-react";
 import * as TagsInput from "@diceui/tags-input";
+import { RefreshCcw, X } from "lucide-react";
 
 type KeywordInputProps = {
   value: string[];

@@ -1,12 +1,11 @@
 "use client";
 import { FileInput } from "@/components/Project/FileInput";
-import * as React from "react";
 
+import ProposerField from "@/app/projects/[id]/_components/Body/RightPanel/ProposerField";
+import { KeywordInput } from "@/components/Project/KeywordInput";
 import { Textarea } from "@/components/ui/textarea";
 import Link from "next/link";
-import { useForm, Controller } from "react-hook-form";
-import { KeywordInput } from "@/components/Project/KeywordInput";
-import ProposerField from "@/components/Project/ProposerField";
+import { Controller, useForm } from "react-hook-form";
 
 type ProjectFormType = {
   title: string;

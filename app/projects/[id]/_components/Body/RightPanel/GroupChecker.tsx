@@ -1,4 +1,3 @@
-// components/GroupChecker.tsx
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 type GroupCheckerProps = {

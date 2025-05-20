@@ -1,10 +1,17 @@
-import { Input } from "../ui/input";
-import { Controller } from "react-hook-form";
-import { GroupChecker } from "./GroupChecker";
+import { GroupChecker } from "@/app/projects/[id]/_components/Body/RightPanel/GroupChecker";
+import { Input } from "@/components/ui/input";
+import { CreateProposerInput } from "@/types/proposer";
+import { Controller, useForm } from "react-hook-form";
 
-export default function ProposerField({ control }: { control: any }) {
+interface ProposerFieldProps {
+  className?: string;
+}
+
+const ProposerField = ({ className }: ProposerFieldProps) => {
+  const { handleSubmit, control } = useForm<CreateProposerInput>();
+
   return (
-    <>
+    <div className={className}>
       <div className="flex items-center">
         <span className="text-sm text-end font-semibold w-16 mr-3">이름</span>
         <Controller
@@ -26,7 +33,7 @@ export default function ProposerField({ control }: { control: any }) {
           )}
         />
       </div>
-      {/* 두 개라 굳이 map 안씀 */}
+
       <div className="flex items-center">
         <span className="text-sm text-end font-semibold w-16 mr-3 whitespace-nowrap">
           비밀번호
@@ -38,6 +45,7 @@ export default function ProposerField({ control }: { control: any }) {
           render={({ field }) => <Input type="text" {...field} />}
         />
       </div>
+
       <div className="flex items-center">
         <span className="text-sm text-end font-semibold w-16 mr-3">전공</span>
         <Controller
@@ -47,6 +55,8 @@ export default function ProposerField({ control }: { control: any }) {
           render={({ field }) => <Input {...field} className="w-full h-10" />}
         />
       </div>
-    </>
+    </div>
   );
-}
+};
+
+export default ProposerField;

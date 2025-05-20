@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import CustomPagination from "@/components/Pagination";
 import ApiClient from "@/lib/apiClientHelper";
 import ProjectCard from "./ProjectCard";
 
@@ -15,6 +16,8 @@ export async function ProjectList() {
           </Link>
         ))}
       </div>
+
+      <CustomPagination totalPages={res.totalPages} />
     </div>
   );
 }
