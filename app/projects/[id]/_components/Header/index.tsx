@@ -3,6 +3,7 @@ import KeywordBadge from "@/components/Badge/KeywordBadge";
 import ProposalBadge from "@/components/Badge/ProposalBadge";
 import { Switch } from "@/components/ui/switch";
 import { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
+import { getProjectStatus } from "@/lib/utils";
 import { Calendar, Eye } from "lucide-react";
 import { Controller } from "react-hook-form";
 
@@ -21,11 +22,7 @@ const ProjectHeader = ({
   toggleAdminMode,
   projectFormControl,
 }: ProjectHeaderProps) => {
-  const projectStatus = project
-    ? project.applicants.length >= 4
-      ? "closed"
-      : "recruiting"
-    : "recruiting";
+  const projectStatus = getProjectStatus(project);
 
   return (
     <div>
