@@ -36,8 +36,6 @@ export default function Project({ params }: { params: { id: string } }) {
     // TODO: 첨부 파일 처리 로직 추가
   }
 
-  // 프로젝트 지원 시 호출 함수
-
   function toggleAdminMode() {
     setAdminMode((prev) => !prev);
   }

@@ -1,97 +1,57 @@
 "use client";
-import { FileInput } from "@/components/Project/FileInput";
 
 import ProposerField from "@/app/projects/[id]/_components/Body/RightPanel/ProposerField";
 import { KeywordInput } from "@/components/Project/KeywordInput";
 import { Textarea } from "@/components/ui/textarea";
+import { CreateProjectInput } from "@/types/project";
 import Link from "next/link";
 import { Controller, useForm } from "react-hook-form";
 
-type ProjectFormType = {
-  title: string;
-  introduction: string;
-  background: string;
-  methodology: string;
-  goal: string;
-  expectation: string;
-  name: string;
-  proposer: "professor" | "student" | "admin";
-  password: string;
-  majors: string;
-  keywords: string[];
-  files: File[];
-};
-
 export default function Create() {
   const createField = [
-    { name: "introduction", label: "프로젝트 소개*" },
-    { name: "background", label: "프로젝트 추진배경*" },
-    { name: "methodology", label: "프로젝트 실행방법*" },
-    { name: "goal", label: "프로젝트 목표*" },
-    { name: "expectation", label: "프로젝트 기대효과*" },
+    { name: "background", label: "프로젝트 추진배경" },
+    { name: "method", label: "프로젝트 실행방법" },
+    { name: "objective", label: "프로젝트 목표" },
+    { name: "result", label: "프로젝트 기대효과" },
   ] as const;
 
-  const {
-    register,
-    handleSubmit,
-    control,
-    formState: { errors },
-  } = useForm<ProjectFormType>({
-    defaultValues: {
-      keywords: [],
-      files: [],
-    },
-  });
+  const { handleSubmit, control } = useForm<CreateProjectInput>();
 
-  function onError(errors: any) {
-    console.error("유효성 검사 에러 발생:", errors);
-  }
-
-  function doFunction(data: ProjectFormType) {
+  function onSuccess(data: CreateProjectInput) {
     alert("프로젝트 생성이 완료되었습니다");
     console.log("제출된 전체 데이터:", data);
-    console.log("제출된 파일 배열:", data.files);
+    console.log("제출된 파일 배열:", data.attachments);
   }
 
   return (
     <form
-      onSubmit={handleSubmit(doFunction, onError)}
+      onSubmit={handleSubmit(onSuccess)}
       className="pageWidth max-[1100px]:px-5 pb-16  flex flex-col mt-12 gap-5 justify-center w-full h-auto"
     >
       <div className=" mx-5 h-16  border-b-[1px] border-black">
-        <input
-          placeholder="제목을 입력하세요"
-          className="text-4xl font-medium text-black w-full h-full p-1 py-5"
-          {...register("title", {
-            required: "제목을 입력해주세요",
-          })}
-        ></input>
+        <Controller
+          name="name"
+          control={control}
+          render={({ field }) => (
+            <input
+              {...field}
+              className="text-4xl font-medium text-black w-full h-full p-1 py-5"
+            />
+          )}
+        />
       </div>
 
-      <Controller
-        name="files"
+      {/* <Controller
+        name="attachments"
         control={control}
-        defaultValue={[]}
-        render={({ field }) => (
-          <FileInput
-            className="px-5 w-full"
-            value={field.value}
-            onChange={field.onChange}
-          />
-        )}
-      />
+        render={({ field }) => <FileInput className="px-5 w-full" {...field} />}
+      /> */}
       <div className="w-full mt-5 flex justify-center">
         <div className="w-2/3 h-auto flex flex-col gap-5">
           <Controller
             name="keywords"
             control={control}
-            rules={{ required: "키워드를 입력해주세요." }}
-            render={({ field }) => (
-              <KeywordInput
-                value={field.value}
-                onChange={field.onChange}
-              ></KeywordInput>
-            )}
+            render={({ field }) => <KeywordInput {...field} />}
           />
           {createField.map(({ name, label }) => (
             <div key={name}>
@@ -99,7 +59,6 @@ export default function Create() {
               <Controller
                 name={name}
                 control={control}
-                rules={{ required: `${label}을 입력해주세요.` }}
                 render={({ field }) => (
                   <Textarea {...field} className="w-full resize-none h-10" />
                 )}
@@ -111,7 +70,7 @@ export default function Create() {
         <div className="w-[30%] pl-5 text-lg font-semibold flex flex-col gap-5">
           <div>프로젝트 제안자</div>
           <div className="w-full p-5 flex flex-col gap-3 border rounded-lg h-auto">
-            <ProposerField control={control}></ProposerField>
+            <ProposerField />
           </div>
           <div className="w-full flex gap-3 justify-center items-center">
             <Link

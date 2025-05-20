@@ -8,10 +8,10 @@ import { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
 import { Controller } from "react-hook-form";
 
 const fields = [
-  { name: "background", title: "프로젝트 추진배경" },
-  { name: "method", title: "프로젝트 실행방법" },
-  { name: "objective", title: "프로젝트 목표" },
-  { name: "result", title: "프로젝트 기대효과" },
+  { name: "background", label: "프로젝트 추진배경" },
+  { name: "method", label: "프로젝트 실행방법" },
+  { name: "objective", label: "프로젝트 목표" },
+  { name: "result", label: "프로젝트 기대효과" },
 ] as const;
 
 interface ProjectBodyProps {
@@ -61,7 +61,7 @@ const ProjectBody = ({
           )}
 
           {/* 필드: 나머지 */}
-          {fields.map(({ name, title }) => (
+          {fields.map(({ name, label }) => (
             <Controller
               key={name}
               name={name}
@@ -70,7 +70,7 @@ const ProjectBody = ({
                 <ProjectTextArea
                   {...field}
                   value={field.value || ""}
-                  title={title}
+                  title={label}
                   adminMode={adminMode}
                 />
               )}

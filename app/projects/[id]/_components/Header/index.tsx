@@ -26,7 +26,7 @@ const ProjectHeader = ({
 
   return (
     <div>
-      {/* 최상단 헤더: 프로젝트 뱃지, 키워드, 관리자 스위치치 */}
+      {/* 최상단 헤더: 프로젝트 뱃지, 키워드, 관리자 스위치 */}
       <div className="flex justify-between items-center">
         <div className="flex w-full gap-[10px] items-center h-7 ">
           <ApplyStatueBadge status={projectStatus} />
@@ -51,12 +51,10 @@ const ProjectHeader = ({
         <Controller
           name="name"
           control={projectFormControl}
-          defaultValue={project.name}
           render={({ field }) => (
             <input
               {...field}
               readOnly={!adminMode}
-              placeholder="제목을 입력하세요"
               className={`text-4xl ${
                 adminMode ? "bg-gray-100" : ""
               } font-medium  text-black w-full h-14   p-1 py-1`}

@@ -2,7 +2,7 @@ import * as TagsInput from "@diceui/tags-input";
 import { RefreshCcw, X } from "lucide-react";
 
 type KeywordInputProps = {
-  value: string[];
+  value?: string[];
   onChange: (value: string[]) => void;
 };
 
@@ -18,7 +18,7 @@ export function KeywordInput({ value, onChange }: KeywordInputProps) {
         키워드
       </TagsInput.Label>
       <div className="flex min-h-10 flex-wrap items-center gap-1.5 rounded-md border border-input bg-background px-3 py-2 text-sm focus-within:ring-1 focus-within:ring-zinc-500">
-        {value.map((keyword) => (
+        {value?.map((keyword) => (
           <TagsInput.Item
             key={keyword}
             value={keyword}
