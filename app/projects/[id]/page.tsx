@@ -50,11 +50,23 @@ export default function Project({ params }: { params: { id: string } }) {
     });
 
   function onSuccess(data: UpdateProjectInput & UpdateProposerInput) {
+    console.log("제출된 전체 데이터:", data);
+    alert("제출 성공!");
     if (!data.attachments || data.attachments.length === 0) {
       console.log("첨부된 파일이 없습니다.");
       return;
     }
     // TODO: 첨부 파일 처리 로직 추가
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  function onError(error: any) {
+    console.error("Error submitting form:", error);
+    alert("제출 실패!");
+  }
+
+  function onSubmit() {
+    handleTextSubmit(onSuccess, onError);
   }
 
   function toggleAdminMode() {
@@ -73,7 +85,7 @@ export default function Project({ params }: { params: { id: string } }) {
   }
 
   return (
-    <form onSubmit={handleTextSubmit(onSuccess)} className="my-12 px-5 w-full">
+    <form onSubmit={onSubmit} className="my-12 px-5 w-full">
       {/* 헤더 */}
       <ProjectDetailHeader
         project={project}
@@ -98,6 +110,7 @@ export default function Project({ params }: { params: { id: string } }) {
           adminMode={adminMode}
           control={projectFormControl}
           toggleAdminMode={toggleAdminMode}
+          onSubmit={onSubmit}
         />
       </div>
     </form>

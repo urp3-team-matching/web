@@ -13,6 +13,7 @@ interface ProjectDetailRightPanelProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   control: any; // TODO: FormControl 타입을 정의해야 함
   toggleAdminMode: () => void;
+  onSubmit: () => void;
 }
 
 const ProjectDetailRightPanel = ({
@@ -21,6 +22,7 @@ const ProjectDetailRightPanel = ({
   adminMode,
   control,
   toggleAdminMode,
+  onSubmit,
 }: ProjectDetailRightPanelProps) => {
   return (
     <div className={cn("flex flex-col gap-5 h-auto mt-12", className)}>
@@ -43,7 +45,9 @@ const ProjectDetailRightPanel = ({
       {!adminMode && <ProjectApplyButton />}
 
       {/* 프로젝트 취소 및 저장 버튼 */}
-      {adminMode && <CancelAndSubmitButton onCancel={toggleAdminMode} />}
+      {adminMode && (
+        <CancelAndSubmitButton onCancel={toggleAdminMode} onSubmit={onSubmit} />
+      )}
     </div>
   );
 };

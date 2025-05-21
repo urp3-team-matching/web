@@ -34,7 +34,11 @@ export default function Create() {
           className="w-2/3 h-full flex flex-col gap-5"
           control={control}
         />
-        <ProjectCreateRightPanel className="w-[30%] pl-5" control={control} />
+        <ProjectCreateRightPanel
+          className="w-[30%] pl-5"
+          control={control}
+          onSubmit={handleSubmit(onSuccess)}
+        />
       </div>
     </form>
   );

@@ -11,11 +11,13 @@ import { cn } from "@/lib/utils";
 
 interface CancelAndSubmitButtonProps {
   onCancel: () => void;
+  onSubmit: () => void;
   className?: string;
 }
 
 const CancelAndSubmitButton = ({
   onCancel,
+  onSubmit,
   className,
 }: CancelAndSubmitButtonProps) => {
   return (
@@ -50,6 +52,7 @@ const CancelAndSubmitButton = ({
             </DialogClose>
             <Button
               type="submit"
+              onClick={onSubmit}
               className="bg-secondary hover:bg-secondary/90 hover:cursor-pointer"
             >
               확인

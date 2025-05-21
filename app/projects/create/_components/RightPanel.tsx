@@ -6,11 +6,13 @@ import { useRouter } from "next/navigation";
 interface ProjectCreateRightPanelProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   control: any; // TODO: FormControl 타입을 정의해야 함
+  onSubmit: () => void;
   className?: string;
 }
 
 const ProjectCreateRightPanel = ({
   control,
+  onSubmit,
   className,
 }: ProjectCreateRightPanelProps) => {
   const router = useRouter();
@@ -27,7 +29,7 @@ const ProjectCreateRightPanel = ({
         control={control}
       />
 
-      <CancelAndSubmitButton onCancel={onCancel} />
+      <CancelAndSubmitButton onCancel={onCancel} onSubmit={onSubmit} />
     </div>
   );
 };
