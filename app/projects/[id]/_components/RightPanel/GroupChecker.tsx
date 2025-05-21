@@ -1,4 +1,20 @@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { ProposerType } from "@prisma/client";
+
+const GroupCheckers: { label: string; value: ProposerType }[] = [
+  {
+    label: "학생",
+    value: ProposerType.STUDENT,
+  },
+  {
+    label: "교수",
+    value: ProposerType.PROFESSOR,
+  },
+  {
+    label: "성균융합원",
+    value: ProposerType.HOST,
+  },
+];
 
 type GroupCheckerProps = {
   value: string;
@@ -12,18 +28,12 @@ export function GroupChecker({ value, onChange }: GroupCheckerProps) {
       onValueChange={onChange}
       className="w-full flex gap-4"
     >
-      <div className="flex gap-1 items-center">
-        <RadioGroupItem value="student" className="rounded-full" />
-        <span className="font-medium text-[14px]">학생</span>
-      </div>
-      <div className="flex gap-1 items-center">
-        <RadioGroupItem value="professor" className="rounded-full" />
-        <span className="font-medium text-[14px]">교수</span>
-      </div>
-      <div className="flex gap-1 items-center">
-        <RadioGroupItem value="admin" className="rounded-full" />
-        <span className="font-medium text-[14px]">성균융합원</span>
-      </div>
+      {GroupCheckers.map((group) => (
+        <div key={group.value} className="flex gap-1 items-center">
+          <RadioGroupItem value={group.value} className="rounded-full" />
+          <span className="font-medium text-[14px]">{group.label}</span>
+        </div>
+      ))}
     </RadioGroup>
   );
 }
