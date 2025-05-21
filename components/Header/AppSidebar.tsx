@@ -35,7 +35,7 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               <div className="w-full h-14 flex mb-5 items-center justify-end">
-                <button onClick={handleClose}>
+                <button className="cursor-pointer" onClick={handleClose}>
                   <X className="size-12 stroke-1" />
                 </button>
               </div>

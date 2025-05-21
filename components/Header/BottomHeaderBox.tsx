@@ -7,7 +7,7 @@ export default function BottomHeaderBox() {
     <div className="w-full h-24 flex flex-col">
       <div className="flex justify-center w-full h-full border-b-[1px] border-b-gray-300">
         <div className="headerWidth relative h-full  lg:mx-5  mx-2 flex  max-lg:justify-between items-center">
-          <SidebarTrigger className="lg:hidden" />
+          <SidebarTrigger className="lg:hidden cursor-pointer" />
           <Link className="flex gap-1 sm:gap-2 items-center" href="/">
             <Image
               src="/logo.png"
