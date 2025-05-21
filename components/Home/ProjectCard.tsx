@@ -1,7 +1,7 @@
 import ApplyStatueBadge from "@/components/Badge/ApplyStatueBadge";
 import ProposalBadge from "@/components/Badge/ProposalBadge";
 import { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
-import { cn, getProjectStatus } from "@/lib/utils";
+import { cn, getProjectStatus, parseDate } from "@/lib/utils";
 import { Calendar, Eye } from "lucide-react";
 import KeywordBadge from "../Badge/KeywordBadge";
 
@@ -16,7 +16,7 @@ export default function ProjectCard({ project, className }: ProjectCardProps) {
   return (
     <div
       className={cn(
-        "w-full border-[1px] my-[1px] py-[10px] px-[17px] shadow-[0px_4px_4px_0px_rgba(174,174,174,0.25)] bg-white rounded-[6px]",
+        "w-full border-[1px] my-[1px] py-2.5 px-4.5 shadow-[0px_4px_4px_0px_rgba(174,174,174,0.25)] bg-white rounded-lg hover:bg-slate-50 transition-colors duration-200 ease-in-out",
         className
       )}
     >
@@ -50,7 +50,7 @@ export default function ProjectCard({ project, className }: ProjectCardProps) {
           {/* 생성일 */}
           <div className="flex items-center gap-1">
             <Calendar className="size-5 mt-0.5" />
-            <span>{project.createdDatetime}</span>
+            <span>{parseDate(project.createdDatetime)}</span>
           </div>
         </div>
       </div>

@@ -4,7 +4,7 @@ import ProposalBadge from "@/components/Badge/ProposalBadge";
 import ProjectNameForm from "@/components/Project/Form/ProjectNameForm";
 import { Switch } from "@/components/ui/switch";
 import { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
-import { getProjectStatus } from "@/lib/utils";
+import { getProjectStatus, parseDate } from "@/lib/utils";
 import { Calendar, Eye } from "lucide-react";
 
 interface ProjectDetailHeaderProps {
@@ -60,7 +60,7 @@ const ProjectDetailHeader = ({
         </div>
         <div className="flex items-center gap-1">
           <Calendar className="size-5 mt-0.5" />
-          <span>{project.createdDatetime}</span>
+          <span>{parseDate(project.createdDatetime)}</span>
         </div>
       </div>
     </div>
