@@ -1,15 +1,14 @@
-import { GroupChecker } from "@/app/projects/[id]/_components/Body/RightPanel/GroupChecker";
+import { GroupChecker } from "@/app/projects/[id]/_components/RightPanel/GroupChecker";
 import { Input } from "@/components/ui/input";
-import { CreateProposerInput } from "@/types/proposer";
-import { Controller, useForm } from "react-hook-form";
+import { Controller } from "react-hook-form";
 
 interface ProposerFieldProps {
   className?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  control: any; // TODO: FormControl 타입을 정의해야 함
 }
 
-const ProposerField = ({ className }: ProposerFieldProps) => {
-  const { handleSubmit, control } = useForm<CreateProposerInput>();
-
+const ProjectProposerForm = ({ className, control }: ProposerFieldProps) => {
   return (
     <div className={className}>
       <div className="flex items-center">
@@ -59,4 +58,4 @@ const ProposerField = ({ className }: ProposerFieldProps) => {
   );
 };
 
-export default ProposerField;
+export default ProjectProposerForm;

@@ -1,7 +1,8 @@
 "use client";
 
-import ProjectBody from "@/app/projects/[id]/_components/Body";
-import ProjectHeader from "@/app/projects/[id]/_components/Header";
+import ProjectDetailHeader from "@/app/projects/[id]/_components/Header";
+import ProjectDetailRightPanel from "@/app/projects/[id]/_components/RightPanel";
+import ProjectForm from "@/components/Project/Form/ProjectForm";
 import apiClient, { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
 import { UpdateProjectInput } from "@/types/project";
 import { useEffect, useState } from "react";
@@ -39,7 +40,7 @@ export default function Project({ params }: { params: { id: string } }) {
       },
     });
 
-  function edit(data: UpdateProjectInput) {
+  function onSuccess(data: UpdateProjectInput) {
     if (!data.attachments || data.attachments.length === 0) {
       console.log("첨부된 파일이 없습니다.");
       return;
@@ -56,22 +57,36 @@ export default function Project({ params }: { params: { id: string } }) {
   }
 
   return (
-    <div className="w-full pageWidth h-auto">
-      <form onSubmit={handleTextSubmit(edit)} className="my-12 px-5 w-full">
-        <ProjectHeader
-          project={project}
+    <form
+      onSubmit={handleTextSubmit(onSuccess)}
+      className="my-12 px-5 w-full pageWidth"
+    >
+      {/* 헤더 */}
+      <ProjectDetailHeader
+        project={project}
+        projectFormControl={projectFormControl}
+        adminMode={adminMode}
+        toggleAdminMode={toggleAdminMode}
+      />
+
+      {/* 본문 */}
+      <div className="w-full flex justify-between">
+        {/* 좌측 */}
+        <ProjectForm
+          className="w-2/3 h-full mt-9 flex flex-col gap-5"
           adminMode={adminMode}
-          toggleAdminMode={toggleAdminMode}
-          projectFormControl={projectFormControl}
+          control={projectFormControl}
         />
 
-        <ProjectBody
+        {/* 우측 */}
+        <ProjectDetailRightPanel
+          className="w-[30%]"
           project={project}
           adminMode={adminMode}
+          control={projectFormControl}
           toggleAdminMode={toggleAdminMode}
-          projectFormControl={projectFormControl}
         />
-      </form>
-    </div>
+      </div>
+    </form>
   );
 }
