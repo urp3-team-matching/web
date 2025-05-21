@@ -31,7 +31,7 @@ const ProjectDetailHeader = ({
       <div className="flex justify-between items-center">
         <div className="flex w-full gap-[10px] items-center h-7 ">
           <ApplyStatueBadge status={projectStatus} />
-          <ProposalBadge proposerType={project.proposer.type} />
+          {!adminMode && <ProposalBadge proposerType={project.proposer.type} />}
           {!adminMode && (
             <div className="w-auto h-full flex gap-1 items-center">
               {project.keywords.map((keyword) => (

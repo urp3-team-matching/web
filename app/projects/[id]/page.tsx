@@ -3,12 +3,14 @@
 import ProjectDetailHeader from "@/app/projects/[id]/_components/Header";
 import ProjectDetailRightPanel from "@/app/projects/[id]/_components/RightPanel";
 import ProjectForm from "@/components/Project/Form/ProjectForm";
+import Spinner from "@/components/ui/spinner";
 import apiClient, { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
 import { UpdateProjectInput } from "@/types/project";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 export default function Project({ params }: { params: { id: string } }) {
+  const [loading, setLoading] = useState(true);
   const projectId = parseInt(params.id);
   const [project, setProject] = useState<PublicProjectWithForeignKeys>();
   useEffect(() => {
@@ -16,6 +18,7 @@ export default function Project({ params }: { params: { id: string } }) {
       const response = await apiClient.getProjectById(projectId);
       if (response) {
         setProject(response);
+        setLoading(false);
       } else {
         console.error("Failed to fetch project data.");
       }
@@ -52,7 +55,14 @@ export default function Project({ params }: { params: { id: string } }) {
     setAdminMode((prev) => !prev);
   }
 
-  if (!project) {
+  if (loading) {
+    return (
+      <div className="w-full flex justify-center items-center py-10">
+        <Spinner />
+      </div>
+    );
+  }
+  if (project === undefined) {
     return <div>프로젝트를 찾을 수 없습니다!</div>;
   }
 

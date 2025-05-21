@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { z } from "zod";
 
 import CustomPagination from "@/components/Pagination";
+import Spinner from "@/components/ui/spinner";
 import ApiClient, { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
 import { GetProjectsQuerySchema } from "@/types/project";
 import ProjectCard from "./ProjectCard";
@@ -61,7 +62,11 @@ const ProjectList = () => {
   }, [searchParams]);
 
   if (loading) {
-    return <div className="w-full h-auto">Loading...</div>;
+    return (
+      <div className="w-full flex justify-center items-center py-10">
+        <Spinner />
+      </div>
+    );
   }
 
   if (!projects || projects.length === 0) {
