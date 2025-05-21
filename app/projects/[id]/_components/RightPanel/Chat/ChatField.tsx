@@ -1,7 +1,7 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import { Send } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import ChatBubble from "./ChatBubble";
 
 export type Chat = {
@@ -42,26 +42,79 @@ export default function ChatField() {
       });
     }
   };
+
+  const [chats, setChats] = useState<Chat[]>(ChatExample);
   useEffect(() => {
     scrollToBottom();
-  }, [ChatExample]);
+  }, [chats]);
+
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  function handleSubmit() {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      if (textarea.value.trim() === "") {
+        textarea.focus();
+        return;
+      }
+      const newChat: Chat = {
+        name: "익명2",
+        content: [
+          {
+            text: textarea.value,
+            time: new Date().toLocaleString(),
+          },
+        ],
+      };
+      setChats((prev) => [...prev, newChat]);
+      textarea.value = ""; // textarea 초기화
+      textarea.style.height = "auto"; // textarea 높이 초기화
+      textarea.focus();
+    }
+  }
 
   return (
     <div className="w-full h-full">
       <ScrollArea className="h-[380px] p-2">
-        <ChatBubble chat={ChatExample[0]} />
-        <ChatBubble chat={ChatExample[0]} />
-        <ChatBubble chat={ChatExample[0]} />
-        <ChatBubble chat={ChatExample[0]} />
-        <ChatBubble chat={ChatExample[0]} ref={lastElementRef} />
+        <div className="flex flex-col gap-2">
+          {chats.map((chat, index) => (
+            <div key={index} className="flex flex-col gap-1">
+              <span className="text-sm font-semibold text-gray-500">
+                {chat.name}
+              </span>
+              <ChatBubble
+                chat={chat}
+                ref={index === chats.length - 1 ? lastElementRef : null}
+              />
+            </div>
+          ))}
+          <div ref={lastElementRef} />
+        </div>
       </ScrollArea>
 
-      <div className="w-full p-2 h-[80px] flex relative items-center ">
+      <div className="w-full p-2 flex relative items-center">
         <Textarea
+          ref={textareaRef}
+          name="text"
           className="w-[70%] sm:w-[80%] lg:w-[90%] resize-none text-gray-500 font-medium"
           placeholder="채팅을 입력하세요."
+          rows={3}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              handleSubmit();
+            }
+          }}
         />
-        <Send className="size-6 cursor-pointer absolute right-3 bottom-3" />
+        <button
+          type="submit"
+          onClick={(e) => {
+            e.preventDefault();
+            handleSubmit();
+          }}
+        >
+          <Send className="size-6 cursor-pointer absolute right-3 bottom-3" />
+        </button>
       </div>
     </div>
   );
