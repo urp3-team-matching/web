@@ -1,37 +1,42 @@
 "use client";
 
-import { useState } from "react";
+import TabTrigger from "@/components/Filter/TabTrigger";
+import { parseAsStringEnum, useQueryState } from "nuqs";
+
+enum ProjectFilter {
+  ALL = "all",
+  RECRUITING = "recruiting",
+  CLOSED = "closed",
+}
 
 const Filter = () => {
-  const [chosenFilter, setChosenFilter] = useState<
-    "all" | "recruiting" | "closed"
-  >("all");
+  const [filter, setFilter] = useQueryState(
+    "filter",
+    parseAsStringEnum<ProjectFilter>(Object.values(ProjectFilter))
+  );
+
   return (
-    <div className="w-full h-10 *:cursor-pointer *:border-b-black *:justify-center *:items-center *:flex border-b-[1px] border-b-black flex">
-      <div
-        className={`w-[60px] h-[40px] ${
-          chosenFilter == "all" ? "border-b-[3px]" : ""
-        } `}
-        onClick={() => setChosenFilter("all")}
+    <div className="w-full h-10 *:cursor-pointer items-center border-b-[1px] *:border-black border-b-black flex">
+      <TabTrigger
+        active={filter === ProjectFilter.ALL}
+        onClick={() => setFilter(ProjectFilter.ALL)}
       >
         전체
-      </div>
-      <div
-        className={`w-[64px] h-[40px]  ${
-          chosenFilter == "recruiting" ? "border-b-[3px]" : ""
-        } `}
-        onClick={() => setChosenFilter("recruiting")}
+      </TabTrigger>
+
+      <TabTrigger
+        active={filter === ProjectFilter.RECRUITING}
+        onClick={() => setFilter(ProjectFilter.RECRUITING)}
       >
         모집중
-      </div>
-      <div
-        className={`w-[72px] h-[40px] ${
-          chosenFilter == "closed" ? "border-b-[3px]" : ""
-        } `}
-        onClick={() => setChosenFilter("closed")}
+      </TabTrigger>
+
+      <TabTrigger
+        active={filter === ProjectFilter.CLOSED}
+        onClick={() => setFilter(ProjectFilter.CLOSED)}
       >
         모집마감
-      </div>
+      </TabTrigger>
     </div>
   );
 };

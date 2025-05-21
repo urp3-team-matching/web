@@ -3,8 +3,8 @@
 import { parseAsStringEnum, useQueryState } from "nuqs";
 
 enum Sort {
-  latest = "latest",
-  popular = "popular",
+  LATEST = "latest",
+  POPULAR = "popular",
 }
 
 const ProjectSort = () => {
@@ -16,14 +16,14 @@ const ProjectSort = () => {
   return (
     <div className="flex *:cursor-pointer text-[14px] gap-4">
       <button
-        className={sort === Sort.latest ? "text-secondary-100" : ""}
-        onClick={() => setSort(Sort.latest)}
+        className={sort === Sort.LATEST ? "text-secondary" : ""}
+        onClick={() => setSort(Sort.LATEST)}
       >
         • 최신순
       </button>
       <button
-        className={sort === Sort.popular ? "text-secondary-100" : ""}
-        onClick={() => setSort(Sort.popular)}
+        className={sort === Sort.POPULAR ? "text-secondary" : ""}
+        onClick={() => setSort(Sort.POPULAR)}
       >
         • 인기순
       </button>
