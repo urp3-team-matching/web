@@ -1,3 +1,4 @@
+import { ProjectPageMode, ProjectPageModeEnum } from "@/app/projects/[id]/page";
 import ApplyStatueBadge from "@/components/Badge/ApplyStatueBadge";
 import KeywordBadge from "@/components/Badge/KeywordBadge";
 import ProposalBadge from "@/components/Badge/ProposalBadge";
@@ -12,16 +13,16 @@ interface ProjectDetailHeaderProps {
   className?: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   projectFormControl: any; // TODO: FormControl 타입을 정의해야 함
-  adminMode: boolean;
-  toggleAdminMode: () => void;
+  mode: ProjectPageMode;
+  togglemode: () => void;
 }
 
 const ProjectDetailHeader = ({
   project,
   className,
   projectFormControl,
-  adminMode,
-  toggleAdminMode,
+  mode,
+  togglemode,
 }: ProjectDetailHeaderProps) => {
   const projectStatus = getProjectStatus(project);
 
@@ -31,8 +32,10 @@ const ProjectDetailHeader = ({
       <div className="flex justify-between items-center">
         <div className="flex w-full gap-[10px] items-center h-7 ">
           <ApplyStatueBadge status={projectStatus} />
-          {!adminMode && <ProposalBadge proposerType={project.proposer.type} />}
-          {!adminMode && (
+          {mode === null && (
+            <ProposalBadge proposerType={project.proposer.type} />
+          )}
+          {mode === null && (
             <div className="w-auto h-full flex gap-1 items-center">
               {project.keywords.map((keyword) => (
                 <KeywordBadge key={keyword} keyword={keyword} />
@@ -42,14 +45,17 @@ const ProjectDetailHeader = ({
         </div>
 
         <div className="flex gap-x-2 items-center">
-          <Switch checked={adminMode} onClick={toggleAdminMode} />
+          <Switch
+            checked={mode === ProjectPageModeEnum.ADMIN}
+            onClick={togglemode}
+          />
           <span className="text-sm font-medium text-nowrap">관리자</span>
         </div>
       </div>
 
       {/* 메인: 프로젝트 제목 */}
       <div className="h-16 flex flex-col justify-end border-b-[1px] border-black">
-        <ProjectNameForm control={projectFormControl} adminMode={adminMode} />
+        <ProjectNameForm control={projectFormControl} mode={mode} />
       </div>
 
       {/* 하단: 프로젝트 조회수, 생성 일시 */}

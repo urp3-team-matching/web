@@ -8,6 +8,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
 
 interface CancelAndSubmitButtonProps {
   onCancel: () => void;
@@ -20,6 +21,8 @@ const CancelAndSubmitButton = ({
   onSubmit,
   className,
 }: CancelAndSubmitButtonProps) => {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
     <div className={cn("flex justify-center gap-2", className)}>
       {/* 취소 버튼 */}
@@ -32,7 +35,7 @@ const CancelAndSubmitButton = ({
       </Button>
 
       {/* 저장 버튼 */}
-      <Dialog aria-describedby="alert-dialog-description">
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
           <div className="text-white flex justify-center items-center cursor-pointer text-base font-normal w-[280px] h-10 bg-secondary hover:bg-secondary/90 rounded-lg">
             저장
@@ -51,8 +54,11 @@ const CancelAndSubmitButton = ({
               </Button>
             </DialogClose>
             <Button
-              type="submit"
-              onClick={onSubmit}
+              onClick={(e) => {
+                e.preventDefault();
+                onSubmit();
+                setIsOpen(false);
+              }}
               className="bg-secondary hover:bg-secondary/90 hover:cursor-pointer"
             >
               확인

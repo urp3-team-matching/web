@@ -1,6 +1,7 @@
 "use client";
 
 import ProjectTextArea from "@/app/projects/[id]/_components/ProjectTextArea";
+import { ProjectPageMode } from "@/app/projects/[id]/page";
 import { KeywordInput } from "@/components/Project/KeywordInput";
 import { Controller } from "react-hook-form";
 
@@ -13,17 +14,17 @@ const fields = [
 
 interface ProjectBodyProps {
   className?: string;
-  adminMode?: boolean;
+  mode?: ProjectPageMode;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   control: any; // TODO: FormControl 타입을 정의해야 함
 }
 
-const ProjectForm = ({ className, adminMode, control }: ProjectBodyProps) => {
+const ProjectForm = ({ className, mode, control }: ProjectBodyProps) => {
   return (
     <div className={className}>
       {/* 필드: 키워드 */}
-      {adminMode === undefined ||
-        (adminMode !== undefined && adminMode && (
+      {mode === undefined ||
+        (mode !== undefined && mode && (
           <Controller
             name="keywords"
             control={control}
@@ -44,7 +45,7 @@ const ProjectForm = ({ className, adminMode, control }: ProjectBodyProps) => {
               {...field}
               value={field.value || ""}
               title={label}
-              adminMode={adminMode}
+              mode={mode}
             />
           )}
         />

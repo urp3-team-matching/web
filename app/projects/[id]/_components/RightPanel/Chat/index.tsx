@@ -1,3 +1,4 @@
+import { ProjectPageMode, ProjectPageModeEnum } from "@/app/projects/[id]/page";
 import { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
 import { User } from "lucide-react";
 import { parseAsStringEnum, useQueryState } from "nuqs";
@@ -10,10 +11,10 @@ enum Tab {
 interface ChatProps {
   className?: string;
   project: PublicProjectWithForeignKeys;
-  adminMode: boolean;
+  mode: ProjectPageMode;
 }
 
-const Chat = ({ className, project, adminMode }: ChatProps) => {
+const Chat = ({ className, project, mode }: ChatProps) => {
   const [tab, setTab] = useQueryState(
     "tab",
     parseAsStringEnum<Tab>(Object.values(Tab))
@@ -28,16 +29,22 @@ const Chat = ({ className, project, adminMode }: ChatProps) => {
         <button
           onClick={() => setTab(null)}
           type="button"
-          className={adminMode && tab === null ? "text-secondary" : ""}
+          className={
+            mode === ProjectPageModeEnum.ADMIN && tab === null
+              ? "text-secondary"
+              : ""
+          }
         >
           대화방
         </button>
-        {adminMode && (
+        {mode === ProjectPageModeEnum.ADMIN && (
           <button
             onClick={() => setTab(Tab.모집관리)}
             type="button"
             className={
-              adminMode && tab === Tab.모집관리 ? "text-secondary" : ""
+              mode === ProjectPageModeEnum.ADMIN && tab === Tab.모집관리
+                ? "text-secondary"
+                : ""
             }
           >
             모집 관리
@@ -51,7 +58,7 @@ const Chat = ({ className, project, adminMode }: ChatProps) => {
         </div>
       )}
 
-      {adminMode && tab === Tab.모집관리 && (
+      {mode === ProjectPageModeEnum.ADMIN && tab === Tab.모집관리 && (
         <div className="flex flex-col px-2">
           <div className="my-2">
             확정{`(${project.applicants.length}/${MAX_APPLICANTS})`}

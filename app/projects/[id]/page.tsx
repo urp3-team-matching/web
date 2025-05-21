@@ -7,8 +7,16 @@ import Spinner from "@/components/ui/spinner";
 import apiClient, { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
 import { UpdateProjectInput } from "@/types/project";
 import { UpdateProposerInput } from "@/types/proposer";
+import { useRouter } from "next/navigation";
+import { parseAsStringEnum, useQueryState } from "nuqs";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+
+export enum ProjectPageModeEnum {
+  ADMIN = "admin",
+}
+
+export type ProjectPageMode = ProjectPageModeEnum | null;
 
 export default function Project({ params }: { params: { id: string } }) {
   const [loading, setLoading] = useState(true);
@@ -26,7 +34,10 @@ export default function Project({ params }: { params: { id: string } }) {
     })();
   }, [projectId]);
 
-  const [adminMode, setAdminMode] = useState<boolean>(false);
+  const [mode, setmode] = useQueryState(
+    "mode",
+    parseAsStringEnum<ProjectPageModeEnum>(Object.values(ProjectPageModeEnum))
+  );
 
   // 프로젝트 정보 폼
   const { handleSubmit: handleTextSubmit, control: projectFormControl } =
@@ -52,11 +63,7 @@ export default function Project({ params }: { params: { id: string } }) {
   function onSuccess(data: UpdateProjectInput & UpdateProposerInput) {
     console.log("제출된 전체 데이터:", data);
     alert("제출 성공!");
-    if (!data.attachments || data.attachments.length === 0) {
-      console.log("첨부된 파일이 없습니다.");
-      return;
-    }
-    // TODO: 첨부 파일 처리 로직 추가
+    router.push(`/projects/${projectId}`);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -65,12 +72,17 @@ export default function Project({ params }: { params: { id: string } }) {
     alert("제출 실패!");
   }
 
+  const router = useRouter();
   function onSubmit() {
-    handleTextSubmit(onSuccess, onError);
+    handleTextSubmit(onSuccess, onError)();
   }
 
-  function toggleAdminMode() {
-    setAdminMode((prev) => !prev);
+  function togglemode() {
+    if (mode === ProjectPageModeEnum.ADMIN) {
+      setmode(null);
+      return;
+    }
+    setmode(ProjectPageModeEnum.ADMIN);
   }
 
   if (loading) {
@@ -90,8 +102,8 @@ export default function Project({ params }: { params: { id: string } }) {
       <ProjectDetailHeader
         project={project}
         projectFormControl={projectFormControl}
-        adminMode={adminMode}
-        toggleAdminMode={toggleAdminMode}
+        mode={mode}
+        togglemode={togglemode}
       />
 
       {/* 본문 */}
@@ -99,7 +111,7 @@ export default function Project({ params }: { params: { id: string } }) {
         {/* 좌측 */}
         <ProjectForm
           className="w-2/3 h-full mt-9 flex flex-col gap-5"
-          adminMode={adminMode}
+          mode={mode}
           control={projectFormControl}
         />
 
@@ -107,9 +119,9 @@ export default function Project({ params }: { params: { id: string } }) {
         <ProjectDetailRightPanel
           className="w-[30%]"
           project={project}
-          adminMode={adminMode}
+          mode={mode}
           control={projectFormControl}
-          toggleAdminMode={toggleAdminMode}
+          togglemode={togglemode}
           onSubmit={onSubmit}
         />
       </div>
