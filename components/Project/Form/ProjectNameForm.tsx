@@ -20,6 +20,7 @@ const ProjectNameForm = ({
       render={({ field }) => (
         <input
           {...field}
+          value={field.value || ""}
           readOnly={!adminMode}
           className={cn(
             "text-4xl font-medium text-black w-full h-14 p-1 py-1",

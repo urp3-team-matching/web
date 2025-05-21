@@ -16,7 +16,6 @@ const ProjectProposerForm = ({ className, control }: ProposerFieldProps) => {
         <Controller
           name="name"
           control={control}
-          rules={{ required: "제안자 이름을 입력해주세요" }}
           render={({ field }) => <Input {...field} />}
         />
       </div>
@@ -26,7 +25,6 @@ const ProjectProposerForm = ({ className, control }: ProposerFieldProps) => {
         <Controller
           name="proposer"
           control={control}
-          rules={{ required: "제안자 구분을 선택해주세요" }}
           render={({ field }) => (
             <GroupChecker value={field.value} onChange={field.onChange} />
           )}
@@ -40,7 +38,6 @@ const ProjectProposerForm = ({ className, control }: ProposerFieldProps) => {
         <Controller
           name="password"
           control={control}
-          rules={{ required: "비밀번호를 입력해주세요" }}
           render={({ field }) => <Input type="text" {...field} />}
         />
       </div>
@@ -50,7 +47,6 @@ const ProjectProposerForm = ({ className, control }: ProposerFieldProps) => {
         <Controller
           name="majors"
           control={control}
-          rules={{ required: "전공을 입력해주세요" }}
           render={({ field }) => <Input {...field} className="w-full h-10" />}
         />
       </div>
