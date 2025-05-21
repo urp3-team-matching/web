@@ -7,7 +7,7 @@ const Filter = () => {
     "all" | "recruiting" | "closed"
   >("all");
   return (
-    <div className="w-full h-10 *:cursor-pointer *:border-b-black *:justify-center *:items-center *:flex border-b-[1px] border-b-black  flex ">
+    <div className="w-full h-10 *:cursor-pointer *:border-b-black *:justify-center *:items-center *:flex border-b-[1px] border-b-black flex">
       <div
         className={`w-[60px] h-[40px] ${
           chosenFilter == "all" ? "border-b-[3px]" : ""

@@ -45,7 +45,7 @@ const ProjectApplyButton = ({ className }: ProjectApplyButtonProps) => {
         <div
           onClick={() => setOpen(false)}
           className={cn(
-            `w-full h-[50px] bg-secondary-100 text-white flex justify-center cursor-pointer items-center rounded-lg text-base font-medium`,
+            `w-full h-[50px] bg-secondary text-white flex justify-center cursor-pointer items-center rounded-lg text-base font-medium`,
             className
           )}
         >
@@ -92,7 +92,7 @@ const ProjectApplyButton = ({ className }: ProjectApplyButtonProps) => {
             <DialogClose className="text-sm font-normal rounded-md hover:bg-gray-300 cursor-pointer bg-gray-200 border text-black w-[58px] h-11">
               취소
             </DialogClose>
-            <button className="w-[58px] text-sm font-normal bg-secondary-100 rounded-lg text-white cursor-pointer h-11">
+            <button className="w-[58px] text-sm font-normal bg-secondary rounded-lg text-white cursor-pointer h-11">
               제출
             </button>
           </div>

@@ -57,10 +57,7 @@ export default function Project({ params }: { params: { id: string } }) {
   }
 
   return (
-    <form
-      onSubmit={handleTextSubmit(onSuccess)}
-      className="my-12 px-5 w-full pageWidth"
-    >
+    <form onSubmit={handleTextSubmit(onSuccess)} className="my-12 px-5 w-full">
       {/* 헤더 */}
       <ProjectDetailHeader
         project={project}

@@ -1,11 +1,23 @@
+import { cn } from "@/lib/utils";
 import BottomHeaderBox from "./BottomHeaderBox";
 import TopHeaderBox from "./TopHeaderBox";
 
-export default function Header() {
+interface HeaderProps {
+  className?: string;
+}
+
+const Header = ({ className }: HeaderProps) => {
   return (
-    <div className="w-full h-auto flex flex-col">
+    <div
+      className={cn(
+        "w-full h-auto flex flex-col border-b-[1px] border-b-gray-300",
+        className
+      )}
+    >
       <TopHeaderBox />
       <BottomHeaderBox />
     </div>
   );
-}
+};
+
+export default Header;

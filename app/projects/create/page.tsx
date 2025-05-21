@@ -18,7 +18,7 @@ export default function Create() {
   return (
     <form
       onSubmit={handleSubmit(onSuccess)}
-      className="pageWidth max-[1100px]:px-5 pb-16  flex flex-col mt-12 gap-5 justify-center w-full h-auto"
+      className="max-[1100px]:px-5 pb-16  flex flex-col mt-12 gap-5 justify-center w-full h-auto"
     >
       <div className="mx-5 h-16  border-b-[1px] border-black">
         <ProjectNameForm control={control} />
@@ -31,7 +31,7 @@ export default function Create() {
       /> */}
       <div className="w-full mt-5 flex justify-center">
         <ProjectForm
-          className="w-2/3 h-full mt-9 flex flex-col gap-5"
+          className="w-2/3 h-full flex flex-col gap-5"
           control={control}
         />
         <ProjectCreateRightPanel className="w-[30%] pl-5" control={control} />

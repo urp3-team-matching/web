@@ -7,7 +7,7 @@ export default function ApplyStatueBadge({ status }: ApplyStatueBadgeProps) {
   let badgeColor = "";
   let badgeText = "";
   if (status === "recruiting") {
-    badgeColor = "bg-secondary-100";
+    badgeColor = "bg-secondary";
     badgeText = "모집중";
   } else {
     badgeColor = "bg-gray-400";

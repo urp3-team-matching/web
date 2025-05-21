@@ -10,7 +10,7 @@ interface MajorGraphProps {
 export default function MajorGraph({ project, className }: MajorGraphProps) {
   const majorNumber = project.applicants.length;
   const majorColor = [
-    "bg-secondary-100",
+    "bg-secondary",
     "bg-blue-300",
     "bg-yellow-300",
     "bg-fuchsia-400",
@@ -39,7 +39,7 @@ export default function MajorGraph({ project, className }: MajorGraphProps) {
         ))}
       </div>
       <div className="w-full h-4 rounded-2xl relative justify-between ">
-        <div className="w-1/4 left-0  absolute z-40 h-full bg-secondary-100 rounded-2xl"></div>
+        <div className="w-1/4 left-0  absolute z-40 h-full bg-secondary rounded-2xl"></div>
         <div
           className={`${
             majorNumber >= 2 ? `` : `hidden`

@@ -22,11 +22,11 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body
-        className={`${pretendard.variable}  flex flex-col items-center antialiased `}
+        className={`${pretendard.variable} flex flex-col items-center antialiased`}
       >
         <NuqsAdapter>
           <Header />
-          {children}
+          <div className="container">{children}</div>
         </NuqsAdapter>
       </body>
     </html>

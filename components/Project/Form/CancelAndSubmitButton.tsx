@@ -31,7 +31,7 @@ const CancelAndSubmitButton = ({
       {/* 저장 버튼 */}
       <Dialog>
         <DialogTrigger asChild>
-          <div className="text-white flex justify-center items-center cursor-pointer text-base font-normal w-[280px] h-10 bg-secondary-100 rounded-lg">
+          <div className="text-white flex justify-center items-center cursor-pointer text-base font-normal w-[280px] h-10 bg-secondary rounded-lg">
             저장
           </div>
         </DialogTrigger>
@@ -39,7 +39,7 @@ const CancelAndSubmitButton = ({
           <DialogTitle>저장하시겠습니까?</DialogTitle>
           <div className="flex justify-end gap-2 mt-4">
             <DialogClose className="bg-white text-black">취소</DialogClose>
-            <Button type="submit" className="bg-secondary-100">
+            <Button type="submit" className="bg-secondary">
               확인
             </Button>
           </div>

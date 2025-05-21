@@ -114,7 +114,7 @@ const CustomPagination = ({
                 onClick={() => setPage(Number(pageNumber))}
                 className={cn(
                   isCurrentOrDefaultPage(pageNumber) &&
-                    "bg-secondary-100 text-white hover:bg-secondary-100 hover:text-white"
+                    "bg-secondary text-white hover:bg-secondary hover:text-white"
                 )}
                 aria-label={`Go to page ${pageNumber}`}
                 isActive={isCurrentOrDefaultPage(pageNumber)}

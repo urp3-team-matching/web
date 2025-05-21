@@ -8,11 +8,11 @@ export default function SearchCreateRow() {
       <SearchBar />
 
       <div className="flex gap-3">
-        <Button className="w-24 h-full bg-third-100 hover:bg-... hover:cursor-pointer">
+        <Button className="w-24 h-full bg-third hover:cursor-pointer">
           검색
         </Button>
         <Link href="/projects/create">
-          <Button className="w-24 h-full bg-secondary-100 hover:bg-... hover:cursor-pointer">
+          <Button className="w-24 h-full bg-secondary hover:cursor-pointer">
             생성
           </Button>
         </Link>
