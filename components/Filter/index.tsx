@@ -4,7 +4,6 @@ import TabTrigger from "@/components/Filter/TabTrigger";
 import { parseAsStringEnum, useQueryState } from "nuqs";
 
 enum ProjectFilter {
-  ALL = "all",
   RECRUITING = "recruiting",
   CLOSED = "closed",
 }
@@ -17,10 +16,7 @@ const Filter = () => {
 
   return (
     <div className="w-full h-10 *:cursor-pointer items-center border-b-[1px] *:border-black border-b-black flex">
-      <TabTrigger
-        active={filter === ProjectFilter.ALL}
-        onClick={() => setFilter(ProjectFilter.ALL)}
-      >
+      <TabTrigger active={filter === null} onClick={() => setFilter(null)}>
         전체
       </TabTrigger>
 
