@@ -14,7 +14,7 @@ const ProjectProposerForm = ({ className, control }: ProposerFieldProps) => {
       <div className="flex items-center">
         <span className="text-sm text-end font-semibold w-16 mr-3">이름</span>
         <Controller
-          name="name"
+          name="proposer.name"
           control={control}
           render={({ field }) => <Input {...field} value={field.value || ""} />}
         />
@@ -23,7 +23,7 @@ const ProjectProposerForm = ({ className, control }: ProposerFieldProps) => {
       <div className="flex items-center">
         <span className="text-sm text-end font-semibold w-16 mr-3">구분</span>
         <Controller
-          name="proposer"
+          name="proposer.type"
           control={control}
           render={({ field }) => (
             <GroupChecker value={field.value} onChange={field.onChange} />
@@ -36,7 +36,7 @@ const ProjectProposerForm = ({ className, control }: ProposerFieldProps) => {
           비밀번호
         </span>
         <Controller
-          name="password"
+          name="proposer.password"
           control={control}
           render={({ field }) => (
             <Input type="password" {...field} value={field.value || ""} />
@@ -47,7 +47,7 @@ const ProjectProposerForm = ({ className, control }: ProposerFieldProps) => {
       <div className="flex items-center">
         <span className="text-sm text-end font-semibold w-16 mr-3">전공</span>
         <Controller
-          name="majors"
+          name="proposer.major"
           control={control}
           render={({ field }) => (
             <Input

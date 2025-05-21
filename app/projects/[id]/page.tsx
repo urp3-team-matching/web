@@ -6,6 +6,7 @@ import ProjectForm from "@/components/Project/Form/ProjectForm";
 import Spinner from "@/components/ui/spinner";
 import apiClient, { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
 import { UpdateProjectInput } from "@/types/project";
+import { UpdateProposerInput } from "@/types/proposer";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -29,7 +30,7 @@ export default function Project({ params }: { params: { id: string } }) {
 
   // 프로젝트 정보 폼
   const { handleSubmit: handleTextSubmit, control: projectFormControl } =
-    useForm<UpdateProjectInput>({
+    useForm<UpdateProjectInput & UpdateProposerInput>({
       values: {
         name: project?.name,
         background: project?.background,
@@ -40,10 +41,15 @@ export default function Project({ params }: { params: { id: string } }) {
         // attachments: project?.attachments,
         keywords: project?.keywords,
         currentPassword: "",
+        proposer: {
+          name: project?.proposer.name,
+          type: project?.proposer.type,
+          major: project?.proposer.major,
+        },
       },
     });
 
-  function onSuccess(data: UpdateProjectInput) {
+  function onSuccess(data: UpdateProjectInput & UpdateProposerInput) {
     if (!data.attachments || data.attachments.length === 0) {
       console.log("첨부된 파일이 없습니다.");
       return;
