@@ -11,7 +11,6 @@ import ApiClient, { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
 import { GetProjectsQuerySchema } from "@/types/project";
 import ProjectCard from "./ProjectCard";
 
-// 안전한 파싱 함수 (컴포넌트 외부에 선언하거나 util 파일로 분리)
 function safeParseSearchParams<T extends z.ZodTypeAny>(
   searchParams: URLSearchParams,
   schema: T
