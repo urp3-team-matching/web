@@ -55,6 +55,7 @@ export default function Project({ params }: { params: { id: string } }) {
       password: "",
       proposerName: project?.proposerName || "",
       proposerType: project?.proposerType || "STUDENT",
+      proposerMajor: project?.proposerMajor || "",
     },
   });
 
