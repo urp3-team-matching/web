@@ -6,13 +6,14 @@ import ProjectNameForm from "@/components/Project/Form/ProjectNameForm";
 import { Switch } from "@/components/ui/switch";
 import { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
 import { getProjectStatus, parseDate } from "@/lib/utils";
+import { CreateProjectInput, UpdateProjectInput } from "@/types/project";
 import { Calendar, Eye } from "lucide-react";
+import { Control } from "react-hook-form";
 
 interface ProjectDetailHeaderProps {
   project: PublicProjectWithForeignKeys;
   className?: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  projectFormControl: any; // TODO: FormControl 타입을 정의해야 함
+  projectFormControl: Control<CreateProjectInput | UpdateProjectInput>;
   mode: ProjectPageMode;
   togglemode: () => void;
 }

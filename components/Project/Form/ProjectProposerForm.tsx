@@ -1,8 +1,9 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { CreateProjectInput, UpdateProjectInput } from "@/types/project";
 import { ProposerType } from "@prisma/client";
-import { Controller } from "react-hook-form";
+import { Control, Controller } from "react-hook-form";
 
 const proposerTypes: { label: string; value: ProposerType }[] = [
   {
@@ -21,8 +22,7 @@ const proposerTypes: { label: string; value: ProposerType }[] = [
 
 interface ProposerFieldProps {
   className?: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  control: any; // TODO: FormControl 타입을 정의해야 함
+  control: Control<CreateProjectInput | UpdateProjectInput>;
   isCreatePage: boolean;
 }
 
@@ -104,23 +104,25 @@ const ProjectProposerForm = ({
         </div>
       </div>
 
-      <div className="flex items-center">
-        <span className="text-sm text-end font-semibold w-16 mr-3">전공</span>
-        <div>
-          <Controller
-            name="proposer.major"
-            control={control}
-            render={({ field, fieldState }) => (
-              <Input
-                {...field}
-                className="w-full h-10"
-                value={field.value || ""}
-                fieldState={fieldState}
-              />
-            )}
-          />
+      {control._formValues.proposer?.type === ProposerType.STUDENT && (
+        <div className="flex items-center">
+          <span className="text-sm text-end font-semibold w-16 mr-3">전공</span>
+          <div>
+            <Controller
+              name="proposer.major"
+              control={control}
+              render={({ field, fieldState }) => (
+                <Input
+                  {...field}
+                  className="w-full h-10"
+                  value={field.value || ""}
+                  fieldState={fieldState}
+                />
+              )}
+            />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

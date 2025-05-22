@@ -1,11 +1,11 @@
 import { ProjectPageMode, ProjectPageModeEnum } from "@/app/projects/[id]/page";
 import { cn } from "@/lib/utils";
-import { Controller } from "react-hook-form";
+import { CreateProjectInput, UpdateProjectInput } from "@/types/project";
+import { Control, Controller } from "react-hook-form";
 
 interface ProjectNameFormProps {
   className?: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  control: any; // TODO: FormControl 타입을 정의해야 함
+  control: Control<CreateProjectInput | UpdateProjectInput>;
   mode: ProjectPageMode;
 }
 
@@ -18,7 +18,6 @@ const ProjectNameForm = ({
     <Controller
       name="name"
       control={control}
-      // TODO: 에러 처리 로직 추가
       render={({ field, fieldState }) => (
         <input
           {...field}

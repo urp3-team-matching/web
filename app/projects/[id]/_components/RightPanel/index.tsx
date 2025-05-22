@@ -7,13 +7,14 @@ import ProjectProposerForm from "@/components/Project/Form/ProjectProposerForm";
 import { MAX_APPLICANTS } from "@/constants";
 import { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
 import { cn } from "@/lib/utils";
+import { CreateProjectInput, UpdateProjectInput } from "@/types/project";
+import { Control } from "react-hook-form";
 
 interface ProjectDetailRightPanelProps {
   className?: string;
   project: PublicProjectWithForeignKeys;
   mode: ProjectPageMode;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  control: any; // TODO: FormControl 타입을 정의해야 함
+  control: Control<CreateProjectInput | UpdateProjectInput>;
   togglemode: () => void;
   onSubmit: () => void;
 }
@@ -35,6 +36,7 @@ const ProjectDetailRightPanel = ({
       {/* 프로젝트 제안자 입력 */}
       {mode === ProjectPageModeEnum.ADMIN && (
         <ProjectProposerForm
+          isCreatePage={false}
           control={control}
           className="w-full p-5 flex flex-col gap-3 border rounded-lg h-auto"
         />
