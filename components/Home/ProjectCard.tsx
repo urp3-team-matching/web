@@ -1,6 +1,7 @@
+import ApplyStatueBadge from "@/components/Badge/ApplyStatueBadge";
 import ProposalBadge from "@/components/Badge/ProposalBadge";
 import { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
-import { ProposerType } from "@prisma/client";
+import { cn, getProjectStatus, parseDate } from "@/lib/utils";
 import { Calendar, Eye } from "lucide-react";
 import KeywordBadge from "../Badge/KeywordBadge";
 
@@ -10,36 +11,46 @@ export interface ProjectCardProps {
 }
 
 export default function ProjectCard({ project, className }: ProjectCardProps) {
+  const projectStatus = getProjectStatus(project);
+
   return (
     <div
-      id={project.id.toString()}
-      className={`${className} w-full border-[1px] h-[126px] my-[1px] py-[10px] px-[17px] shadow-[0px_4px_4px_0px_rgba(174,174,174,0.25)] bg-white rounded-[6px]`}
+      className={cn(
+        "w-full border-[1px] my-[1px] py-2.5 px-4.5 shadow-[0px_4px_4px_0px_rgba(174,174,174,0.25)] bg-white rounded-lg hover:bg-slate-50 transition-colors duration-200 ease-in-out",
+        className
+      )}
     >
       <div className="flex flex-col gap-2 justify-between h-full pt-1">
+        {/* 헤더: 상태, 제안 타입 */}
         <div className="flex gap-[10px]">
-          {/* TODO: status 계산 로직 추가 */}
-          {/* <ApplyStatueBadge status={status} /> */}
-          <ProposalBadge proposerType={project.proposer.type as ProposerType} />
+          <ApplyStatueBadge status={projectStatus} />
+          <ProposalBadge proposerType={project.proposer.type} />
         </div>
+
+        {/* 제목 */}
         <span className="text-base font-medium pl-1 py-[1px]">
           {project.name}
         </span>
+
+        {/* 키워드 */}
         <div className="flex gap-1 my-[2px]">
           {project.keywords.map((keyword, index) => (
             <KeywordBadge key={index} keyword={keyword} />
           ))}
         </div>
+
+        {/* 하단: 조회수, 생성일 */}
         <div className="gap-3 flex  font-medium text-xs">
-          <span className="text-slate-500 flex items-center">
-            {project.name}
-          </span>
+          {/* 조회수 */}
           <div className="flex items-center gap-1">
             <Eye className="size-5 mt-0.5" />
             <span>{project.viewCount}</span>
           </div>
+
+          {/* 생성일 */}
           <div className="flex items-center gap-1">
             <Calendar className="size-5 mt-0.5" />
-            <span>{project.createdDatetime}</span>
+            <span>{parseDate(project.createdDatetime)}</span>
           </div>
         </div>
       </div>

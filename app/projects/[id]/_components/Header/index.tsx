@@ -1,0 +1,78 @@
+import { ProjectPageMode, ProjectPageModeEnum } from "@/app/projects/[id]/page";
+import ApplyStatueBadge from "@/components/Badge/ApplyStatueBadge";
+import KeywordBadge from "@/components/Badge/KeywordBadge";
+import ProposalBadge from "@/components/Badge/ProposalBadge";
+import ProjectNameForm from "@/components/Project/Form/ProjectNameForm";
+import { Switch } from "@/components/ui/switch";
+import { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
+import { getProjectStatus, parseDate } from "@/lib/utils";
+import { Calendar, Eye } from "lucide-react";
+
+interface ProjectDetailHeaderProps {
+  project: PublicProjectWithForeignKeys;
+  className?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  projectFormControl: any; // TODO: FormControl 타입을 정의해야 함
+  mode: ProjectPageMode;
+  togglemode: () => void;
+}
+
+const ProjectDetailHeader = ({
+  project,
+  className,
+  projectFormControl,
+  mode,
+  togglemode,
+}: ProjectDetailHeaderProps) => {
+  const projectStatus = getProjectStatus(project);
+
+  return (
+    <div className={className}>
+      {/* 최상단: 프로젝트 뱃지, 키워드, 관리자 스위치 */}
+      <div className="flex justify-between items-center">
+        <div className="flex w-full gap-[10px] items-center h-7 ">
+          <ApplyStatueBadge status={projectStatus} />
+          {mode === null && (
+            <ProposalBadge proposerType={project.proposer.type} />
+          )}
+          {mode === null && (
+            <div className="w-auto h-full flex gap-1 items-center">
+              {project.keywords.map((keyword) => (
+                <KeywordBadge key={keyword} keyword={keyword} />
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="flex gap-x-2 items-center">
+          <Switch
+            checked={mode === ProjectPageModeEnum.ADMIN}
+            onClick={togglemode}
+          />
+          <span className="text-sm font-medium text-nowrap">관리자</span>
+        </div>
+      </div>
+
+      {/* 메인: 프로젝트 제목 */}
+      <ProjectNameForm
+        className="h-16 flex flex-col justify-end border-b-[1px] border-black"
+        control={projectFormControl}
+        mode={mode}
+      />
+
+      {/* 하단: 프로젝트 조회수, 생성 일시 */}
+      <div className="gap-3 flex h-7 items-center font-medium text-xs">
+        <div className="flex items-center gap-1">
+          <Eye className="size-5 mt-0.5" />
+          <span>{project.viewCount}</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <Calendar className="size-5 mt-0.5" />
+          <span>{parseDate(project.createdDatetime)}</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ProjectDetailHeader;

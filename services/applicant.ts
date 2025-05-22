@@ -1,4 +1,6 @@
+import { MAX_APPLICANTS } from "@/constants";
 import {
+  MaxApplicantsError,
   NotFoundError,
   UnauthorizedError,
   verifyResourcePassword,
@@ -9,6 +11,7 @@ import {
   CreateApplicantInput, // types에서 import
   UpdateApplicantInput,
 } from "@/types/applicant";
+import { projectPublicSelection } from "@/types/project";
 import { PasswordOmittedType } from "@/types/utils";
 import { Applicant } from "@prisma/client";
 import bcrypt from "bcryptjs";
@@ -25,12 +28,19 @@ export async function createApplicant(
   const passwordHash = await bcrypt.hash(plainTextPassword, SALT_ROUNDS);
 
   // 연결할 프로젝트 존재 확인 (선택적)
-  const projectExists = await prisma.project.findUnique({
+  const project = await prisma.project.findUnique({
     where: { id: projectId },
+    select: projectPublicSelection,
   });
-  if (!projectExists) {
+  if (!project) {
     throw new NotFoundError(
       `Project with id ${projectId} not found to associate applicant.`
+    );
+  }
+
+  if (project.applicants.length >= MAX_APPLICANTS) {
+    throw new MaxApplicantsError(
+      `Maximum number of applicants (${MAX_APPLICANTS}) reached for this project.`
     );
   }
 
