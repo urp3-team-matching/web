@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 /**
  * 이 타입은 비밀번호 해시를 제외한 모든 속성을 포함하는 타입을 나타냅니다.
  */
@@ -32,3 +34,7 @@ export type PaginatedType<T> = {
   currentPage: number;
   itemsPerPage: number;
 };
+
+export const passwordField = z
+  .string()
+  .min(6, "Password is required (min 6 chars).");

@@ -12,16 +12,16 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import apiClient from "@/lib/apiClientHelper";
+import apiClient, { PublicApplicant } from "@/lib/apiClientHelper";
 import { MaxApplicantsError } from "@/lib/authUtils";
 import { cn } from "@/lib/utils";
-import { CreateApplicantInput, CreateApplicantSchema } from "@/types/applicant";
+import { ApplicantInput, ApplicantSchema } from "@/types/applicant";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { HTMLInputTypeAttribute, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 const applyFields: {
-  name: keyof (typeof CreateApplicantSchema)["shape"];
+  name: keyof (typeof ApplicantSchema)["shape"];
   label: string;
   type: HTMLInputTypeAttribute;
 }[] = [
@@ -35,12 +35,14 @@ interface ProjectApplyButtonProps {
   className?: string;
   projectId: number;
   active: boolean;
+  onSuccess: (project: PublicApplicant) => void;
 }
 
 const ProjectApplyButton = ({
   className,
   projectId,
   active,
+  onSuccess,
 }: ProjectApplyButtonProps) => {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -49,27 +51,16 @@ const ProjectApplyButton = ({
     handleSubmit,
     control: applyFormControl,
     reset,
-  } = useForm<CreateApplicantInput>({
-    resolver: zodResolver(CreateApplicantSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      major: "",
-      phone: "",
-      introduction: "",
-      password: "",
-    },
+  } = useForm<ApplicantInput>({
+    resolver: zodResolver(ApplicantSchema),
   });
 
-  async function onApply(data: CreateApplicantInput) {
+  async function onApply(data: ApplicantInput) {
     try {
       setIsSubmitting(true);
 
       const response = await apiClient.createApplicant(projectId, data);
-      if (response) {
-        console.log(response);
-      }
-      alert("신청서가 제출되었습니다.");
+      onSuccess(response);
       reset(); // 폼 초기화
       setOpen(false);
     } catch (error) {

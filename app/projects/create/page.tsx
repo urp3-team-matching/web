@@ -5,7 +5,7 @@ import ProjectCreateRightPanel from "@/app/projects/create/_components/RightPane
 import ProjectForm from "@/components/Project/Form/ProjectForm";
 import ProjectNameForm from "@/components/Project/Form/ProjectNameForm";
 import apiClient from "@/lib/apiClientHelper";
-import { CreateProjectInput, CreateProjectSchema } from "@/types/project";
+import { ProjectInput, ProjectSchema } from "@/types/project";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -14,18 +14,16 @@ import { useForm } from "react-hook-form";
 export default function Create() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const { handleSubmit, control } = useForm<CreateProjectInput>({
-    resolver: zodResolver(CreateProjectSchema),
+  const { handleSubmit, control } = useForm<ProjectInput>({
+    resolver: zodResolver(ProjectSchema),
   });
 
-  async function onSuccess(data: CreateProjectInput) {
-    console.log("Form data:", data);
+  async function onSuccess(data: ProjectInput) {
     setLoading(true);
     try {
       const response = await apiClient.createProject(data);
       router.push(`/projects/${response.id}`);
-    } catch (error) {
-      console.error("Failed to create project:", error);
+    } catch {
       alert("프로젝트 생성 실패!");
     } finally {
       setLoading(false);
@@ -52,15 +50,9 @@ export default function Create() {
         />
         <ProjectCreateRightPanel
           className="w-[30%] pl-5"
-          isCreatePage={true}
           control={control}
-          onSubmit={() => {
-            console.log("Form submitted2");
-            handleSubmit(onSuccess, (data) => {
-              console.log("Form error:", data);
-              alert("프로젝트 생성 실패!");
-            })();
-          }}
+          onSubmit={handleSubmit(onSuccess)}
+          loading={loading}
         />
       </div>
     </form>

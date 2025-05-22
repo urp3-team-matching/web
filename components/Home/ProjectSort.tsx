@@ -1,15 +1,17 @@
 "use client";
 
+import { GetProjectsQuerySchema } from "@/types/project";
 import { parseAsStringEnum, useQueryState } from "nuqs";
+import { z } from "zod";
 
 enum Sort {
-  LATEST = "latest",
-  POPULAR = "popular",
+  LATEST = "createdDatetime",
+  POPULAR = "viewCount",
 }
 
 const ProjectSort = () => {
   const [sort, setSort] = useQueryState(
-    "sort",
+    "sortBy" as keyof z.infer<typeof GetProjectsQuerySchema>,
     parseAsStringEnum<Sort>(Object.values(Sort))
   );
 

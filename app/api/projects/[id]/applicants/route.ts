@@ -4,7 +4,7 @@ import {
   createApplicant,
   getApplicantsByProjectId,
 } from "@/services/applicant";
-import { CreateApplicantSchema } from "@/types/applicant";
+import { ApplicantSchema } from "@/types/applicant";
 import { NextRequest, NextResponse } from "next/server";
 
 interface ProjectContext {
@@ -21,7 +21,7 @@ export async function POST(request: NextRequest, { params }: ProjectContext) {
       );
 
     const { data: validatedData, errorResponse } =
-      await parseAndValidateRequestBody(request, CreateApplicantSchema);
+      await parseAndValidateRequestBody(request, ApplicantSchema);
     if (errorResponse) return errorResponse;
     if (!validatedData)
       throw new Error("Validated data is unexpectedly undefined.");

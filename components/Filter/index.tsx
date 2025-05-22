@@ -1,7 +1,9 @@
 "use client";
 
 import TabTrigger from "@/components/Filter/TabTrigger";
+import { GetProjectsQuerySchema } from "@/types/project";
 import { parseAsStringEnum, useQueryState } from "nuqs";
+import { z } from "zod";
 
 enum ProjectFilter {
   RECRUITING = "recruiting",
@@ -10,7 +12,7 @@ enum ProjectFilter {
 
 const Filter = () => {
   const [filter, setFilter] = useQueryState(
-    "filter",
+    "recruiting" as keyof z.infer<typeof GetProjectsQuerySchema>,
     parseAsStringEnum<ProjectFilter>(Object.values(ProjectFilter))
   );
 

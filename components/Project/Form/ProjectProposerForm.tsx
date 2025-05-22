@@ -1,7 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { CreateProjectInput, UpdateProjectInput } from "@/types/project";
+import { ProjectInput } from "@/types/project";
 import { ProposerType } from "@prisma/client";
 import { Control, Controller } from "react-hook-form";
 
@@ -22,22 +22,17 @@ const proposerTypes: { label: string; value: ProposerType }[] = [
 
 interface ProposerFieldProps {
   className?: string;
-  control: Control<CreateProjectInput | UpdateProjectInput>;
-  isCreatePage: boolean;
+  control: Control<ProjectInput>;
 }
 
-const ProjectProposerForm = ({
-  className,
-  control,
-  isCreatePage,
-}: ProposerFieldProps) => {
+const ProjectProposerForm = ({ className, control }: ProposerFieldProps) => {
   return (
     <div className={className}>
       <div className="flex items-center">
         <span className="text-sm text-end font-semibold w-16 mr-3">이름</span>
         <div>
           <Controller
-            name="proposer.name"
+            name="proposerName"
             control={control}
             render={({ field, fieldState }) => (
               <Input
@@ -50,39 +45,66 @@ const ProjectProposerForm = ({
         </div>
       </div>
 
-      <div className="flex items-center">
-        <span className="text-sm text-end font-semibold w-16 mr-3">구분</span>
-        <div>
-          <Controller
-            name="proposer.type"
-            control={control}
-            render={({ field }) => (
-              <RadioGroup
-                value={field.value || ProposerType.STUDENT}
-                onValueChange={field.onChange}
-                onBlur={field.onBlur}
-                name={field.name}
-                className="w-full flex gap-4"
-              >
-                {proposerTypes.map((proposerType) => (
-                  <div
-                    key={proposerType.value}
-                    className="flex gap-1 items-center"
-                  >
-                    <RadioGroupItem
-                      value={proposerType.value}
-                      className="rounded-full"
-                    />
-                    <Label className="font-medium text-[14px]">
-                      {proposerType.label}
-                    </Label>
-                  </div>
-                ))}
-              </RadioGroup>
+      <Controller
+        name="proposerType"
+        control={control}
+        render={({ field: proposerTypeField }) => (
+          <>
+            <div className="flex items-center">
+              <span className="text-sm text-end font-semibold w-16 mr-3">
+                구분
+              </span>
+              <div>
+                <RadioGroup
+                  value={proposerTypeField.value || null}
+                  onValueChange={proposerTypeField.onChange}
+                  onBlur={proposerTypeField.onBlur}
+                  name={proposerTypeField.name}
+                  className="w-full flex gap-4"
+                  ref={proposerTypeField.ref}
+                >
+                  {proposerTypes.map((proposerType) => (
+                    <div
+                      key={proposerType.value}
+                      className="flex gap-1 items-center"
+                    >
+                      <RadioGroupItem
+                        value={proposerType.value}
+                        className="rounded-full"
+                      />
+                      <Label className="font-medium text-[14px]">
+                        {proposerType.label}
+                      </Label>
+                    </div>
+                  ))}
+                </RadioGroup>
+              </div>
+            </div>
+
+            {proposerTypeField.value === ProposerType.STUDENT && (
+              <div className="flex items-center">
+                <span className="text-sm text-end font-semibold w-16 mr-3">
+                  전공
+                </span>
+                <div>
+                  <Controller
+                    name="proposerMajor"
+                    control={control}
+                    render={({ field: proposerMajorField, fieldState }) => (
+                      <Input
+                        {...proposerMajorField}
+                        className="w-full h-10"
+                        value={proposerMajorField.value || ""}
+                        fieldState={fieldState}
+                      />
+                    )}
+                  />
+                </div>
+              </div>
             )}
-          />
-        </div>
-      </div>
+          </>
+        )}
+      />
 
       <div className="flex items-center">
         <span className="text-sm text-end font-semibold w-16 mr-3 whitespace-nowrap">
@@ -90,7 +112,7 @@ const ProjectProposerForm = ({
         </span>
         <div>
           <Controller
-            name={isCreatePage ? "password" : "currentPassword"}
+            name="password"
             control={control}
             render={({ field, fieldState }) => (
               <Input
@@ -103,26 +125,6 @@ const ProjectProposerForm = ({
           />
         </div>
       </div>
-
-      {control._formValues.proposer?.type === ProposerType.STUDENT && (
-        <div className="flex items-center">
-          <span className="text-sm text-end font-semibold w-16 mr-3">전공</span>
-          <div>
-            <Controller
-              name="proposer.major"
-              control={control}
-              render={({ field, fieldState }) => (
-                <Input
-                  {...field}
-                  className="w-full h-10"
-                  value={field.value || ""}
-                  fieldState={fieldState}
-                />
-              )}
-            />
-          </div>
-        </div>
-      )}
     </div>
   );
 };

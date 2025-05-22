@@ -5,7 +5,7 @@ import ProjectDetailRightPanel from "@/app/projects/[id]/_components/RightPanel"
 import ProjectForm from "@/components/Project/Form/ProjectForm";
 import Spinner from "@/components/ui/spinner";
 import apiClient, { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
-import { UpdateProjectInput, UpdateProjectSchema } from "@/types/project";
+import { ProjectInput, ProjectSchema } from "@/types/project";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { parseAsStringEnum, useQueryState } from "nuqs";
@@ -41,28 +41,25 @@ export default function Project({ params }: { params: { id: string } }) {
   );
 
   // 프로젝트 정보 폼
-  const { handleSubmit, control: projectFormControl } =
-    useForm<UpdateProjectInput>({
-      resolver: zodResolver(UpdateProjectSchema),
-      values: {
-        name: project?.name,
-        background: project?.background,
-        method: project?.method,
-        objective: project?.objective,
-        result: project?.result,
-        // TODO: 첨부파일 처리 로직 추가
-        // attachments: project?.attachments,
-        keywords: project?.keywords,
-        currentPassword: "",
-        proposer: {
-          name: project?.proposer.name,
-          type: project?.proposer.type,
-          major: project?.proposer.major,
-        },
-      },
-    });
+  const { handleSubmit, control: projectFormControl } = useForm<ProjectInput>({
+    resolver: zodResolver(ProjectSchema),
+    values: {
+      name: project?.name || "",
+      background: project?.background || "",
+      method: project?.method || "",
+      objective: project?.objective || "",
+      result: project?.result || "",
+      // TODO: 첨부파일 처리 로직 추가
+      // attachments: project?.attachments  || "",
+      keywords: project?.keywords || [],
+      password: "",
+      proposerName: project?.proposerName || "",
+      proposerType: project?.proposerType || "STUDENT",
+      proposerMajor: project?.proposerMajor || "",
+    },
+  });
 
-  async function onSuccess(data: UpdateProjectInput) {
+  async function onSuccess(data: ProjectInput) {
     setLoading(true);
     try {
       const response = await apiClient.updateProject(projectId, data);
@@ -124,6 +121,16 @@ export default function Project({ params }: { params: { id: string } }) {
           control={projectFormControl}
           togglemode={togglemode}
           onSubmit={handleSubmit(onSuccess)}
+          loading={loading}
+          onApplySuccess={(newApplicant) => {
+            setProject((prev) => {
+              if (!prev) return;
+              return {
+                ...prev,
+                applicants: [...prev.applicants, newApplicant],
+              };
+            });
+          }}
         />
       </div>
     </form>

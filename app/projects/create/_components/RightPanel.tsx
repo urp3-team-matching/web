@@ -1,28 +1,29 @@
 import CancelAndSubmitButton from "@/components/Project/Form/CancelAndSubmitButton";
 import ProjectProposerForm from "@/components/Project/Form/ProjectProposerForm";
 import { cn } from "@/lib/utils";
-import { CreateProjectInput, UpdateProjectInput } from "@/types/project";
+import { ProjectInput } from "@/types/project";
 import { useRouter } from "next/navigation";
 import { Control } from "react-hook-form";
 
 interface ProjectCreateRightPanelProps {
-  control: Control<CreateProjectInput | UpdateProjectInput>;
+  control: Control<ProjectInput>;
   onSubmit: () => void;
   className?: string;
-  isCreatePage?: boolean;
+  loading?: boolean;
 }
 
 const ProjectCreateRightPanel = ({
   control,
   onSubmit,
   className,
-  isCreatePage = false,
+  loading = false,
 }: ProjectCreateRightPanelProps) => {
   const router = useRouter();
 
   function onCancel() {
     router.push("/projects");
   }
+
   return (
     <div className={cn("text-lg font-semibold flex flex-col gap-5", className)}>
       <div>프로젝트 제안자</div>
@@ -30,10 +31,13 @@ const ProjectCreateRightPanel = ({
       <ProjectProposerForm
         className="w-full p-5 flex flex-col gap-3 border rounded-lg h-auto"
         control={control}
-        isCreatePage={isCreatePage}
       />
 
-      <CancelAndSubmitButton onCancel={onCancel} onSubmit={onSubmit} />
+      <CancelAndSubmitButton
+        onCancel={onCancel}
+        onSubmit={onSubmit}
+        loading={loading}
+      />
     </div>
   );
 };

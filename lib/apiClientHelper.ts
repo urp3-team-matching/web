@@ -7,41 +7,25 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from "@/lib/authUtils";
-import type {
-  CreateApplicantInput,
-  UpdateApplicantInput,
-} from "@/types/applicant";
+import type { ApplicantInput } from "@/types/applicant";
 import type {
   ApplicantForProject,
-  CreateProjectInput,
   GetProjectsQueryInput,
-  ProposerForProject,
-  UpdateProjectInput,
+  ProjectInput,
 } from "@/types/project";
-import type {
-  GetProposersQueryInput,
-  UpdateProposerInput,
-} from "@/types/proposer";
 import { PaginatedType, PublicType } from "@/types/utils";
-import { Applicant, Post, Project, Proposer } from "@prisma/client";
+import { Applicant, Post, Project } from "@prisma/client";
 
 export type PublicApplicant = PublicType<Applicant>;
 export type PublicApplicantForProject = PublicType<ApplicantForProject>;
 export type PublicPost = PublicType<Post>;
 export type PublicProject = PublicType<Project>;
-export type PublicProposer = PublicType<Proposer>;
-export type PublicProposerForProject = PublicType<ProposerForProject>;
-export type PublicProjectWithProposer = PublicProject & {
-  proposer: PublicProposerForProject;
-};
 export type ProjectWithForeignKeys = Project & {
-  proposer: ProposerForProject;
-  applicants: ApplicantForProject[];
+  applicants: PublicApplicantForProject[];
 };
 export type PublicProjectWithForeignKeys = PublicType<ProjectWithForeignKeys>;
 
 export type PaginatedPosts = PaginatedType<PublicPost>;
-export type PaginatedProposers = PaginatedType<PublicProposer>;
 export type PaginatedPublicProjects =
   PaginatedType<PublicProjectWithForeignKeys>;
 
@@ -162,9 +146,7 @@ class ApiClient {
     return await response.json();
   }
 
-  public async createProject(
-    data: CreateProjectInput
-  ): Promise<PublicProjectWithProposer> {
+  public async createProject(data: ProjectInput): Promise<PublicProject> {
     const response = await this._request(`/api/projects`, "POST", data);
 
     if (!response.ok) {
@@ -185,7 +167,7 @@ class ApiClient {
 
   public async updateProject(
     id: number,
-    data: UpdateProjectInput
+    data: ProjectInput
   ): Promise<PublicProjectWithForeignKeys> {
     const request = await this._request(`/api/projects/${id}`, "PUT", data);
 
@@ -308,7 +290,7 @@ class ApiClient {
 
   public async createApplicant(
     projectId: number,
-    data: CreateApplicantInput
+    data: ApplicantInput
   ): Promise<PublicApplicant> {
     const response = await this._request(
       `/api/projects/${projectId}/applicants`,
@@ -337,7 +319,7 @@ class ApiClient {
   public async updateApplicant(
     projectId: number,
     applicantId: number,
-    data: UpdateApplicantInput
+    data: ApplicantInput
   ): Promise<PublicApplicant> {
     const response = await this._request(
       `/api/projects/${projectId}/applicants/${applicantId}`,
@@ -386,101 +368,6 @@ class ApiClient {
           throw new InternalServerError();
         default:
           throw new Error("Failed to delete applicant");
-      }
-    }
-
-    return await response.json();
-  }
-
-  // --- Proposer API Methods ---
-  public async getProposers(
-    params?: GetProposersQueryInput
-  ): Promise<PaginatedProposers> {
-    const query = params
-      ? new URLSearchParams(
-          Object.entries(params).filter(([, v]) => v !== undefined) as any
-        ).toString()
-      : "";
-
-    const response = await this._request(`/api/proposers?${query}`, "GET");
-
-    if (!response.ok) {
-      switch (response.status) {
-        case 404:
-          throw new NotFoundError();
-        case 500:
-          throw new InternalServerError("Internal Server Error");
-        default:
-          throw new Error("Failed to fetch proposers");
-      }
-    }
-
-    return await response.json();
-  }
-
-  public async getProposerById(id: number): Promise<PublicProposer> {
-    const response = await this._request(`/api/proposers/${id}`, "GET");
-
-    if (!response.ok) {
-      switch (response.status) {
-        case 404:
-          throw new NotFoundError();
-        case 500:
-          throw new InternalServerError("Internal Server Error");
-        default:
-          throw new Error("Failed to fetch proposer");
-      }
-    }
-
-    return await response.json();
-  }
-
-  // 독립적 Proposer 수정 (API 라우트 존재 시)
-  public async updateProposer(
-    id: number,
-    data: UpdateProposerInput
-  ): Promise<PublicProposer> {
-    const response = await this._request(`/api/proposers/${id}`, "PUT", data);
-
-    if (!response.ok) {
-      switch (response.status) {
-        case 400:
-          throw new BadRequestError();
-        case 401:
-          throw new UnauthorizedError();
-        case 404:
-          throw new NotFoundError();
-        case 500:
-          throw new InternalServerError("Internal Server Error");
-        default:
-          throw new Error("Failed to update proposer");
-      }
-    }
-
-    return await response.json();
-  }
-
-  // 독립적 Proposer 삭제 (API 라우트 존재 시)
-  public async deleteProposer(
-    id: number,
-    currentPassword: string
-  ): Promise<void> {
-    const response = await this._request(`/api/proposers/${id}`, "DELETE", {
-      currentPassword,
-    });
-
-    if (!response.ok) {
-      switch (response.status) {
-        case 400:
-          throw new BadRequestError();
-        case 401:
-          throw new UnauthorizedError();
-        case 404:
-          throw new NotFoundError();
-        case 500:
-          throw new InternalServerError("Internal Server Error");
-        default:
-          throw new Error("Failed to delete proposer");
       }
     }
 

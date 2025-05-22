@@ -1,26 +1,14 @@
-import { PrismaClient, ProposerType } from "@prisma/client"; // Prisma 추가 임포트
+import { PrismaClient, ProposerType } from "@prisma/client";
 import { hash } from "bcryptjs";
 
 const prisma = new PrismaClient();
 
 async function main() {
-  // --- 데이터 초기화 (선택 사항, 시드 실행 시 일관성 유지 목적) ---
+  // --- 데이터 초기화 (기존 데이터 삭제) ---
   console.log("Deleting existing data...");
   await prisma.applicant.deleteMany({});
+  await prisma.project.deleteMany({});
   await prisma.post.deleteMany({});
-  try {
-    // Project가 Proposer를 참조하므로 Project를 먼저 삭제 시도
-    await prisma.project.deleteMany({});
-    await prisma.proposer.deleteMany({});
-  } catch (error) {
-    console.warn(
-      "Deletion order might need adjustment based on constraints:",
-      error
-    );
-    // Fallback: Proposer 먼저 삭제
-    await prisma.proposer.deleteMany({});
-    await prisma.project.deleteMany({});
-  }
   console.log("Existing data deleted.");
   // --- 데이터 초기화 끝 ---
 
@@ -28,12 +16,10 @@ async function main() {
   const passwordHash = await hash("password123", 10);
   console.log("Password hashed.");
 
-  // 예제 프로젝트와 제안자를 중첩된 쓰기로 동시에 생성 (create 사용)
-  console.log("Creating Project with nested Proposer...");
-  // Prisma.ProjectGetPayload 타입을 사용하여 반환 타입 명시
-  const createdProject = await prisma.project.create({
+  // 예제 프로젝트 생성 (수정된 스키마에 맞춤)
+  console.log("Creating Project...");
+  const project = await prisma.project.create({
     data: {
-      // Project 데이터
       name: "샘플 프로젝트",
       background: "프로젝트 연구 배경 설명",
       method: "프로젝트 연구 방법 설명",
@@ -41,30 +27,14 @@ async function main() {
       result: "프로젝트 예상 결과 설명",
       attachments: ["/attachments/sample1.pdf", "/attachments/sample2.docx"],
       keywords: ["AI", "머신러닝", "데이터과학"],
+      // 제안자 정보를 별도 모델이 아닌 직접 포함
+      proposerName: "김교수",
+      proposerType: ProposerType.PROFESSOR,
+      proposerMajor: "컴퓨터 과학",
       passwordHash: passwordHash,
-      proposer: {
-        create: {
-          // Proposer 데이터
-          type: ProposerType.PROFESSOR,
-          name: "김교수",
-          email: "professor.kim@example.com",
-          major: "컴퓨터 과학",
-          phone: "010-1111-2222",
-          introduction: "AI 연구 전문가입니다.",
-          passwordHash: passwordHash,
-        },
-      },
-    },
-    include: {
-      proposer: true,
     },
   });
-  console.log("Project and Proposer created:", createdProject);
-
-  // 생성된 Project와 Proposer 객체 가져오기
-  // Prisma.ProjectGetPayload 타입을 사용했으므로 타입이 정확함
-  const project = createdProject;
-  const proposer = createdProject.proposer; // proposer는 null이 아님 (include: true)
+  console.log("Project created:", project);
 
   // 예제 지원자 생성
   console.log("Creating Applicant...");
@@ -81,7 +51,7 @@ async function main() {
   });
   console.log("Applicant created:", applicant);
 
-  // 예제 게시글 생성 (선택 사항)
+  // 예제 게시글 생성
   console.log("Creating Post...");
   const post = await prisma.post.create({
     data: {
@@ -94,8 +64,44 @@ async function main() {
   });
   console.log("Post created:", post);
 
+  // 추가 지원자 생성 (다양한 데이터를 위해)
+  console.log("Creating additional applicants...");
+  const applicant2 = await prisma.applicant.create({
+    data: {
+      projectId: project.id,
+      name: "이영희",
+      email: "applicant2@example.com",
+      major: "전자공학",
+      phone: "010-9876-5432",
+      introduction: "전자공학 전공자로 하드웨어 부분에 기여할 수 있습니다.",
+      passwordHash: passwordHash,
+    },
+  });
+
+  // 추가 프로젝트 생성
+  console.log("Creating additional project...");
+  const project2 = await prisma.project.create({
+    data: {
+      name: "IoT 스마트홈 시스템",
+      background: "편리한 가정 환경을 위한 IoT 기술 접목",
+      method: "라즈베리파이와 아두이노를 활용한 프로토타입 개발",
+      objective: "저비용 고효율의 스마트홈 시스템 구축",
+      result: "실용적인 스마트홈 제어 시스템 개발",
+      attachments: ["/attachments/iot_proposal.pdf"],
+      keywords: ["IoT", "스마트홈", "임베디드시스템"],
+      proposerName: "이교수",
+      proposerType: ProposerType.PROFESSOR,
+      proposerMajor: "전자공학",
+      passwordHash: passwordHash,
+    },
+  });
+
   console.log("Seeding finished successfully.");
-  console.log({ project, proposer, applicant, post });
+  console.log({
+    projects: [project, project2],
+    applicants: [applicant, applicant2],
+    posts: [post],
+  });
 }
 
 main()

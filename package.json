@@ -23,7 +23,7 @@
     "@diceui/tags-input": "^0.7.2",
     "@faker-js/faker": "^9.6.0",
     "@hookform/resolvers": "^5.0.1",
-    "@prisma/client": "^6.7.0",
+    "@prisma/client": "^6.8.2",
     "@radix-ui/react-checkbox": "^1.2.3",
     "@radix-ui/react-dialog": "^1.1.11",
     "@radix-ui/react-label": "^2.1.4",
@@ -37,7 +37,7 @@
     "lucide-react": "^0.477.0",
     "next": "14.2.24",
     "nuqs": "^2.4.3",
-    "prisma": "^6.4.1",
+    "prisma": "^6.8.2",
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "^7.56.1",
@@ -66,5 +66,19 @@
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+  },
+  "pnpm": {
+    "ignoredBuiltDependencies": [
+      "@prisma/client",
+      "@prisma/engines",
+      "@tailwindcss/oxide",
+      "prisma",
+      "unrs-resolver"
+    ],
+    "onlyBuiltDependencies": [
+      "@prisma/client",
+      "@prisma/engines",
+      "prisma"
+    ]
   }
 }
