@@ -13,9 +13,10 @@ interface SearchBarProps {
 }
 
 export default function SearchBar({ className }: SearchBarProps) {
-  const [searchQuery, setSearchQuery] = useQueryState(
-    "searchTerm" as keyof z.infer<typeof GetProjectsQuerySchema>
-  );
+  const searchQueryKey = "searchTerm" as keyof z.infer<
+    typeof GetProjectsQuerySchema
+  >;
+  const [searchQuery, setSearchQuery] = useQueryState(searchQueryKey);
 
   const handleSearch = (value: string) => {
     if (!value || value.trim() === "") {
@@ -31,7 +32,7 @@ export default function SearchBar({ className }: SearchBarProps) {
       onSubmit={(e) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
-        const searchValue = formData.get("search") as string;
+        const searchValue = formData.get(searchQueryKey) as string;
         handleSearch(searchValue);
       }}
     >
