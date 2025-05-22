@@ -9,12 +9,9 @@ import {
   GetProjectsQueryInput,
   ProjectInput,
   projectPublicSelection,
+  ProjectUpdateInput,
 } from "@/types/project";
-import {
-  PaginatedType,
-  PasswordOmittedType,
-  WithCurrentPassword,
-} from "@/types/utils";
+import { PaginatedType, PasswordOmittedType } from "@/types/utils";
 import { Prisma, Project } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
@@ -148,7 +145,7 @@ export async function getProjectById(
 // 프로젝트 수정 (비밀번호 검증, Proposer 포함 가능)
 export async function updateProject(
   id: number,
-  data: WithCurrentPassword<ProjectInput>
+  data: ProjectUpdateInput
 ): Promise<Project> {
   const {
     currentPassword,

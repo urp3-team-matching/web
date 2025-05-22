@@ -19,6 +19,7 @@ export const ProjectUpdateSchema = ProjectSchema.extend({
   currentPassword: passwordField,
 });
 export type ProjectInput = z.infer<typeof ProjectSchema>;
+export type ProjectUpdateInput = z.infer<typeof ProjectUpdateSchema>;
 
 export const GetProjectsQuerySchema = z.object({
   page: z.coerce.number().int().positive().optional().default(1),

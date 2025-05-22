@@ -8,12 +8,9 @@ import {
   GetPostsQueryInput,
   PostInput,
   postPublicSelection,
+  PostUpdateInput,
 } from "@/types/post";
-import {
-  PaginatedType,
-  PasswordOmittedType,
-  WithCurrentPassword,
-} from "@/types/utils";
+import { PaginatedType, PasswordOmittedType } from "@/types/utils";
 import { Post, Prisma } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
@@ -103,7 +100,7 @@ export async function getPostById(
 // 포스트 수정 (비밀번호 검증)
 export async function updatePost(
   id: number,
-  data: WithCurrentPassword<PostInput>
+  data: PostUpdateInput
 ): Promise<PasswordOmittedPost> {
   const {
     currentPassword,

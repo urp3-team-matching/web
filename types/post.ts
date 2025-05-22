@@ -13,6 +13,7 @@ export const PostUpdateSchema = PostSchema.extend({
   currentPassword: passwordField,
 });
 export type PostInput = z.infer<typeof PostSchema>;
+export type PostUpdateInput = z.infer<typeof PostUpdateSchema>;
 
 export const GetPostsQuerySchema = z.object({
   page: z.coerce.number().int().positive().optional().default(1),

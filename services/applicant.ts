@@ -6,9 +6,13 @@ import {
   verifyResourcePassword,
 } from "@/lib/authUtils";
 import { prisma } from "@/lib/prisma";
-import { ApplicantInput, applicantPublicSelection } from "@/types/applicant";
+import {
+  ApplicantInput,
+  applicantPublicSelection,
+  ApplicantUpdateInput,
+} from "@/types/applicant";
 import { projectPublicSelection } from "@/types/project";
-import { PasswordOmittedType, WithCurrentPassword } from "@/types/utils";
+import { PasswordOmittedType } from "@/types/utils";
 import { Applicant } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
@@ -81,7 +85,7 @@ export async function getApplicantByIdForProject(
 export async function updateApplicant(
   applicantId: number,
   projectId: number,
-  data: WithCurrentPassword<ApplicantInput>
+  data: ApplicantUpdateInput
 ): Promise<PasswordOmittedApplicant> {
   const {
     currentPassword,

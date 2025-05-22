@@ -14,6 +14,7 @@ export const ApplicantUpdateSchema = ApplicantSchema.extend({
   currentPassword: passwordField,
 });
 export type ApplicantInput = z.infer<typeof ApplicantSchema>;
+export type ApplicantUpdateInput = z.infer<typeof ApplicantUpdateSchema>;
 
 export const applicantPublicSelection: Prisma.ApplicantSelect = {
   id: true,
