@@ -43,7 +43,7 @@ const ProjectDetailRightPanel = ({
         project={project}
         mode={mode}
       />
-      {mode === null && <ProjectApplyButton />}
+      {mode === null && <ProjectApplyButton projectId={project.id} />}
 
       {/* 프로젝트 취소 및 저장 버튼 */}
       {mode === ProjectPageModeEnum.ADMIN && (

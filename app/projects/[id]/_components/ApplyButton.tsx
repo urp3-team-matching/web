@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogClose,
@@ -11,39 +12,77 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import apiClient from "@/lib/apiClientHelper";
 import { cn } from "@/lib/utils";
-import { CreateApplicantInput } from "@/types/applicant";
-import { useState } from "react";
+import { CreateApplicantInput, CreateApplicantSchema } from "@/types/applicant";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { HTMLInputTypeAttribute, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
-const applyFields = [
-  { name: "name", title: "이름" },
-  { name: "major", title: "학과" },
-  { name: "phone", title: "전화번호" },
-  { name: "email", title: "이메일" },
+const applyFields: {
+  name: keyof (typeof CreateApplicantSchema)["shape"];
+  label: string;
+  type: HTMLInputTypeAttribute;
+}[] = [
+  { name: "name", label: "이름", type: "text" },
+  { name: "major", label: "학과", type: "text" },
+  { name: "phone", label: "전화번호", type: "tel" },
+  { name: "email", label: "이메일", type: "email" },
 ] as const;
 
 interface ProjectApplyButtonProps {
   className?: string;
+  projectId: number;
 }
 
-const ProjectApplyButton = ({ className }: ProjectApplyButtonProps) => {
+const ProjectApplyButton = ({
+  className,
+  projectId,
+}: ProjectApplyButtonProps) => {
   const [open, setOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { handleSubmit: handleApplySubmit, control: applyFormControl } =
-    useForm<CreateApplicantInput>();
+  const {
+    handleSubmit,
+    control: applyFormControl,
+    reset,
+  } = useForm<CreateApplicantInput>({
+    resolver: zodResolver(CreateApplicantSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      major: "",
+      phone: "",
+      introduction: "",
+      password: "",
+    },
+  });
 
-  function onApply(data: CreateApplicantInput) {
-    console.log("신청서 제출된 데이터:", data);
-    alert("신청서가 제출되었습니다.");
-    setOpen(false);
+  async function onApply(data: CreateApplicantInput) {
+    try {
+      setIsSubmitting(true);
+
+      await apiClient.createApplicant(projectId, data);
+      alert("신청서가 제출되었습니다.");
+      reset(); // 폼 초기화
+      setOpen(false);
+    } catch (error) {
+      alert("신청서 제출에 실패했습니다. 다시 시도해주세요.");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(isOpen) => {
+        setOpen(isOpen);
+        if (!isOpen) reset(); // 다이얼로그가 닫힐 때 폼 초기화
+      }}
+    >
       <DialogTrigger asChild>
         <div
-          onClick={() => setOpen(false)}
           className={cn(
             `w-full h-[50px] bg-secondary text-white flex justify-center cursor-pointer items-center rounded-lg text-base font-medium`,
             className
@@ -59,42 +98,111 @@ const ProjectApplyButton = ({ className }: ProjectApplyButtonProps) => {
           <DialogDescription>모든 필드를 작성해주세요.</DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleApplySubmit(onApply)}>
-          {/* 필드: 나머지 */}
-          {applyFields.map(({ name, title }) => (
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleSubmit(onApply)();
+          }}
+        >
+          {/* 기본 필드들 */}
+          {applyFields.map(({ name, label }) => (
             <div key={name} className="flex items-center my-3">
               <span className="text-sm text-end font-semibold w-16 mr-3 whitespace-nowrap">
-                {title}
+                {label}
               </span>
-              <Controller
-                name={name}
-                control={applyFormControl}
-                rules={{ required: `${title}을 입력해주세요` }}
-                render={({ field }) => <Input {...field} />}
-              />
+              <div className="w-full">
+                <Controller
+                  name={name}
+                  control={applyFormControl}
+                  render={({ field, fieldState }) => (
+                    <>
+                      <Input
+                        {...field}
+                        className={cn(fieldState.error && "border-destructive")}
+                      />
+                      {fieldState.error && (
+                        <p className="text-xs text-destructive mt-1">
+                          {fieldState.error.message}
+                        </p>
+                      )}
+                    </>
+                  )}
+                />
+              </div>
             </div>
           ))}
 
-          {/* 필드: 자기소개 */}
+          {/* 비밀번호 필드 */}
+          <div className="flex items-center my-3">
+            <span className="text-sm text-end font-semibold w-16 mr-3 whitespace-nowrap">
+              비밀번호
+            </span>
+            <div className="w-full">
+              <Controller
+                name="password"
+                control={applyFormControl}
+                render={({ field, fieldState }) => (
+                  <>
+                    <Input
+                      type="password"
+                      {...field}
+                      className={cn(fieldState.error && "border-destructive")}
+                    />
+                    {fieldState.error && (
+                      <p className="text-xs text-destructive mt-1">
+                        {fieldState.error.message}
+                      </p>
+                    )}
+                  </>
+                )}
+              />
+            </div>
+          </div>
+
+          {/* 자기소개 필드 */}
           <div className="flex items-center my-3">
             <span className="text-sm text-end font-semibold w-16 mr-3 whitespace-nowrap">
               자기소개
             </span>
-            <Controller
-              name="introduction"
-              control={applyFormControl}
-              render={({ field }) => <Textarea className="h-32" {...field} />}
-            />
+            <div className="w-full">
+              <Controller
+                name="introduction"
+                control={applyFormControl}
+                render={({ field, fieldState }) => (
+                  <>
+                    <Textarea
+                      className={cn(
+                        "h-32",
+                        fieldState.error && "border-destructive"
+                      )}
+                      {...field}
+                    />
+                    {fieldState.error && (
+                      <p className="text-xs text-destructive mt-1">
+                        {fieldState.error.message}
+                      </p>
+                    )}
+                  </>
+                )}
+              />
+            </div>
           </div>
 
           {/* 취소 및 제출 버튼 */}
-          <div className="w-full h-auto flex justify-end gap-2 mt-5">
-            <DialogClose className="text-sm font-normal rounded-md hover:bg-gray-300 cursor-pointer bg-gray-200 border text-black w-[58px] h-11">
-              취소
+          <div className="w-full h-11 flex justify-end gap-2 mt-5">
+            <DialogClose asChild>
+              <Button type="button" variant="ghost" className="h-full">
+                취소
+              </Button>
             </DialogClose>
-            <button className="w-[58px] text-sm font-normal bg-secondary rounded-lg text-white cursor-pointer h-11">
-              제출
-            </button>
+            <Button
+              type="submit"
+              className="w-[58px] text-sm h-full bg-third hover:bg-third/90"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "제출중..." : "제출"}
+            </Button>
           </div>
         </form>
       </DialogContent>
