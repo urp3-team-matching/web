@@ -1,6 +1,34 @@
+import { MAX_APPLICANTS } from "@/constants";
 import { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
 import { cn } from "@/lib/utils";
 import { CircleUser } from "lucide-react";
+
+const majorBackgroundColor = [
+  "bg-secondary",
+  "bg-blue-300",
+  "bg-yellow-300",
+  "bg-fuchsia-400",
+];
+const majorTextColor = [
+  "text-secondary",
+  "text-blue-300",
+  "text-yellow-300",
+  "text-fuchsia-400",
+];
+
+function getMajorColor(
+  major: string,
+  uniqueMajors: string[],
+  type: "bg" | "text" = "bg"
+) {
+  const uniqueMajorIndex = uniqueMajors.findIndex((m) => m === major);
+  if (uniqueMajorIndex !== -1) {
+    return type === "bg"
+      ? majorBackgroundColor[uniqueMajorIndex]
+      : majorTextColor[uniqueMajorIndex];
+  }
+  return "gray-300"; // 기본 색상
+}
 
 interface MajorGraphProps {
   project: PublicProjectWithForeignKeys;
@@ -8,29 +36,28 @@ interface MajorGraphProps {
 }
 
 export default function MajorGraph({ project, className }: MajorGraphProps) {
-  const majorNumber = project.applicants.length;
-  const majorColor = [
-    "bg-secondary",
-    "bg-blue-300",
-    "bg-yellow-300",
-    "bg-fuchsia-400",
-  ];
+  const majors = project.applicants.map((applicant) => applicant.major);
+  const uniqueMajors = [...new Set(majors)];
+  const restApplicantsCount = MAX_APPLICANTS - majors.length;
+
   return (
     <div
       className={cn(
-        "w-full h-auto flex flex-col gap-3 shadow-md rounded-lg p-1",
+        "w-full h-auto flex flex-col gap-3 shadow-md rounded-lg p-2",
         className
       )}
     >
-      <div className="w-full h-auto justify-between flex">
-        {[...Array(majorNumber)].map((_, index) => (
+      {/* 유저 아이콘 */}
+      <div className="w-full justify-between flex">
+        {majors.map((major) => (
           <CircleUser
-            key={index}
+            key={major}
             size={50}
-            className="text-secondary-100 stroke-1"
+            className={`flex-1 ${getMajorColor(major, uniqueMajors, "text")}`}
+            strokeWidth={1}
           />
         ))}
-        {[...Array(4 - majorNumber)].map((_, index) => (
+        {[...Array(restApplicantsCount)].map((_, index) => (
           <CircleUser
             key={index}
             size={50}
@@ -38,30 +65,28 @@ export default function MajorGraph({ project, className }: MajorGraphProps) {
           />
         ))}
       </div>
-      <div className="w-full h-4 rounded-2xl relative justify-between ">
-        <div className="w-1/4 left-0  absolute z-40 h-full bg-secondary rounded-2xl"></div>
-        <div
-          className={`${
-            majorNumber >= 2 ? `` : `hidden`
-          }  w-1/2 left-0 absolute z-30 h-full bg-blue-300 rounded-2xl`}
-        ></div>
-        <div
-          className={` ${
-            majorNumber >= 3 ? `` : ` hidden`
-          } w-3/4 left-0 absolute z-20 h-full bg-yellow-300 rounded-2xl`}
-        ></div>
-        <div
-          className={` ${
-            majorNumber == 4 ? `` : `hidden`
-          }  w-full h-full z-10 bg-fuchsia-400  rounded-2xl`}
-        ></div>
-        <div className="w-full h-full top-0 left-0  -z-10 bg-gray-100 absolute"></div>
+
+      {/* 그래프 */}
+      <div className="w-full h-4 rounded-2xl overflow-hidden flex justify-between">
+        {majors.map((major) => (
+          <div
+            key={major}
+            className={`h-full flex-1 ${getMajorColor(major, uniqueMajors)}`}
+          />
+        ))}
       </div>
+
+      {/* 전공 */}
       <div className="w-full flex flex-col gap-1 justify-center h-auto">
-        {project.applicants.map((applicant, i) => (
-          <div className="flex gap-1 items-center" key={applicant.id}>
-            <div className={`size-5 rounded-full ${majorColor[i]}`}></div>
-            <div className="w-full text-xs font-normal">{applicant.major}</div>
+        {uniqueMajors.map((major, i) => (
+          <div className="flex gap-x-1.5 items-center" key={major}>
+            <div
+              className={cn(
+                "h-5 w-5 rounded-full",
+                `${getMajorColor(major, uniqueMajors)}`
+              )}
+            />
+            <div className="flex-1 text-xs font-normal">{major}</div>
           </div>
         ))}
       </div>
