@@ -49,17 +49,17 @@ export default function MajorGraph({ project, className }: MajorGraphProps) {
     >
       {/* 유저 아이콘 */}
       <div className="w-full justify-between flex">
-        {majors.map((major) => (
+        {majors.map((major, i) => (
           <CircleUser
-            key={major}
+            key={i}
             size={50}
             className={`flex-1 ${getMajorColor(major, uniqueMajors, "text")}`}
             strokeWidth={1}
           />
         ))}
-        {[...Array(restApplicantsCount)].map((_, index) => (
+        {[...Array(restApplicantsCount)].map((_, i) => (
           <CircleUser
-            key={index}
+            key={i}
             size={50}
             className="text-black font-thin stroke-1"
           />
@@ -68,9 +68,9 @@ export default function MajorGraph({ project, className }: MajorGraphProps) {
 
       {/* 그래프 */}
       <div className="w-full h-4 rounded-2xl overflow-hidden flex justify-between">
-        {majors.map((major) => (
+        {majors.map((major, i) => (
           <div
-            key={major}
+            key={i}
             className={`h-full flex-1 ${getMajorColor(major, uniqueMajors)}`}
           />
         ))}
@@ -79,7 +79,7 @@ export default function MajorGraph({ project, className }: MajorGraphProps) {
       {/* 전공 */}
       <div className="w-full flex flex-col gap-1 justify-center h-auto">
         {uniqueMajors.map((major, i) => (
-          <div className="flex gap-x-1.5 items-center" key={major}>
+          <div className="flex gap-x-1.5 items-center" key={i}>
             <div
               className={cn(
                 "h-5 w-5 rounded-full",
