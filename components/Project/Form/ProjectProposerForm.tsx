@@ -1,6 +1,23 @@
-import { GroupChecker } from "@/app/projects/[id]/_components/RightPanel/GroupChecker";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { ProposerType } from "@prisma/client";
 import { Controller } from "react-hook-form";
+
+const proposerTypes: { label: string; value: ProposerType }[] = [
+  {
+    label: "학생",
+    value: ProposerType.STUDENT,
+  },
+  {
+    label: "교수",
+    value: ProposerType.PROFESSOR,
+  },
+  {
+    label: "성균융합원",
+    value: ProposerType.HOST,
+  },
+];
 
 interface ProposerFieldProps {
   className?: string;
@@ -26,7 +43,28 @@ const ProjectProposerForm = ({ className, control }: ProposerFieldProps) => {
           name="proposer.type"
           control={control}
           render={({ field }) => (
-            <GroupChecker value={field.value} onChange={field.onChange} />
+            <RadioGroup
+              value={field.value || ProposerType.STUDENT}
+              onValueChange={field.onChange}
+              onBlur={field.onBlur}
+              name={field.name}
+              className="w-full flex gap-4"
+            >
+              {proposerTypes.map((proposerType) => (
+                <div
+                  key={proposerType.value}
+                  className="flex gap-1 items-center"
+                >
+                  <RadioGroupItem
+                    value={proposerType.value}
+                    className="rounded-full"
+                  />
+                  <Label className="font-medium text-[14px]">
+                    {proposerType.label}
+                  </Label>
+                </div>
+              ))}
+            </RadioGroup>
           )}
         />
       </div>
