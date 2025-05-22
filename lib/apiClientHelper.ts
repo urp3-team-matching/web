@@ -186,13 +186,13 @@ class ApiClient {
   public async updateProject(
     id: number,
     data: UpdateProjectInput
-  ): Promise<PublicProjectWithProposer> {
+  ): Promise<PublicProjectWithForeignKeys> {
     const request = await this._request(`/api/projects/${id}`, "PUT", data);
 
     if (!request.ok) {
       switch (request.status) {
         case 400:
-          throw new BadRequestError();
+          throw new BadRequestError(await request.text());
         case 401:
           throw new UnauthorizedError();
         case 404:

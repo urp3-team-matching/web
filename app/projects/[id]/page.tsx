@@ -5,8 +5,8 @@ import ProjectDetailRightPanel from "@/app/projects/[id]/_components/RightPanel"
 import ProjectForm from "@/components/Project/Form/ProjectForm";
 import Spinner from "@/components/ui/spinner";
 import apiClient, { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
-import { UpdateProjectInput } from "@/types/project";
-import { UpdateProposerInput } from "@/types/proposer";
+import { UpdateProjectInput, UpdateProjectSchema } from "@/types/project";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { parseAsStringEnum, useQueryState } from "nuqs";
 import { useEffect, useState } from "react";
@@ -41,7 +41,8 @@ export default function Project({ params }: { params: { id: string } }) {
 
   // 프로젝트 정보 폼
   const { handleSubmit: handleTextSubmit, control: projectFormControl } =
-    useForm<UpdateProjectInput & UpdateProposerInput>({
+    useForm<UpdateProjectInput>({
+      resolver: zodResolver(UpdateProjectSchema),
       values: {
         name: project?.name,
         background: project?.background,
@@ -60,14 +61,25 @@ export default function Project({ params }: { params: { id: string } }) {
       },
     });
 
-  function onSuccess(data: UpdateProjectInput & UpdateProposerInput) {
-    console.log("제출된 전체 데이터:", data);
-    alert("제출 성공!");
+  async function onSuccess(data: UpdateProjectInput) {
+    setLoading(true);
+    try {
+      const response = await apiClient.updateProject(projectId, data);
+      setProject(response);
+    } catch (error) {
+      console.error("Error updating project:", error);
+      alert("프로젝트 수정 실패!");
+      return;
+    } finally {
+      setLoading(false);
+    }
+
     router.push(`/projects/${projectId}`);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function onError(error: any) {
+    // TODO: 에러 처리 로직 추가
     console.error("Error submitting form:", error);
     alert("제출 실패!");
   }

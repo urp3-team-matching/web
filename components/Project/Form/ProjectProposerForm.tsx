@@ -74,7 +74,7 @@ const ProjectProposerForm = ({ className, control }: ProposerFieldProps) => {
           비밀번호
         </span>
         <Controller
-          name="proposer.password"
+          name="currentPassword"
           control={control}
           render={({ field }) => (
             <Input type="password" {...field} value={field.value || ""} />
