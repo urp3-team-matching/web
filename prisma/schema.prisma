@@ -34,6 +34,7 @@ model Project {
   updatedDatetime DateTime @updatedAt
 
   applicants Applicant[]
+  messages   Message[]
 }
 
 model Applicant {
@@ -64,4 +65,19 @@ model Post {
 
   createdDatetime DateTime @default(now())
   updatedDatetime DateTime @updatedAt
+}
+
+model Message {
+  id      BigInt @id @default(autoincrement())
+  content String
+
+  userId   String
+  username String
+
+  projectId Int
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([projectId])
 }
