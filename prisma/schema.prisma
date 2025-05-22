@@ -8,49 +8,32 @@ datasource db {
   directUrl = env("DIRECT_URL") // 필요시
 }
 
-model Project {
-  id          Int      @id @default(autoincrement())
-  name        String
-  viewCount   Int      @default(0)
-  background  String
-  method      String
-  objective   String
-  result      String
-  attachments String[]
-  keywords    String[]
-
-  passwordHash String @map("password")
-
-  createdDatetime DateTime @default(now())
-  updatedDatetime DateTime @updatedAt
-
-  // Relations
-  proposerId Int         @unique
-  proposer   Proposer    @relation(fields: [proposerId], references: [id])
-  applicants Applicant[]
-}
-
 enum ProposerType {
   PROFESSOR
   STUDENT
   HOST
 }
 
-model Proposer {
-  id           Int          @id @default(autoincrement())
-  type         ProposerType
-  name         String
-  // email        String
-  major        String?
-  // phone        String
-  // introduction String
-  passwordHash String       @map("password")
+model Project {
+  id            Int          @id @default(autoincrement())
+  name          String
+  viewCount     Int          @default(0)
+  background    String
+  method        String
+  objective     String
+  result        String
+  attachments   String[]
+  keywords      String[]
+  proposerName  String
+  proposerType  ProposerType
+  proposerMajor String?
+
+  passwordHash String @map("password")
 
   createdDatetime DateTime @default(now())
   updatedDatetime DateTime @updatedAt
 
-  // Relations
-  project Project?
+  applicants Applicant[]
 }
 
 model Applicant {
@@ -77,7 +60,7 @@ model Post {
   author       String
   attachments  String[]
   viewCount    Int      @default(0)
-  passwordHash String   @map("password") // Post에도 비밀번호 추가
+  passwordHash String   @map("password")
 
   createdDatetime DateTime @default(now())
   updatedDatetime DateTime @updatedAt

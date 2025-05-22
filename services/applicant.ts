@@ -6,13 +6,9 @@ import {
   verifyResourcePassword,
 } from "@/lib/authUtils";
 import { prisma } from "@/lib/prisma";
-import {
-  applicantPublicSelection,
-  CreateApplicantInput, // types에서 import
-  UpdateApplicantInput,
-} from "@/types/applicant";
+import { ApplicantInput, applicantPublicSelection } from "@/types/applicant";
 import { projectPublicSelection } from "@/types/project";
-import { PasswordOmittedType } from "@/types/utils";
+import { PasswordOmittedType, WithCurrentPassword } from "@/types/utils";
 import { Applicant } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
@@ -22,12 +18,11 @@ type PasswordOmittedApplicant = PasswordOmittedType<Applicant>;
 // 지원자 생성 (비밀번호 해싱)
 export async function createApplicant(
   projectId: number,
-  data: CreateApplicantInput
+  data: ApplicantInput
 ): Promise<PasswordOmittedApplicant> {
   const { password: plainTextPassword, ...applicantData } = data;
   const passwordHash = await bcrypt.hash(plainTextPassword, SALT_ROUNDS);
 
-  // 연결할 프로젝트 존재 확인 (선택적)
   const project = await prisma.project.findUnique({
     where: { id: projectId },
     select: projectPublicSelection,
@@ -86,7 +81,7 @@ export async function getApplicantByIdForProject(
 export async function updateApplicant(
   applicantId: number,
   projectId: number,
-  data: UpdateApplicantInput
+  data: WithCurrentPassword<ApplicantInput>
 ): Promise<PasswordOmittedApplicant> {
   const {
     currentPassword,

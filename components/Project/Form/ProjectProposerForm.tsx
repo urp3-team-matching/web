@@ -1,7 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { CreateProjectInput, UpdateProjectInput } from "@/types/project";
+import { ProjectInput, UpdateProjectInput } from "@/types/project";
 import { ProposerType } from "@prisma/client";
 import { Control, Controller } from "react-hook-form";
 
@@ -22,7 +22,7 @@ const proposerTypes: { label: string; value: ProposerType }[] = [
 
 interface ProposerFieldProps {
   className?: string;
-  control: Control<CreateProjectInput | UpdateProjectInput>;
+  control: Control<ProjectInput | UpdateProjectInput>;
   isCreatePage: boolean;
 }
 

@@ -7,14 +7,11 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from "@/lib/authUtils";
-import type {
-  CreateApplicantInput,
-  UpdateApplicantInput,
-} from "@/types/applicant";
+import type { ApplicantInput, UpdateApplicantInput } from "@/types/applicant";
 import type {
   ApplicantForProject,
-  CreateProjectInput,
   GetProjectsQueryInput,
+  ProjectInput,
   ProposerForProject,
   UpdateProjectInput,
 } from "@/types/project";
@@ -163,7 +160,7 @@ class ApiClient {
   }
 
   public async createProject(
-    data: CreateProjectInput
+    data: ProjectInput
   ): Promise<PublicProjectWithProposer> {
     const response = await this._request(`/api/projects`, "POST", data);
 
@@ -308,7 +305,7 @@ class ApiClient {
 
   public async createApplicant(
     projectId: number,
-    data: CreateApplicantInput
+    data: ApplicantInput
   ): Promise<PublicApplicant> {
     const response = await this._request(
       `/api/projects/${projectId}/applicants`,

@@ -5,7 +5,7 @@ import ProjectCreateRightPanel from "@/app/projects/create/_components/RightPane
 import ProjectForm from "@/components/Project/Form/ProjectForm";
 import ProjectNameForm from "@/components/Project/Form/ProjectNameForm";
 import apiClient from "@/lib/apiClientHelper";
-import { CreateProjectInput, CreateProjectSchema } from "@/types/project";
+import { CreateProjectSchema, ProjectInput } from "@/types/project";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -14,11 +14,11 @@ import { useForm } from "react-hook-form";
 export default function Create() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const { handleSubmit, control } = useForm<CreateProjectInput>({
+  const { handleSubmit, control } = useForm<ProjectInput>({
     resolver: zodResolver(CreateProjectSchema),
   });
 
-  async function onSuccess(data: CreateProjectInput) {
+  async function onSuccess(data: ProjectInput) {
     console.log("Form data:", data);
     setLoading(true);
     try {

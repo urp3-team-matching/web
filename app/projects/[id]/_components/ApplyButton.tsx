@@ -15,7 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import apiClient from "@/lib/apiClientHelper";
 import { MaxApplicantsError } from "@/lib/authUtils";
 import { cn } from "@/lib/utils";
-import { CreateApplicantInput, CreateApplicantSchema } from "@/types/applicant";
+import { ApplicantInput, CreateApplicantSchema } from "@/types/applicant";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { HTMLInputTypeAttribute, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -49,7 +49,7 @@ const ProjectApplyButton = ({
     handleSubmit,
     control: applyFormControl,
     reset,
-  } = useForm<CreateApplicantInput>({
+  } = useForm<ApplicantInput>({
     resolver: zodResolver(CreateApplicantSchema),
     defaultValues: {
       name: "",
@@ -61,7 +61,7 @@ const ProjectApplyButton = ({
     },
   });
 
-  async function onApply(data: CreateApplicantInput) {
+  async function onApply(data: ApplicantInput) {
     try {
       setIsSubmitting(true);
 

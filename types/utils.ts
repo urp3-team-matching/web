@@ -32,3 +32,7 @@ export type PaginatedType<T> = {
   currentPage: number;
   itemsPerPage: number;
 };
+
+export type WithCurrentPassword<T> = T & {
+  currentPassword: string;
+};

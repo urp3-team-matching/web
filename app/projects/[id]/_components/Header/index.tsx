@@ -6,14 +6,14 @@ import ProjectNameForm from "@/components/Project/Form/ProjectNameForm";
 import { Switch } from "@/components/ui/switch";
 import { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
 import { getProjectStatus, parseDate } from "@/lib/utils";
-import { CreateProjectInput, UpdateProjectInput } from "@/types/project";
+import { ProjectInput, UpdateProjectInput } from "@/types/project";
 import { Calendar, Eye } from "lucide-react";
 import { Control } from "react-hook-form";
 
 interface ProjectDetailHeaderProps {
   project: PublicProjectWithForeignKeys;
   className?: string;
-  projectFormControl: Control<CreateProjectInput | UpdateProjectInput>;
+  projectFormControl: Control<ProjectInput | UpdateProjectInput>;
   mode: ProjectPageMode;
   togglemode: () => void;
 }

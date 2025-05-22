@@ -1,12 +1,12 @@
 import CancelAndSubmitButton from "@/components/Project/Form/CancelAndSubmitButton";
 import ProjectProposerForm from "@/components/Project/Form/ProjectProposerForm";
 import { cn } from "@/lib/utils";
-import { CreateProjectInput, UpdateProjectInput } from "@/types/project";
+import { ProjectInput, UpdateProjectInput } from "@/types/project";
 import { useRouter } from "next/navigation";
 import { Control } from "react-hook-form";
 
 interface ProjectCreateRightPanelProps {
-  control: Control<CreateProjectInput | UpdateProjectInput>;
+  control: Control<ProjectInput | UpdateProjectInput>;
   onSubmit: () => void;
   className?: string;
   isCreatePage?: boolean;

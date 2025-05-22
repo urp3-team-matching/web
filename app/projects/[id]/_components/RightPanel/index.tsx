@@ -7,14 +7,14 @@ import ProjectProposerForm from "@/components/Project/Form/ProjectProposerForm";
 import { MAX_APPLICANTS } from "@/constants";
 import { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
 import { cn } from "@/lib/utils";
-import { CreateProjectInput, UpdateProjectInput } from "@/types/project";
+import { ProjectInput, UpdateProjectInput } from "@/types/project";
 import { Control } from "react-hook-form";
 
 interface ProjectDetailRightPanelProps {
   className?: string;
   project: PublicProjectWithForeignKeys;
   mode: ProjectPageMode;
-  control: Control<CreateProjectInput | UpdateProjectInput>;
+  control: Control<ProjectInput | UpdateProjectInput>;
   togglemode: () => void;
   onSubmit: () => void;
 }
