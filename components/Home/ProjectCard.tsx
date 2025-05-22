@@ -24,7 +24,7 @@ export default function ProjectCard({ project, className }: ProjectCardProps) {
         {/* 헤더: 상태, 제안 타입 */}
         <div className="flex gap-[10px]">
           <ApplyStatueBadge status={projectStatus} />
-          <ProposalBadge proposerType={project.proposer.type} />
+          <ProposalBadge proposerType={project.proposerType} />
         </div>
 
         {/* 제목 */}

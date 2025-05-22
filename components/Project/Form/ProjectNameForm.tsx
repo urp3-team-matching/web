@@ -1,11 +1,11 @@
 import { ProjectPageMode, ProjectPageModeEnum } from "@/app/projects/[id]/page";
 import { cn } from "@/lib/utils";
-import { ProjectInput, UpdateProjectInput } from "@/types/project";
+import { ProjectInput } from "@/types/project";
 import { Control, Controller } from "react-hook-form";
 
 interface ProjectNameFormProps {
   className?: string;
-  control: Control<ProjectInput | UpdateProjectInput>;
+  control: Control<ProjectInput>;
   mode: ProjectPageMode;
 }
 

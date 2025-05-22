@@ -15,13 +15,13 @@ import { Textarea } from "@/components/ui/textarea";
 import apiClient from "@/lib/apiClientHelper";
 import { MaxApplicantsError } from "@/lib/authUtils";
 import { cn } from "@/lib/utils";
-import { ApplicantInput, CreateApplicantSchema } from "@/types/applicant";
+import { ApplicantInput, ApplicantSchema } from "@/types/applicant";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { HTMLInputTypeAttribute, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 const applyFields: {
-  name: keyof (typeof CreateApplicantSchema)["shape"];
+  name: keyof (typeof ApplicantSchema)["shape"];
   label: string;
   type: HTMLInputTypeAttribute;
 }[] = [
@@ -50,15 +50,7 @@ const ProjectApplyButton = ({
     control: applyFormControl,
     reset,
   } = useForm<ApplicantInput>({
-    resolver: zodResolver(CreateApplicantSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      major: "",
-      phone: "",
-      introduction: "",
-      password: "",
-    },
+    resolver: zodResolver(ApplicantSchema),
   });
 
   async function onApply(data: ApplicantInput) {

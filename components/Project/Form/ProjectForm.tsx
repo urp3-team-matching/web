@@ -3,7 +3,7 @@
 import ProjectTextArea from "@/app/projects/[id]/_components/ProjectTextArea";
 import { ProjectPageMode } from "@/app/projects/[id]/page";
 import { KeywordInput } from "@/components/Project/KeywordInput";
-import { ProjectInput, UpdateProjectInput } from "@/types/project";
+import { ProjectInput } from "@/types/project";
 import { Control, Controller } from "react-hook-form";
 
 const fields = [
@@ -16,7 +16,7 @@ const fields = [
 interface ProjectBodyProps {
   className?: string;
   mode?: ProjectPageMode;
-  control: Control<ProjectInput | UpdateProjectInput>;
+  control: Control<ProjectInput>;
 }
 
 const ProjectForm = ({ className, mode, control }: ProjectBodyProps) => {

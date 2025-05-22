@@ -5,7 +5,7 @@ import ProjectCreateRightPanel from "@/app/projects/create/_components/RightPane
 import ProjectForm from "@/components/Project/Form/ProjectForm";
 import ProjectNameForm from "@/components/Project/Form/ProjectNameForm";
 import apiClient from "@/lib/apiClientHelper";
-import { CreateProjectSchema, ProjectInput } from "@/types/project";
+import { ProjectInput, ProjectSchema } from "@/types/project";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -15,7 +15,7 @@ export default function Create() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const { handleSubmit, control } = useForm<ProjectInput>({
-    resolver: zodResolver(CreateProjectSchema),
+    resolver: zodResolver(ProjectSchema),
   });
 
   async function onSuccess(data: ProjectInput) {
@@ -52,7 +52,6 @@ export default function Create() {
         />
         <ProjectCreateRightPanel
           className="w-[30%] pl-5"
-          isCreatePage={true}
           control={control}
           onSubmit={() => {
             console.log("Form submitted2");
@@ -61,6 +60,7 @@ export default function Create() {
               alert("프로젝트 생성 실패!");
             })();
           }}
+          loading={loading}
         />
       </div>
     </form>

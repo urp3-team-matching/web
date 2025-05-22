@@ -6,14 +6,14 @@ import ProjectNameForm from "@/components/Project/Form/ProjectNameForm";
 import { Switch } from "@/components/ui/switch";
 import { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
 import { getProjectStatus, parseDate } from "@/lib/utils";
-import { ProjectInput, UpdateProjectInput } from "@/types/project";
+import { ProjectInput } from "@/types/project";
 import { Calendar, Eye } from "lucide-react";
 import { Control } from "react-hook-form";
 
 interface ProjectDetailHeaderProps {
   project: PublicProjectWithForeignKeys;
   className?: string;
-  projectFormControl: Control<ProjectInput | UpdateProjectInput>;
+  projectFormControl: Control<ProjectInput>;
   mode: ProjectPageMode;
   togglemode: () => void;
 }
@@ -34,7 +34,7 @@ const ProjectDetailHeader = ({
         <div className="flex w-full gap-[10px] items-center h-7 ">
           <ApplyStatueBadge status={projectStatus} />
           {mode === null && (
-            <ProposalBadge proposerType={project.proposer.type} />
+            <ProposalBadge proposerType={project.proposerType} />
           )}
           {mode === null && (
             <div className="w-auto h-full flex gap-1 items-center">

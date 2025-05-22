@@ -1,7 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { ProjectInput, UpdateProjectInput } from "@/types/project";
+import { ProjectInput } from "@/types/project";
 import { ProposerType } from "@prisma/client";
 import { Control, Controller } from "react-hook-form";
 
@@ -22,22 +22,17 @@ const proposerTypes: { label: string; value: ProposerType }[] = [
 
 interface ProposerFieldProps {
   className?: string;
-  control: Control<ProjectInput | UpdateProjectInput>;
-  isCreatePage: boolean;
+  control: Control<ProjectInput>;
 }
 
-const ProjectProposerForm = ({
-  className,
-  control,
-  isCreatePage,
-}: ProposerFieldProps) => {
+const ProjectProposerForm = ({ className, control }: ProposerFieldProps) => {
   return (
     <div className={className}>
       <div className="flex items-center">
         <span className="text-sm text-end font-semibold w-16 mr-3">이름</span>
         <div>
           <Controller
-            name="proposer.name"
+            name="proposerName"
             control={control}
             render={({ field, fieldState }) => (
               <Input
@@ -54,7 +49,7 @@ const ProjectProposerForm = ({
         <span className="text-sm text-end font-semibold w-16 mr-3">구분</span>
         <div>
           <Controller
-            name="proposer.type"
+            name="proposerType"
             control={control}
             render={({ field }) => (
               <RadioGroup
@@ -90,7 +85,7 @@ const ProjectProposerForm = ({
         </span>
         <div>
           <Controller
-            name={isCreatePage ? "password" : "currentPassword"}
+            name="password"
             control={control}
             render={({ field, fieldState }) => (
               <Input
@@ -109,7 +104,7 @@ const ProjectProposerForm = ({
           <span className="text-sm text-end font-semibold w-16 mr-3">전공</span>
           <div>
             <Controller
-              name="proposer.major"
+              name="proposerMajor"
               control={control}
               render={({ field, fieldState }) => (
                 <Input

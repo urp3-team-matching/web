@@ -7,16 +7,17 @@ import ProjectProposerForm from "@/components/Project/Form/ProjectProposerForm";
 import { MAX_APPLICANTS } from "@/constants";
 import { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
 import { cn } from "@/lib/utils";
-import { ProjectInput, UpdateProjectInput } from "@/types/project";
+import { ProjectInput } from "@/types/project";
 import { Control } from "react-hook-form";
 
 interface ProjectDetailRightPanelProps {
   className?: string;
   project: PublicProjectWithForeignKeys;
   mode: ProjectPageMode;
-  control: Control<ProjectInput | UpdateProjectInput>;
+  control: Control<ProjectInput>;
   togglemode: () => void;
   onSubmit: () => void;
+  loading?: boolean;
 }
 
 const ProjectDetailRightPanel = ({
@@ -26,6 +27,7 @@ const ProjectDetailRightPanel = ({
   control,
   togglemode,
   onSubmit,
+  loading = false,
 }: ProjectDetailRightPanelProps) => {
   const isProjectFull = project.applicants.length >= MAX_APPLICANTS;
 
@@ -36,7 +38,6 @@ const ProjectDetailRightPanel = ({
       {/* 프로젝트 제안자 입력 */}
       {mode === ProjectPageModeEnum.ADMIN && (
         <ProjectProposerForm
-          isCreatePage={false}
           control={control}
           className="w-full p-5 flex flex-col gap-3 border rounded-lg h-auto"
         />
@@ -44,7 +45,7 @@ const ProjectDetailRightPanel = ({
 
       {/* 프로젝트 대화방 및 모집관리 */}
       <Chat
-        className="w-full text-sm font-medium flex flex-col shadow-md rounded-lg  h-[500px]"
+        className="w-full text-sm font-medium flex flex-col shadow-md rounded-lg h-[500px]"
         project={project}
         mode={mode}
       />
@@ -54,7 +55,11 @@ const ProjectDetailRightPanel = ({
 
       {/* 프로젝트 취소 및 저장 버튼 */}
       {mode === ProjectPageModeEnum.ADMIN && (
-        <CancelAndSubmitButton onCancel={togglemode} onSubmit={onSubmit} />
+        <CancelAndSubmitButton
+          onCancel={togglemode}
+          onSubmit={onSubmit}
+          loading={loading}
+        />
       )}
     </div>
   );

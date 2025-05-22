@@ -14,12 +14,14 @@ interface CancelAndSubmitButtonProps {
   onCancel: () => void;
   onSubmit: () => void;
   className?: string;
+  loading?: boolean;
 }
 
 const CancelAndSubmitButton = ({
   onCancel,
   onSubmit,
   className,
+  loading = false,
 }: CancelAndSubmitButtonProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -36,7 +38,7 @@ const CancelAndSubmitButton = ({
 
       {/* 저장 버튼 */}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogTrigger asChild>
+        <DialogTrigger asChild disabled={loading}>
           <div className="text-white flex justify-center items-center cursor-pointer text-base font-normal w-[280px] h-10 bg-secondary hover:bg-secondary/90 rounded-lg">
             저장
           </div>
