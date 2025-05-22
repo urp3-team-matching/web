@@ -19,14 +19,19 @@ import { cn } from "@/lib/utils";
 
 interface CustomPaginationProps {
   totalPages: number;
-  key?: string;
+  queryKey?: string;
+  className?: string;
 }
 
 const CustomPagination = ({
   totalPages,
-  key = "page",
+  queryKey = "page",
+  className,
 }: CustomPaginationProps) => {
-  const [page, setPage] = useQueryState(key, parseAsInteger.withDefault(0));
+  const [page, setPage] = useQueryState(
+    queryKey,
+    parseAsInteger.withDefault(0)
+  );
 
   const maxPagesToShow = 5; // 표시할 최대 페이지 수
   const getPageNumbers = () => {
@@ -74,7 +79,7 @@ const CustomPagination = ({
   }
 
   return (
-    <Pagination>
+    <Pagination className={className}>
       <PaginationContent className="gap-x-2">
         {/* 첫 페이지 */}
         <PaginationItem>

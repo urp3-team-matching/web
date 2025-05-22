@@ -45,8 +45,8 @@ export async function getAllProjects(
   query: GetProjectsQueryInput
 ): Promise<PaginatedType<PasswordOmittedProject>> {
   const {
-    page,
-    limit,
+    page = 1, // 기본값 설정
+    limit = 10, // 기본값 설정
     sortBy,
     sortOrder,
     name,
@@ -95,6 +95,12 @@ export async function getAllProjects(
     orderByConditions.createdDatetime = "desc";
   }
 
+  // 먼저 총 항목 수를 계산하기 위해 카운트 쿼리 실행
+  const totalCount = await prisma.project.count({
+    where: whereConditions,
+  });
+
+  // 그 다음 페이지네이션된 데이터 조회
   const projectsFromDb = await prisma.project.findMany({
     where: whereConditions,
     select: projectPublicSelection, // passwordHash 제외 확인
@@ -106,24 +112,51 @@ export async function getAllProjects(
   let filteredProjects: PasswordOmittedProject[] =
     projectsFromDb as PasswordOmittedProject[];
 
-  // 타입스크립트 단에서 'recruiting' 필터링 (지원자 수 <= MAX_APPLICANTS)
+  // recruiting 필터링이 있는 경우, 전체 데이터를 대상으로 다시 계산 필요
+  let finalTotalCount = totalCount;
+
   if (recruiting) {
-    if (recruiting === "closed") {
-      filteredProjects = projectsFromDb.filter(
-        (project) => project.applicants.length >= MAX_APPLICANTS
-      );
+    // recruiting 필터가 적용된 경우, 전체 데이터를 가져와서 필터링 및 카운트 해야 함
+    if (recruiting === "closed" || recruiting === "recruiting") {
+      // 이 경우에는 모든 프로젝트를 가져와서 applicants 수로 필터링해야 함
+      const allProjects = await prisma.project.findMany({
+        where: whereConditions,
+        select: projectPublicSelection,
+      });
+
+      // 필터링 로직 적용
+      const filteredAllProjects = allProjects.filter((project) => {
+        if (recruiting === "closed") {
+          return project.applicants.length >= MAX_APPLICANTS;
+        } else {
+          // recruiting === "recruiting"
+          return project.applicants.length < MAX_APPLICANTS;
+        }
+      });
+
+      // 총 항목 수 업데이트
+      finalTotalCount = filteredAllProjects.length;
+
+      // 현재 페이지의 데이터만 추출 (메모리에서 페이지네이션)
+      filteredProjects = filteredAllProjects.slice(skip, skip + take);
     }
-    if (recruiting === "recruiting") {
-      filteredProjects = projectsFromDb.filter(
-        (project) => project.applicants.length < MAX_APPLICANTS
-      );
-    }
+  }
+
+  // 앱의 다른 부분과의 일관성을 위해 항상 filteredProjects를 사용하게 함
+  if (recruiting === "closed") {
+    filteredProjects = projectsFromDb.filter(
+      (project) => project.applicants.length >= MAX_APPLICANTS
+    );
+  } else if (recruiting === "recruiting") {
+    filteredProjects = projectsFromDb.filter(
+      (project) => project.applicants.length < MAX_APPLICANTS
+    );
   }
 
   return {
     data: filteredProjects,
-    totalItems: filteredProjects.length,
-    totalPages: Math.ceil(filteredProjects.length / limit),
+    totalItems: finalTotalCount, // 전체 항목 수 반영
+    totalPages: Math.ceil(finalTotalCount / limit), // 전체 항목 수 기준으로 계산
     currentPage: page,
     itemsPerPage: limit,
   };

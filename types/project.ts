@@ -22,8 +22,8 @@ export type ProjectInput = z.infer<typeof ProjectSchema>;
 export type ProjectUpdateInput = z.infer<typeof ProjectUpdateSchema>;
 
 export const GetProjectsQuerySchema = z.object({
-  page: z.coerce.number().int().positive().optional().default(1),
-  limit: z.coerce.number().int().positive().optional().default(10),
+  page: z.coerce.number().int().positive().optional(),
+  limit: z.coerce.number().int().positive().optional(),
   sortBy: z.string().optional().default("createdDatetime"),
   sortOrder: z.enum(["asc", "desc"]).optional().default("desc"),
   name: z.string().optional(),

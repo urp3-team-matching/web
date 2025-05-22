@@ -25,8 +25,6 @@ function safeParseSearchParams<T extends z.ZodTypeAny>(
   } catch {
     console.warn("Invalid query parameters, using defaults");
     return {
-      page: 1,
-      limit: 10,
       sortBy: "createdDatetime",
       sortOrder: "desc",
     };
@@ -70,7 +68,7 @@ const ProjectList = () => {
 
   if (!projects || projects.length === 0) {
     return (
-      <div className="w-full h-auto flex justify-center items-center">
+      <div className="w-full flex justify-center items-center">
         <span className="text-lg font-semibold">
           등록된 프로젝트가 없습니다.
         </span>
@@ -79,9 +77,9 @@ const ProjectList = () => {
   }
 
   return (
-    <div className="w-full h-auto">
+    <div className="w-full space-y-3 pb-3">
       {/* 프로젝트 목록 */}
-      <div className="w-full h-auto flex flex-col">
+      <div className="w-full flex flex-col">
         {projects.map((project, i) => (
           <Link key={i} href={`/projects/${project.id}`}>
             <ProjectCard project={project} />
