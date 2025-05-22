@@ -2,18 +2,20 @@ import { ProjectPageMode, ProjectPageModeEnum } from "@/app/projects/[id]/page";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { forwardRef } from "react";
+import { ControllerFieldState } from "react-hook-form";
 
 interface ProjectTextAreaProps {
   title: string;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   mode?: ProjectPageMode;
+  fieldState: ControllerFieldState;
 }
 
 const ProjectTextArea = forwardRef<HTMLTextAreaElement, ProjectTextAreaProps>(
-  ({ title, value, onChange, mode }, ref) => {
+  ({ title, value, onChange, mode, fieldState }, ref) => {
     return (
-      <div className="w-full h-auto">
+      <>
         <div className="w-full text-lg font-semibold">{title}</div>
         <Textarea
           ref={ref}
@@ -22,10 +24,15 @@ const ProjectTextArea = forwardRef<HTMLTextAreaElement, ProjectTextAreaProps>(
             mode === ProjectPageModeEnum.ADMIN ? "bg-gray-100" : "bg-white"
           )}
           value={value}
-          onChange={mode === ProjectPageModeEnum.ADMIN ? onChange : undefined}
+          onChange={onChange}
           readOnly={mode === null}
         />
-      </div>
+        {fieldState.error && (
+          <p className="text-xs text-destructive mt-1">
+            {fieldState.error.message}
+          </p>
+        )}
+      </>
     );
   }
 );

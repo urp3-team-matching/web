@@ -33,7 +33,13 @@ const ProjectProposerForm = ({ className, control }: ProposerFieldProps) => {
         <Controller
           name="proposer.name"
           control={control}
-          render={({ field }) => <Input {...field} value={field.value || ""} />}
+          render={({ field, fieldState }) => (
+            <Input
+              {...field}
+              value={field.value || ""}
+              fieldState={fieldState}
+            />
+          )}
         />
       </div>
 
@@ -76,8 +82,13 @@ const ProjectProposerForm = ({ className, control }: ProposerFieldProps) => {
         <Controller
           name="currentPassword"
           control={control}
-          render={({ field }) => (
-            <Input type="password" {...field} value={field.value || ""} />
+          render={({ field, fieldState }) => (
+            <Input
+              type="password"
+              {...field}
+              value={field.value || ""}
+              fieldState={fieldState}
+            />
           )}
         />
       </div>
@@ -87,11 +98,12 @@ const ProjectProposerForm = ({ className, control }: ProposerFieldProps) => {
         <Controller
           name="proposer.major"
           control={control}
-          render={({ field }) => (
+          render={({ field, fieldState }) => (
             <Input
               {...field}
               className="w-full h-10"
               value={field.value || ""}
+              fieldState={fieldState}
             />
           )}
         />

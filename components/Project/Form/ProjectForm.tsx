@@ -40,12 +40,13 @@ const ProjectForm = ({ className, mode, control }: ProjectBodyProps) => {
           key={name}
           name={name}
           control={control}
-          render={({ field }) => (
+          render={({ field, fieldState }) => (
             <ProjectTextArea
               {...field}
               value={field.value || ""}
               title={label}
               mode={mode}
+              fieldState={fieldState}
             />
           )}
         />

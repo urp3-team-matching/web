@@ -126,10 +126,7 @@ const ProjectApplyButton = ({
                   control={applyFormControl}
                   render={({ field, fieldState }) => (
                     <>
-                      <Input
-                        {...field}
-                        className={cn(fieldState.error && "border-destructive")}
-                      />
+                      <Input {...field} aria-invalid={fieldState.invalid} />
                       {fieldState.error && (
                         <p className="text-xs text-destructive mt-1">
                           {fieldState.error.message}

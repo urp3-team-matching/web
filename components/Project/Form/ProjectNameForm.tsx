@@ -18,6 +18,7 @@ const ProjectNameForm = ({
     <Controller
       name="name"
       control={control}
+      // TODO: 에러 처리 로직 추가
       render={({ field }) => (
         <input
           {...field}
