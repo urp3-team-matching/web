@@ -3,6 +3,7 @@ import ChatHeader from "@/app/projects/[id]/_components/RightPanel/Chat/Header";
 import { ProjectPageMode, ProjectPageModeEnum } from "@/app/projects/[id]/page";
 import { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
 import { parseAsStringEnum, useQueryState } from "nuqs";
+import { useEffect } from "react";
 import ChatField from "./ChatField";
 
 export enum Tab {
@@ -20,6 +21,12 @@ const Chat = ({ className, project, mode }: ChatProps) => {
     "tab",
     parseAsStringEnum<Tab>(Object.values(Tab))
   );
+  useEffect(() => {
+    if (mode !== ProjectPageModeEnum.ADMIN && tab !== null) {
+      setTab(null);
+    }
+  }, [mode, tab, setTab]);
+
   return (
     <div className={className}>
       {/* 헤더 */}

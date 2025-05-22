@@ -24,7 +24,7 @@ const ApplicantsManage = ({ className, project }: ManageApplicantsProps) => {
             </div>
           )}
           {project.applicants.map((applicant) => (
-            <ApplicantRow applicant={applicant} />
+            <ApplicantRow key={applicant.id} applicant={applicant} />
           ))}
         </div>
       </div>
