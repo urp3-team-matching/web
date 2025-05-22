@@ -1,5 +1,6 @@
 "use client";
 
+import { ProjectPageModeEnum } from "@/app/projects/[id]/page";
 import ProjectCreateRightPanel from "@/app/projects/create/_components/RightPanel";
 import ProjectForm from "@/components/Project/Form/ProjectForm";
 import ProjectNameForm from "@/components/Project/Form/ProjectNameForm";
@@ -20,9 +21,11 @@ export default function Create() {
       onSubmit={handleSubmit(onSuccess)}
       className="max-[1100px]:px-5 pb-16  flex flex-col mt-12 gap-5 justify-center w-full h-auto"
     >
-      <div className="mx-5 h-16  border-b-[1px] border-black">
-        <ProjectNameForm control={control} />
-      </div>
+      <ProjectNameForm
+        control={control}
+        mode={ProjectPageModeEnum.ADMIN}
+        className="mx-5 h-16 border-b-[1px] border-black"
+      />
 
       {/* <Controller
         name="attachments"
