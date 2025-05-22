@@ -8,12 +8,14 @@ interface ProjectCreateRightPanelProps {
   control: any; // TODO: FormControl 타입을 정의해야 함
   onSubmit: () => void;
   className?: string;
+  isCreatePage?: boolean;
 }
 
 const ProjectCreateRightPanel = ({
   control,
   onSubmit,
   className,
+  isCreatePage = false,
 }: ProjectCreateRightPanelProps) => {
   const router = useRouter();
 
@@ -27,6 +29,7 @@ const ProjectCreateRightPanel = ({
       <ProjectProposerForm
         className="w-full p-5 flex flex-col gap-3 border rounded-lg h-auto"
         control={control}
+        isCreatePage={isCreatePage}
       />
 
       <CancelAndSubmitButton onCancel={onCancel} onSubmit={onSubmit} />

@@ -54,9 +54,11 @@ const ProjectDetailHeader = ({
       </div>
 
       {/* 메인: 프로젝트 제목 */}
-      <div className="h-16 flex flex-col justify-end border-b-[1px] border-black">
-        <ProjectNameForm control={projectFormControl} mode={mode} />
-      </div>
+      <ProjectNameForm
+        className="h-16 flex flex-col justify-end border-b-[1px] border-black"
+        control={projectFormControl}
+        mode={mode}
+      />
 
       {/* 하단: 프로젝트 조회수, 생성 일시 */}
       <div className="gap-3 flex h-7 items-center font-medium text-xs">

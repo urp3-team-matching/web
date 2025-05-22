@@ -4,23 +4,36 @@ import { ProjectPageModeEnum } from "@/app/projects/[id]/page";
 import ProjectCreateRightPanel from "@/app/projects/create/_components/RightPanel";
 import ProjectForm from "@/components/Project/Form/ProjectForm";
 import ProjectNameForm from "@/components/Project/Form/ProjectNameForm";
-import { CreateProjectInput } from "@/types/project";
+import apiClient from "@/lib/apiClientHelper";
+import { CreateProjectInput, CreateProjectSchema } from "@/types/project";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 export default function Create() {
-  const { handleSubmit, control } = useForm<CreateProjectInput>();
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const { handleSubmit, control } = useForm<CreateProjectInput>({
+    resolver: zodResolver(CreateProjectSchema),
+  });
 
-  function onSuccess(data: CreateProjectInput) {
-    alert("프로젝트 생성이 완료되었습니다");
-    console.log("제출된 전체 데이터:", data);
-    console.log("제출된 파일 배열:", data.attachments);
+  async function onSuccess(data: CreateProjectInput) {
+    console.log("Form data:", data);
+    setLoading(true);
+    try {
+      const response = await apiClient.createProject(data);
+      router.push(`/projects/${response.id}`);
+    } catch (error) {
+      console.error("Failed to create project:", error);
+      alert("프로젝트 생성 실패!");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
-    <form
-      onSubmit={handleSubmit(onSuccess)}
-      className="max-[1100px]:px-5 pb-16  flex flex-col mt-12 gap-5 justify-center w-full h-auto"
-    >
+    <form className="max-[1100px]:px-5 pb-16 flex flex-col mt-12 gap-5 justify-center w-full">
       <ProjectNameForm
         control={control}
         mode={ProjectPageModeEnum.ADMIN}
@@ -39,8 +52,15 @@ export default function Create() {
         />
         <ProjectCreateRightPanel
           className="w-[30%] pl-5"
+          isCreatePage={true}
           control={control}
-          onSubmit={handleSubmit(onSuccess)}
+          onSubmit={() => {
+            console.log("Form submitted2");
+            handleSubmit(onSuccess, (data) => {
+              console.log("Form error:", data);
+              alert("프로젝트 생성 실패!");
+            })();
+          }}
         />
       </div>
     </form>

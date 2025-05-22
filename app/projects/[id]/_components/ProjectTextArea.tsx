@@ -15,13 +15,15 @@ interface ProjectTextAreaProps {
 const ProjectTextArea = forwardRef<HTMLTextAreaElement, ProjectTextAreaProps>(
   ({ title, value, onChange, mode, fieldState }, ref) => {
     return (
-      <>
+      <div>
         <div className="w-full text-lg font-semibold">{title}</div>
         <Textarea
           ref={ref}
           className={cn(
             "w-full resize-none mt-2 border p-2 rounded",
-            mode === ProjectPageModeEnum.ADMIN ? "bg-gray-100" : "bg-white"
+            mode === ProjectPageModeEnum.ADMIN ? "bg-gray-100" : "bg-white",
+            fieldState.error ? "border-destructive" : "border-gray-300",
+            mode === null ? "cursor-not-allowed" : "cursor-text"
           )}
           value={value}
           onChange={onChange}
@@ -32,7 +34,7 @@ const ProjectTextArea = forwardRef<HTMLTextAreaElement, ProjectTextAreaProps>(
             {fieldState.error.message}
           </p>
         )}
-      </>
+      </div>
     );
   }
 );

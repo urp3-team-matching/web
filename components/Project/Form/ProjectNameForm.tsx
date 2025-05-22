@@ -19,7 +19,7 @@ const ProjectNameForm = ({
       name="name"
       control={control}
       // TODO: 에러 처리 로직 추가
-      render={({ field }) => (
+      render={({ field, fieldState }) => (
         <input
           {...field}
           value={field.value || ""}
@@ -27,7 +27,8 @@ const ProjectNameForm = ({
           className={cn(
             "text-4xl font-medium text-black w-full h-14 p-1 py-1",
             mode === ProjectPageModeEnum.ADMIN && "bg-gray-100",
-            className
+            className,
+            fieldState.error && "border-b-destructive"
           )}
         />
       )}

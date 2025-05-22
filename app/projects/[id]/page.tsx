@@ -19,6 +19,7 @@ export enum ProjectPageModeEnum {
 export type ProjectPageMode = ProjectPageModeEnum | null;
 
 export default function Project({ params }: { params: { id: string } }) {
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const projectId = parseInt(params.id);
   const [project, setProject] = useState<PublicProjectWithForeignKeys>();
@@ -40,7 +41,7 @@ export default function Project({ params }: { params: { id: string } }) {
   );
 
   // 프로젝트 정보 폼
-  const { handleSubmit: handleTextSubmit, control: projectFormControl } =
+  const { handleSubmit, control: projectFormControl } =
     useForm<UpdateProjectInput>({
       resolver: zodResolver(UpdateProjectSchema),
       values: {
@@ -77,18 +78,6 @@ export default function Project({ params }: { params: { id: string } }) {
     router.push(`/projects/${projectId}`);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  function onError(error: any) {
-    // TODO: 에러 처리 로직 추가
-    console.error("Error submitting form:", error);
-    alert("제출 실패!");
-  }
-
-  const router = useRouter();
-  function onSubmit() {
-    handleTextSubmit(onSuccess, onError)();
-  }
-
   function togglemode() {
     if (mode === ProjectPageModeEnum.ADMIN) {
       setmode(null);
@@ -109,7 +98,7 @@ export default function Project({ params }: { params: { id: string } }) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="my-12 px-5 w-full">
+    <form onSubmit={handleSubmit(onSuccess)} className="my-12 px-5 w-full">
       {/* 헤더 */}
       <ProjectDetailHeader
         project={project}
@@ -134,7 +123,7 @@ export default function Project({ params }: { params: { id: string } }) {
           mode={mode}
           control={projectFormControl}
           togglemode={togglemode}
-          onSubmit={onSubmit}
+          onSubmit={handleSubmit(onSuccess)}
         />
       </div>
     </form>
