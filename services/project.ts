@@ -142,7 +142,7 @@ export async function getProjectById(
   return null;
 }
 
-// 프로젝트 수정 (비밀번호 검증, Proposer 포함 가능)
+// 프로젝트 수정 (비밀번호 검증)
 export async function updateProject(
   id: number,
   data: ProjectUpdateInput
@@ -195,7 +195,7 @@ export async function updateProject(
   return updatedProject;
 }
 
-// 프로젝트 삭제 (비밀번호 검증, 관련 Applicant/Proposer 동시 삭제)
+// 프로젝트 삭제 (비밀번호 검증, 관련 Applicant 동시 삭제)
 export async function deleteProject(
   id: number,
   currentPassword?: string
@@ -223,7 +223,7 @@ export async function deleteProject(
     );
   }
 
-  // 관련 레코드(Applicant, Proposer) 삭제 후 프로젝트 삭제 (onDelete: Cascade 미설정 시)
+  // 관련 레코드(Applicant) 삭제 후 프로젝트 삭제 (onDelete: Cascade 미설정 시)
   try {
     await prisma.$transaction([
       prisma.applicant.deleteMany({ where: { projectId: id } }),
