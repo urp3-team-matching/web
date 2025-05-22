@@ -1,15 +1,14 @@
-// components/Chat/chatTypes.ts
 export type MessageFromDB = {
-  id: bigint | number; // Supabase에서 bigint는 number 또는 string으로 올 수 있음
+  id: string | bigint | number;
   content: string;
   userId: string;
   username: string;
   projectId: number;
-  createdAt: string; // ISO 문자열 형태
+  createdDatetime: string;
 };
 
 export type ChatMessageContent = {
-  id: bigint | number | string;
+  id: string | bigint | number;
   text: string;
   time: string;
 };

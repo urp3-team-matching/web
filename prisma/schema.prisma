@@ -1,11 +1,13 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
-  provider  = "postgresql" // 또는 사용하시는 DB
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL") // 필요시
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  directUrl  = env("DIRECT_URL")
+  extensions = [pgcrypto]
 }
 
 enum ProposerType {
@@ -30,8 +32,8 @@ model Project {
 
   passwordHash String @map("password")
 
-  createdDatetime DateTime @default(now())
-  updatedDatetime DateTime @updatedAt
+  createdDatetime DateTime @default(now()) @db.Timestamptz(6)
+  updatedDatetime DateTime @updatedAt @db.Timestamptz(6)
 
   applicants Applicant[]
   messages   Message[]
@@ -46,8 +48,8 @@ model Applicant {
   introduction String
   passwordHash String @map("password")
 
-  createdDatetime DateTime @default(now())
-  updatedDatetime DateTime @updatedAt
+  createdDatetime DateTime @default(now()) @db.Timestamptz(6)
+  updatedDatetime DateTime @updatedAt @db.Timestamptz(6)
 
   // Relations
   projectId Int
@@ -63,8 +65,8 @@ model Post {
   viewCount    Int      @default(0)
   passwordHash String   @map("password")
 
-  createdDatetime DateTime @default(now())
-  updatedDatetime DateTime @updatedAt
+  createdDatetime DateTime @default(now()) @db.Timestamptz(6)
+  updatedDatetime DateTime @updatedAt @db.Timestamptz(6)
 }
 
 model Message {
@@ -77,7 +79,7 @@ model Message {
   projectId Int
   project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
-  createdAt DateTime @default(now())
+  createdDatetime DateTime @default(now()) @db.Timestamptz(6)
 
   @@index([projectId])
 }
