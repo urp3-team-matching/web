@@ -3,15 +3,19 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { GetProjectsQuerySchema } from "@/types/project";
 import { Search } from "lucide-react";
 import { useQueryState } from "nuqs";
+import z from "zod";
 
 interface SearchBarProps {
   className?: string;
 }
 
 export default function SearchBar({ className }: SearchBarProps) {
-  const [searchQuery, setSearchQuery] = useQueryState("search");
+  const [searchQuery, setSearchQuery] = useQueryState(
+    "searchTerm" as keyof z.infer<typeof GetProjectsQuerySchema>
+  );
 
   const handleSearch = (value: string) => {
     if (!value || value.trim() === "") {

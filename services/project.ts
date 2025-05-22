@@ -1,3 +1,4 @@
+import { MAX_APPLICANTS } from "@/constants";
 import {
   NotFoundError,
   UnauthorizedError,
@@ -52,6 +53,7 @@ export async function getAllProjects(
     keyword,
     proposerType,
     searchTerm,
+    recruiting,
   } = query;
   const skip = (page - 1) * limit;
   const take = limit;
@@ -93,21 +95,35 @@ export async function getAllProjects(
     orderByConditions.createdDatetime = "desc";
   }
 
-  const [projects, totalItems] = await prisma.$transaction([
-    prisma.project.findMany({
-      where: whereConditions,
-      select: projectPublicSelection, // passwordHash 제외 확인
-      orderBy: orderByConditions,
-      skip: skip,
-      take: take,
-    }),
-    prisma.project.count({ where: whereConditions }),
-  ]);
+  const projectsFromDb = await prisma.project.findMany({
+    where: whereConditions,
+    select: projectPublicSelection, // passwordHash 제외 확인
+    orderBy: orderByConditions,
+    skip: skip,
+    take: take,
+  });
+
+  let filteredProjects: PasswordOmittedProject[] =
+    projectsFromDb as PasswordOmittedProject[];
+
+  // 타입스크립트 단에서 'recruiting' 필터링 (지원자 수 <= MAX_APPLICANTS)
+  if (recruiting) {
+    if (recruiting === "closed") {
+      filteredProjects = projectsFromDb.filter(
+        (project) => project.applicants.length >= MAX_APPLICANTS
+      );
+    }
+    if (recruiting === "recruiting") {
+      filteredProjects = projectsFromDb.filter(
+        (project) => project.applicants.length < MAX_APPLICANTS
+      );
+    }
+  }
 
   return {
-    data: projects,
-    totalItems,
-    totalPages: Math.ceil(totalItems / limit),
+    data: filteredProjects,
+    totalItems: filteredProjects.length,
+    totalPages: Math.ceil(filteredProjects.length / limit),
     currentPage: page,
     itemsPerPage: limit,
   };
