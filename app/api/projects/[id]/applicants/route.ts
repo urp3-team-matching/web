@@ -1,4 +1,4 @@
-import { NotFoundError } from "@/lib/authUtils"; // Project ID 관련 에러 처리용
+import { MaxApplicantsError, NotFoundError } from "@/lib/authUtils"; // Project ID 관련 에러 처리용
 import { parseAndValidateRequestBody } from "@/lib/routeUtils";
 import {
   createApplicant,
@@ -31,7 +31,8 @@ export async function POST(request: NextRequest, { params }: ProjectContext) {
   } catch (error) {
     if (error instanceof NotFoundError)
       return NextResponse.json({ error: error.message }, { status: 404 }); // 연결할 프로젝트 없음
-    console.error(`Error creating applicant for project ${params.id}:`, error);
+    if (error instanceof MaxApplicantsError)
+      return NextResponse.json({ error: error.message }, { status: 409 });
     if (error instanceof Error && error.message.includes("integrity error")) {
       return NextResponse.json(
         { error: "Server integrity error while creating applicant." },

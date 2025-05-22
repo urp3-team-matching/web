@@ -13,6 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import apiClient from "@/lib/apiClientHelper";
+import { MaxApplicantsError } from "@/lib/authUtils";
 import { cn } from "@/lib/utils";
 import { CreateApplicantInput, CreateApplicantSchema } from "@/types/applicant";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -62,11 +63,18 @@ const ProjectApplyButton = ({
     try {
       setIsSubmitting(true);
 
-      await apiClient.createApplicant(projectId, data);
+      const response = await apiClient.createApplicant(projectId, data);
+      if (response) {
+        console.log(response);
+      }
       alert("신청서가 제출되었습니다.");
       reset(); // 폼 초기화
       setOpen(false);
     } catch (error) {
+      if (error instanceof MaxApplicantsError) {
+        alert("신청자가 최대 인원에 도달했습니다.");
+        return;
+      }
       alert("신청서 제출에 실패했습니다. 다시 시도해주세요.");
     } finally {
       setIsSubmitting(false);

@@ -1,4 +1,5 @@
 import { ProjectPageMode, ProjectPageModeEnum } from "@/app/projects/[id]/page";
+import { MAX_APPLICANTS } from "@/constants";
 import { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
 import { User } from "lucide-react";
 import { parseAsStringEnum, useQueryState } from "nuqs";
@@ -19,9 +20,6 @@ const Chat = ({ className, project, mode }: ChatProps) => {
     "tab",
     parseAsStringEnum<Tab>(Object.values(Tab))
   );
-
-  const MAX_APPLICANTS = 4;
-
   return (
     <div className={className}>
       {/* 헤더 */}

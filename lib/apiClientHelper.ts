@@ -1,15 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { NotFoundError, UnauthorizedError } from "@/lib/authUtils"; // 커스텀 에러 클래스
 
+import {
+  BadRequestError,
+  InternalServerError,
+  MaxApplicantsError,
+  NotFoundError,
+  UnauthorizedError,
+} from "@/lib/authUtils";
 import type {
   CreateApplicantInput,
   UpdateApplicantInput,
 } from "@/types/applicant";
-import type {
-  CreatePostInput,
-  GetPostsQueryInput,
-  UpdatePostInput,
-} from "@/types/post";
 import type {
   ApplicantForProject,
   CreateProjectInput,
@@ -93,11 +94,11 @@ class ApiClient {
   /**
    * 내부 API 요청 헬퍼 메소드
    */
-  private async _request<T = any>(
+  private async _request(
     endpoint: string, // 예: "/api/posts", "/api/projects/1" (항상 '/'로 시작 가정)
     method: "GET" | "POST" | "PUT" | "DELETE",
     body?: any
-  ): Promise<T> {
+  ) {
     const options: RequestInit = {
       method,
       headers: {},
@@ -113,38 +114,11 @@ class ApiClient {
       options.body = JSON.stringify(body);
     }
 
-    const response = await fetch(url, options);
-
-    if (!response.ok) {
-      let errorData = {
-        message: `API Error: ${response.status} ${response.statusText} on ${method} ${endpoint}`,
-      };
-      const jsonError = await response.json();
-      errorData = { ...errorData, ...jsonError };
-
-      if (response.status === 401 || response.status === 403)
-        throw new UnauthorizedError(errorData.message);
-      if (response.status === 404) throw new NotFoundError(errorData.message);
-      throw new Error(errorData.message);
-    }
-
-    if (response.status === 204) {
-      return undefined as T;
-    }
-
-    try {
-      const data: T = await response.json();
-      return data;
-    } catch (e) {
-      console.error("Failed to parse JSON response:", e);
-      throw new Error(
-        `API Response Error: Failed to parse JSON response from ${method} ${endpoint}`
-      );
-    }
+    return await fetch(url, options);
   }
 
   // --- Project API Methods ---
-  public getProjects(
+  public async getProjects(
     params?: GetProjectsQueryInput
   ): Promise<PaginatedPublicProjects> {
     const query = params
@@ -152,129 +126,273 @@ class ApiClient {
           Object.entries(params).filter(([, v]) => v !== undefined) as any
         ).toString()
       : "";
-    return this._request<PaginatedPublicProjects>(
-      `/api/projects?${query}`,
-      "GET"
-    );
+    const response = await this._request(`/api/projects?${query}`, "GET");
+
+    if (!response.ok) {
+      switch (response.status) {
+        case 404:
+          throw new NotFoundError();
+        case 500:
+          throw new InternalServerError("Internal Server Error");
+        default:
+          throw new Error("Failed to fetch projects");
+      }
+    }
+
+    return await response.json();
   }
 
-  public getProjectById(id: number): Promise<PublicProjectWithForeignKeys> {
-    return this._request<PublicProjectWithForeignKeys>(
-      `/api/projects/${id}`,
-      "GET"
-    );
+  public async getProjectById(
+    id: number
+  ): Promise<PublicProjectWithForeignKeys> {
+    const response = await this._request(`/api/projects/${id}`, "GET");
+
+    if (!response.ok) {
+      switch (response.status) {
+        case 404:
+          throw new NotFoundError();
+        case 500:
+          throw new InternalServerError("Internal Server Error");
+        default:
+          throw new Error("Unknown Error");
+      }
+    }
+
+    return await response.json();
   }
 
-  public createProject(
+  public async createProject(
     data: CreateProjectInput
   ): Promise<PublicProjectWithProposer> {
-    return this._request<PublicProjectWithProposer>(
-      `/api/projects`,
-      "POST",
-      data
-    );
+    const response = await this._request(`/api/projects`, "POST", data);
+
+    if (!response.ok) {
+      switch (response.status) {
+        case 400:
+          throw new BadRequestError();
+        case 401:
+          throw new UnauthorizedError();
+        case 500:
+          throw new InternalServerError("Internal Server Error");
+        default:
+          throw new Error("Failed to create project");
+      }
+    }
+
+    return await response.json();
   }
 
-  public updateProject(
+  public async updateProject(
     id: number,
     data: UpdateProjectInput
   ): Promise<PublicProjectWithProposer> {
-    return this._request<PublicProjectWithProposer>(
-      `/api/projects/${id}`,
-      "PUT",
-      data
-    );
+    const request = await this._request(`/api/projects/${id}`, "PUT", data);
+
+    if (!request.ok) {
+      switch (request.status) {
+        case 400:
+          throw new BadRequestError();
+        case 401:
+          throw new UnauthorizedError();
+        case 404:
+          throw new NotFoundError();
+        case 500:
+          throw new InternalServerError("Internal Server Error");
+        default:
+          throw new Error("Failed to update project");
+      }
+    }
+
+    return await request.json();
   }
 
-  public deleteProject(id: number, currentPassword: string): Promise<void> {
-    return this._request<void>(`/api/projects/${id}`, "DELETE", {
+  public async deleteProject(
+    id: number,
+    currentPassword: string
+  ): Promise<void> {
+    const request = await this._request(`/api/projects/${id}`, "DELETE", {
       currentPassword,
     });
+
+    if (!request.ok) {
+      switch (request.status) {
+        case 400:
+          throw new BadRequestError();
+        case 401:
+          throw new UnauthorizedError();
+        case 404:
+          throw new NotFoundError();
+        case 500:
+          throw new InternalServerError("Internal Server Error");
+        default:
+          throw new Error("Failed to delete project");
+      }
+    }
+
+    return await request.json();
   }
 
   // --- Post API Methods ---
-  public getPosts(params?: GetPostsQueryInput): Promise<PaginatedPosts> {
-    const query = params
-      ? new URLSearchParams(
-          Object.entries(params).filter(([, v]) => v !== undefined) as any
-        ).toString()
-      : "";
-    return this._request<PaginatedPosts>(`/api/posts?${query}`, "GET");
-  }
+  // TODO: Post API 메소드 구현
+  // public getPosts(params?: GetPostsQueryInput): Promise<PaginatedPosts> {
+  //   const query = params
+  //     ? new URLSearchParams(
+  //         Object.entries(params).filter(([, v]) => v !== undefined) as any
+  //       ).toString()
+  //     : "";
+  //   return this._request<PaginatedPosts>(`/api/posts?${query}`, "GET");
+  // }
 
-  public getPostById(id: number): Promise<PublicPost> {
-    return this._request<PublicPost>(`/api/posts/${id}`, "GET");
-  }
+  // public getPostById(id: number): Promise<PublicPost> {
+  //   return this._request<PublicPost>(`/api/posts/${id}`, "GET");
+  // }
 
-  public createPost(data: CreatePostInput): Promise<PublicPost> {
-    return this._request<PublicPost>("/api/posts", "POST", data);
-  }
+  // public createPost(data: CreatePostInput): Promise<PublicPost> {
+  //   return this._request<PublicPost>("/api/posts", "POST", data);
+  // }
 
-  public updatePost(id: number, data: UpdatePostInput): Promise<PublicPost> {
-    return this._request<PublicPost>(`/api/posts/${id}`, "PUT", data);
-  }
+  // public updatePost(id: number, data: UpdatePostInput): Promise<PublicPost> {
+  //   return this._request<PublicPost>(`/api/posts/${id}`, "PUT", data);
+  // }
 
-  public deletePost(id: number, currentPassword: string): Promise<void> {
-    return this._request<void>(`/api/posts/${id}`, "DELETE", {
-      currentPassword,
-    });
-  }
+  // public deletePost(id: number, currentPassword: string): Promise<void> {
+  //   return this._request<void>(`/api/posts/${id}`, "DELETE", {
+  //     currentPassword,
+  //   });
+  // }
 
   // --- Applicant API Methods ---
-  public getApplicants(projectId: number): Promise<PublicApplicant[]> {
-    return this._request<PublicApplicant[]>(
+  public async getApplicants(projectId: number): Promise<PublicApplicant[]> {
+    const response = await this._request(
       `/api/projects/${projectId}/applicants`,
       "GET"
     );
+
+    if (!response.ok) {
+      switch (response.status) {
+        case 404:
+          throw new NotFoundError();
+        case 500:
+          throw new InternalServerError();
+        default:
+          throw new Error();
+      }
+    }
+
+    return await response.json();
   }
 
-  public getApplicantById(
+  public async getApplicantById(
     projectId: number,
     applicantId: number
   ): Promise<PublicApplicant> {
-    return this._request<PublicApplicant>(
+    const response = await this._request(
       `/api/projects/${projectId}/applicants/${applicantId}`,
       "GET"
     );
+
+    if (!response.ok) {
+      switch (response.status) {
+        case 404:
+          throw new NotFoundError();
+        case 500:
+          throw new InternalServerError();
+        default:
+          throw new Error();
+      }
+    }
+
+    return await response.json();
   }
 
-  public createApplicant(
+  public async createApplicant(
     projectId: number,
     data: CreateApplicantInput
   ): Promise<PublicApplicant> {
-    return this._request<PublicApplicant>(
+    const response = await this._request(
       `/api/projects/${projectId}/applicants`,
       "POST",
       data
     );
+
+    if (!response.ok) {
+      switch (response.status) {
+        case 400:
+          throw new BadRequestError();
+        case 401:
+          throw new UnauthorizedError();
+        case 409:
+          throw new MaxApplicantsError();
+        case 500:
+          throw new InternalServerError();
+        default:
+          throw new Error("Failed to create applicant");
+      }
+    }
+
+    return await response.json();
   }
 
-  public updateApplicant(
+  public async updateApplicant(
     projectId: number,
     applicantId: number,
     data: UpdateApplicantInput
   ): Promise<PublicApplicant> {
-    return this._request<PublicApplicant>(
+    const response = await this._request(
       `/api/projects/${projectId}/applicants/${applicantId}`,
       "PUT",
       data
     );
+
+    if (!response.ok) {
+      switch (response.status) {
+        case 400:
+          throw new BadRequestError();
+        case 401:
+          throw new UnauthorizedError();
+        case 404:
+          throw new NotFoundError();
+        case 500:
+          throw new InternalServerError();
+        default:
+          throw new Error("Failed to update applicant");
+      }
+    }
+
+    return await response.json();
   }
 
-  public deleteApplicant(
+  public async deleteApplicant(
     projectId: number,
     applicantId: number,
     currentPassword: string
   ): Promise<void> {
-    return this._request<void>(
+    const response = await this._request(
       `/api/projects/${projectId}/applicants/${applicantId}`,
       "DELETE",
       { currentPassword }
     );
+
+    if (!response.ok) {
+      switch (response.status) {
+        case 400:
+          throw new BadRequestError();
+        case 401:
+          throw new UnauthorizedError();
+        case 404:
+          throw new NotFoundError();
+        case 500:
+          throw new InternalServerError();
+        default:
+          throw new Error("Failed to delete applicant");
+      }
+    }
+
+    return await response.json();
   }
 
   // --- Proposer API Methods ---
-  public getProposers(
+  public async getProposers(
     params?: GetProposersQueryInput
   ): Promise<PaginatedProposers> {
     const query = params
@@ -282,26 +400,90 @@ class ApiClient {
           Object.entries(params).filter(([, v]) => v !== undefined) as any
         ).toString()
       : "";
-    return this._request<PaginatedProposers>(`/api/proposers?${query}`, "GET");
+
+    const response = await this._request(`/api/proposers?${query}`, "GET");
+
+    if (!response.ok) {
+      switch (response.status) {
+        case 404:
+          throw new NotFoundError();
+        case 500:
+          throw new InternalServerError("Internal Server Error");
+        default:
+          throw new Error("Failed to fetch proposers");
+      }
+    }
+
+    return await response.json();
   }
 
-  public getProposerById(id: number): Promise<PublicProposer> {
-    return this._request<PublicProposer>(`/api/proposers/${id}`, "GET");
+  public async getProposerById(id: number): Promise<PublicProposer> {
+    const response = await this._request(`/api/proposers/${id}`, "GET");
+
+    if (!response.ok) {
+      switch (response.status) {
+        case 404:
+          throw new NotFoundError();
+        case 500:
+          throw new InternalServerError("Internal Server Error");
+        default:
+          throw new Error("Failed to fetch proposer");
+      }
+    }
+
+    return await response.json();
   }
 
   // 독립적 Proposer 수정 (API 라우트 존재 시)
-  public updateProposer(
+  public async updateProposer(
     id: number,
     data: UpdateProposerInput
   ): Promise<PublicProposer> {
-    return this._request<PublicProposer>(`/api/proposers/${id}`, "PUT", data);
+    const response = await this._request(`/api/proposers/${id}`, "PUT", data);
+
+    if (!response.ok) {
+      switch (response.status) {
+        case 400:
+          throw new BadRequestError();
+        case 401:
+          throw new UnauthorizedError();
+        case 404:
+          throw new NotFoundError();
+        case 500:
+          throw new InternalServerError("Internal Server Error");
+        default:
+          throw new Error("Failed to update proposer");
+      }
+    }
+
+    return await response.json();
   }
 
   // 독립적 Proposer 삭제 (API 라우트 존재 시)
-  public deleteProposer(id: number, currentPassword: string): Promise<void> {
-    return this._request<void>(`/api/proposers/${id}`, "DELETE", {
+  public async deleteProposer(
+    id: number,
+    currentPassword: string
+  ): Promise<void> {
+    const response = await this._request(`/api/proposers/${id}`, "DELETE", {
       currentPassword,
     });
+
+    if (!response.ok) {
+      switch (response.status) {
+        case 400:
+          throw new BadRequestError();
+        case 401:
+          throw new UnauthorizedError();
+        case 404:
+          throw new NotFoundError();
+        case 500:
+          throw new InternalServerError("Internal Server Error");
+        default:
+          throw new Error("Failed to delete proposer");
+      }
+    }
+
+    return await response.json();
   }
 }
 
