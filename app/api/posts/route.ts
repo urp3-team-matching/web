@@ -1,6 +1,6 @@
 import { parseAndValidateRequestBody } from "@/lib/routeUtils"; // GET에는 필요 없음
 import { createPost, getAllPosts } from "@/services/post";
-import { CreatePostSchema, GetPostsQuerySchema } from "@/types/post";
+import { GetPostsQuerySchema, PostSchema } from "@/types/post";
 import { NextRequest, NextResponse } from "next/server";
 import { ZodError } from "zod";
 
@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
   try {
     // POST는 parseAndValidateRequestBody를 사용할 수 있음 (currentPassword 불필요)
     const { data: validatedData, errorResponse } =
-      await parseAndValidateRequestBody(request, CreatePostSchema);
+      await parseAndValidateRequestBody(request, PostSchema);
     if (errorResponse) return errorResponse;
     if (!validatedData)
       throw new Error("Validated data is unexpectedly undefined.");

@@ -1,4 +1,3 @@
-// app/api/projects/[id]/route.ts
 import { NotFoundError, UnauthorizedError } from "@/lib/authUtils";
 import {
   extractPasswordForDelete,
@@ -9,7 +8,7 @@ import {
   getProjectById,
   updateProject,
 } from "@/services/project";
-import { UpdateProjectSchema } from "@/types/project";
+import { ProjectUpdateSchema } from "@/types/project";
 import { NextRequest, NextResponse } from "next/server";
 
 interface RouteContext {
@@ -51,7 +50,7 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
       );
 
     const { data: validatedData, errorResponse } =
-      await parseAndValidateRequestBody(request, UpdateProjectSchema);
+      await parseAndValidateRequestBody(request, ProjectUpdateSchema);
     if (errorResponse) return errorResponse;
     if (!validatedData)
       throw new Error("Validated data is unexpectedly undefined.");

@@ -1,3 +1,4 @@
+import { passwordField } from "@/types/utils";
 import { Prisma } from "@prisma/client";
 import { z } from "zod";
 
@@ -7,7 +8,10 @@ export const ApplicantSchema = z.object({
   major: z.string().min(1, "Major is required."),
   phone: z.string().min(1, "Phone number is required."),
   introduction: z.string().min(1, "Introduction is required."),
-  password: z.string().min(6, "Password is required (min 6 chars)."),
+  password: passwordField,
+});
+export const ApplicantUpdateSchema = ApplicantSchema.extend({
+  currentPassword: passwordField,
 });
 export type ApplicantInput = z.infer<typeof ApplicantSchema>;
 

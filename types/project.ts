@@ -1,3 +1,4 @@
+import { passwordField } from "@/types/utils";
 import { Applicant, Prisma, ProposerType } from "@prisma/client";
 import { z } from "zod";
 
@@ -9,10 +10,13 @@ export const ProjectSchema = z.object({
   result: z.string(),
   attachments: z.array(z.string()).optional(),
   keywords: z.array(z.string()).optional(),
-  password: z.string().min(6, "Project password is required (min 6 chars)."),
+  password: passwordField,
   proposerName: z.string().min(1, "Proposer name is required."),
   proposerType: z.nativeEnum(ProposerType),
   proposerMajor: z.string().optional(),
+});
+export const ProjectUpdateSchema = ProjectSchema.extend({
+  currentPassword: passwordField,
 });
 export type ProjectInput = z.infer<typeof ProjectSchema>;
 

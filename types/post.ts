@@ -1,3 +1,4 @@
+import { passwordField } from "@/types/utils";
 import { Prisma } from "@prisma/client";
 import { z } from "zod";
 
@@ -6,7 +7,10 @@ export const PostSchema = z.object({
   content: z.string().min(1, "Content is required."),
   author: z.string().min(1, "Author is required."),
   attachments: z.array(z.string()).default([]).optional(),
-  password: z.string().min(6, "Password is required (min 6 chars)."),
+  password: passwordField,
+});
+export const PostUpdateSchema = PostSchema.extend({
+  currentPassword: passwordField,
 });
 export type PostInput = z.infer<typeof PostSchema>;
 
