@@ -4,6 +4,7 @@ import Chat from "@/app/projects/[id]/_components/RightPanel/Chat";
 import { ProjectPageMode, ProjectPageModeEnum } from "@/app/projects/[id]/page";
 import CancelAndSubmitButton from "@/components/Project/Form/CancelAndSubmitButton";
 import ProjectProposerForm from "@/components/Project/Form/ProjectProposerForm";
+import { MAX_APPLICANTS } from "@/constants";
 import { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
 import { cn } from "@/lib/utils";
 
@@ -25,6 +26,8 @@ const ProjectDetailRightPanel = ({
   togglemode,
   onSubmit,
 }: ProjectDetailRightPanelProps) => {
+  const isProjectFull = project.applicants.length >= MAX_APPLICANTS;
+
   return (
     <div className={cn("flex flex-col gap-5 h-auto mt-12", className)}>
       {mode === null && <MajorGraph project={project} />}
@@ -43,7 +46,9 @@ const ProjectDetailRightPanel = ({
         project={project}
         mode={mode}
       />
-      {mode === null && <ProjectApplyButton projectId={project.id} />}
+      {mode === null && (
+        <ProjectApplyButton projectId={project.id} active={!isProjectFull} />
+      )}
 
       {/* 프로젝트 취소 및 저장 버튼 */}
       {mode === ProjectPageModeEnum.ADMIN && (

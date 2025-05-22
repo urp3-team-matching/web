@@ -26,6 +26,7 @@ import { PaginatedType, PublicType } from "@/types/utils";
 import { Applicant, Post, Project, Proposer } from "@prisma/client";
 
 export type PublicApplicant = PublicType<Applicant>;
+export type PublicApplicantForProject = PublicType<ApplicantForProject>;
 export type PublicPost = PublicType<Post>;
 export type PublicProject = PublicType<Project>;
 export type PublicProposer = PublicType<Proposer>;

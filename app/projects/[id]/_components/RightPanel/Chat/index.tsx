@@ -1,11 +1,11 @@
+import ManageApplicants from "@/app/projects/[id]/_components/RightPanel/Chat/ApplicantsManage";
+import ChatHeader from "@/app/projects/[id]/_components/RightPanel/Chat/Header";
 import { ProjectPageMode, ProjectPageModeEnum } from "@/app/projects/[id]/page";
-import { MAX_APPLICANTS } from "@/constants";
 import { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
-import { User } from "lucide-react";
 import { parseAsStringEnum, useQueryState } from "nuqs";
 import ChatField from "./ChatField";
 
-enum Tab {
+export enum Tab {
   모집관리 = "manageChat",
 }
 
@@ -23,55 +23,14 @@ const Chat = ({ className, project, mode }: ChatProps) => {
   return (
     <div className={className}>
       {/* 헤더 */}
-      <div className="w-full *:w-16 *:text-center *:cursor-pointer border-b-2 flex justify-center gap-5 h-10 items-center">
-        <button
-          onClick={() => setTab(null)}
-          type="button"
-          className={
-            mode === ProjectPageModeEnum.ADMIN && tab === null
-              ? "text-secondary"
-              : ""
-          }
-        >
-          대화방
-        </button>
-        {mode === ProjectPageModeEnum.ADMIN && (
-          <button
-            onClick={() => setTab(Tab.모집관리)}
-            type="button"
-            className={
-              mode === ProjectPageModeEnum.ADMIN && tab === Tab.모집관리
-                ? "text-secondary"
-                : ""
-            }
-          >
-            모집 관리
-          </button>
-        )}
-      </div>
+      <ChatHeader tab={tab} setTab={setTab} mode={mode} />
 
-      {tab === null && (
-        <div className="relative w-full h-[460px]">
-          <ChatField />
-        </div>
-      )}
+      {/* 탭: 대화방 */}
+      {tab === null && <ChatField />}
 
+      {/* 탭: 모집 관리 */}
       {mode === ProjectPageModeEnum.ADMIN && tab === Tab.모집관리 && (
-        <div className="flex flex-col px-2">
-          <div className="my-2">
-            확정{`(${project.applicants.length}/${MAX_APPLICANTS})`}
-          </div>
-          {project.applicants.map((applicant) => (
-            <div
-              key={applicant.id}
-              className="rounded-lg flex items-center px-3 shadow-md w-full h-[45px] border"
-            >
-              <User className="size-6 mr-3" />
-              <span>Profile ({applicant.major})</span>
-            </div>
-          ))}
-          <div className="my-2">신청</div>
-        </div>
+        <ManageApplicants className="px-2" project={project} />
       )}
     </div>
   );

@@ -34,11 +34,13 @@ const applyFields: {
 interface ProjectApplyButtonProps {
   className?: string;
   projectId: number;
+  active: boolean;
 }
 
 const ProjectApplyButton = ({
   className,
   projectId,
+  active,
 }: ProjectApplyButtonProps) => {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -90,14 +92,13 @@ const ProjectApplyButton = ({
       }}
     >
       <DialogTrigger asChild>
-        <div
-          className={cn(
-            `w-full h-[50px] bg-secondary text-white flex justify-center cursor-pointer items-center rounded-lg text-base font-medium`,
-            className
-          )}
+        <Button
+          disabled={!active}
+          variant="secondary"
+          className={cn(`w-full h-[50px] bg-secondary`, className)}
         >
-          신청하기
-        </div>
+          {active ? "신청하기" : "신청 마감"}
+        </Button>
       </DialogTrigger>
 
       <DialogContent>

@@ -74,19 +74,15 @@ export default function ChatField() {
   }
 
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-[460px]">
       <ScrollArea className="h-[380px] p-2">
         <div className="flex flex-col gap-2">
           {chats.map((chat, index) => (
-            <div key={index} className="flex flex-col gap-1">
-              <span className="text-sm font-semibold text-gray-500">
-                {chat.name}
-              </span>
-              <ChatBubble
-                chat={chat}
-                ref={index === chats.length - 1 ? lastElementRef : null}
-              />
-            </div>
+            <ChatBubble
+              key={index}
+              chat={chat}
+              ref={index === chats.length - 1 ? lastElementRef : null}
+            />
           ))}
           <div ref={lastElementRef} />
         </div>
