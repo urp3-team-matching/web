@@ -5,7 +5,10 @@ import { ProjectPageMode, ProjectPageModeEnum } from "@/app/projects/[id]/page";
 import CancelAndSubmitButton from "@/components/Project/Form/CancelAndSubmitButton";
 import ProjectProposerForm from "@/components/Project/Form/ProjectProposerForm";
 import { MAX_APPLICANTS } from "@/constants";
-import { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
+import {
+  PublicApplicant,
+  PublicProjectWithForeignKeys,
+} from "@/lib/apiClientHelper";
 import { cn } from "@/lib/utils";
 import { ProjectInput } from "@/types/project";
 import { Control } from "react-hook-form";
@@ -18,6 +21,7 @@ interface ProjectDetailRightPanelProps {
   togglemode: () => void;
   onSubmit: () => void;
   loading?: boolean;
+  onApplySuccess: (project: PublicApplicant) => void;
 }
 
 const ProjectDetailRightPanel = ({
@@ -28,6 +32,7 @@ const ProjectDetailRightPanel = ({
   togglemode,
   onSubmit,
   loading = false,
+  onApplySuccess,
 }: ProjectDetailRightPanelProps) => {
   const isProjectFull = project.applicants.length >= MAX_APPLICANTS;
 
@@ -50,7 +55,11 @@ const ProjectDetailRightPanel = ({
         mode={mode}
       />
       {mode === null && (
-        <ProjectApplyButton projectId={project.id} active={!isProjectFull} />
+        <ProjectApplyButton
+          projectId={project.id}
+          active={!isProjectFull}
+          onSuccess={onApplySuccess}
+        />
       )}
 
       {/* 프로젝트 취소 및 저장 버튼 */}

@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import apiClient from "@/lib/apiClientHelper";
+import apiClient, { PublicApplicant } from "@/lib/apiClientHelper";
 import { MaxApplicantsError } from "@/lib/authUtils";
 import { cn } from "@/lib/utils";
 import { ApplicantInput, ApplicantSchema } from "@/types/applicant";
@@ -35,12 +35,14 @@ interface ProjectApplyButtonProps {
   className?: string;
   projectId: number;
   active: boolean;
+  onSuccess: (project: PublicApplicant) => void;
 }
 
 const ProjectApplyButton = ({
   className,
   projectId,
   active,
+  onSuccess,
 }: ProjectApplyButtonProps) => {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -58,10 +60,7 @@ const ProjectApplyButton = ({
       setIsSubmitting(true);
 
       const response = await apiClient.createApplicant(projectId, data);
-      if (response) {
-        console.log(response);
-      }
-      alert("신청서가 제출되었습니다.");
+      onSuccess(response);
       reset(); // 폼 초기화
       setOpen(false);
     } catch (error) {

@@ -121,6 +121,15 @@ export default function Project({ params }: { params: { id: string } }) {
           togglemode={togglemode}
           onSubmit={handleSubmit(onSuccess)}
           loading={loading}
+          onApplySuccess={(newApplicant) => {
+            setProject((prev) => {
+              if (!prev) return;
+              return {
+                ...prev,
+                applicants: [...prev.applicants, newApplicant],
+              };
+            });
+          }}
         />
       </div>
     </form>

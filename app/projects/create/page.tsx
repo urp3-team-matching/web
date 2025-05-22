@@ -19,13 +19,11 @@ export default function Create() {
   });
 
   async function onSuccess(data: ProjectInput) {
-    console.log("Form data:", data);
     setLoading(true);
     try {
       const response = await apiClient.createProject(data);
       router.push(`/projects/${response.id}`);
-    } catch (error) {
-      console.error("Failed to create project:", error);
+    } catch {
       alert("프로젝트 생성 실패!");
     } finally {
       setLoading(false);
@@ -53,13 +51,7 @@ export default function Create() {
         <ProjectCreateRightPanel
           className="w-[30%] pl-5"
           control={control}
-          onSubmit={() => {
-            console.log("Form submitted2");
-            handleSubmit(onSuccess, (data) => {
-              console.log("Form error:", data);
-              alert("프로젝트 생성 실패!");
-            })();
-          }}
+          onSubmit={handleSubmit(onSuccess)}
           loading={loading}
         />
       </div>

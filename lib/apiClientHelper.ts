@@ -21,7 +21,7 @@ export type PublicApplicantForProject = PublicType<ApplicantForProject>;
 export type PublicPost = PublicType<Post>;
 export type PublicProject = PublicType<Project>;
 export type ProjectWithForeignKeys = Project & {
-  applicants: ApplicantForProject[];
+  applicants: PublicApplicantForProject[];
 };
 export type PublicProjectWithForeignKeys = PublicType<ProjectWithForeignKeys>;
 
