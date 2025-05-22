@@ -40,10 +40,10 @@ model Proposer {
   id           Int          @id @default(autoincrement())
   type         ProposerType
   name         String
-  email        String
-  major        String
-  phone        String
-  introduction String
+  // email        String
+  major        String?
+  // phone        String
+  // introduction String
   passwordHash String       @map("password")
 
   createdDatetime DateTime @default(now())

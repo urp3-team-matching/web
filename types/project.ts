@@ -5,11 +5,11 @@ import { z } from "zod";
 export const ProposerDataSchema = z.object({
   type: z.nativeEnum(ProposerType),
   name: z.string().min(1, "Proposer name is required."),
-  email: z.string().email("Invalid email format for proposer."),
+  // email: z.string().email("Invalid email format for proposer."),
   major: z.string().min(1, "Proposer major is required."),
-  phone: z.string().min(1, "Proposer phone number is required."),
-  introduction: z.string(),
-  password: z.string().min(6, "Proposer password is required (min 6 chars)."),
+  // phone: z.string().min(1, "Proposer phone number is required."),
+  // introduction: z.string(),
+  // password: z.string().min(6, "Proposer password is required (min 6 chars)."),
 });
 export type ProposerDataInput = z.infer<typeof ProposerDataSchema>;
 
@@ -19,8 +19,8 @@ export const CreateProjectSchema = z.object({
   method: z.string(),
   objective: z.string(),
   result: z.string(),
-  attachments: z.array(z.string()),
-  keywords: z.array(z.string()),
+  attachments: z.array(z.string()).optional(),
+  keywords: z.array(z.string()).optional(),
   password: z.string().min(6, "Project password is required (min 6 chars)."),
   proposer: ProposerDataSchema.optional(),
 });
@@ -42,7 +42,7 @@ export const UpdateProjectSchema = z.object({
     .min(6, "New password must be at least 6 characters.")
     .optional(),
   proposer: ProposerDataSchema.partial() // Proposer 필드도 부분적 업데이트 가능
-    .extend({ password: z.string().min(6).optional() }) // Proposer 새 비밀번호도 선택적
+    // .extend({ password: z.string().min(6).optional() }) // Proposer 새 비밀번호도 선택적
     .nullable()
     .optional(),
 });
@@ -81,10 +81,10 @@ export const projectPublicSelection: Prisma.ProjectSelect = {
       id: true,
       type: true,
       name: true,
-      email: true,
+      // email: true,
       major: true,
-      phone: true,
-      introduction: true,
+      // phone: true,
+      // introduction: true,
       createdDatetime: true,
       updatedDatetime: true,
     },
