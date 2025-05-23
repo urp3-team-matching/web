@@ -141,7 +141,7 @@ export default function ChatField({ projectId }: ChatFieldProps) {
           });
         }
       )
-      .subscribe((status, err) => {
+      .subscribe((status) => {
         if (status === "SUBSCRIBED") {
           // console.log(`Successfully subscribed to project chat: ${projectId}`);
         } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
@@ -250,15 +250,17 @@ export default function ChatField({ projectId }: ChatFieldProps) {
           "Optimistic update: Inserted data not returned, relying on real-time for final state."
         );
       }
-    } catch (error: any) {
-      console.error(
-        "Error sending message (Optimistic Update Rollback):",
-        error.message
-      );
-      alert(`메시지 전송 오류: ${error.message}`);
-      setRawMessages((prevMessages) =>
-        prevMessages.filter((msg) => msg.id !== tempId)
-      );
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(
+          "Error sending message (Optimistic Update Rollback):",
+          error.message
+        );
+        alert(`메시지 전송 오류: ${error.message}`);
+        setRawMessages((prevMessages) =>
+          prevMessages.filter((msg) => msg.id !== tempId)
+        );
+      }
     }
   };
 

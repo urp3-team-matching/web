@@ -36,7 +36,8 @@ const ApplicantRow = ({ className, applicant }: ApplicantRowProps) => {
         <div
           className={cn(
             "rounded-lg shadow-sm flex items-center px-3 w-full h-[45px] border cursor-pointer",
-            "active:bg-gray-200 hover:bg-gray-100 transition-colors duration-200"
+            "active:bg-gray-200 hover:bg-gray-100 transition-colors duration-200",
+            className
           )}
         >
           <User className="size-6 mr-3" />
