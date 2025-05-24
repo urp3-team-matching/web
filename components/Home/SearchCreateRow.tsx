@@ -4,16 +4,15 @@ import SearchBar from "./SearchBar";
 
 export default function SearchCreateRow() {
   return (
-    <div className="w-full h-11  flex gap-[13px]">
-      <SearchBar></SearchBar>
-      <Button className="w-24 h-full bg-third-100 hover:bg-... hover:cursor-pointer">
-        검색
+    <div className="w-full h-11 flex gap-3">
+      <SearchBar className="flex-1" />
+
+      <Button
+        asChild
+        className="w-24 h-full bg-secondary hover:bg-secondary/90 hover:cursor-pointer"
+      >
+        <Link href="/projects/create">생성</Link>
       </Button>
-      <Link href="/projects/create">
-        <Button className="w-24 h-full bg-secondary-100 hover:bg-... hover:cursor-pointer">
-          생성
-        </Button>
-      </Link>
     </div>
   );
 }

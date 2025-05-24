@@ -1,11 +1,10 @@
-// app/api/posts/[id]/route.ts
 import { NotFoundError, UnauthorizedError } from "@/lib/authUtils";
 import {
   extractPasswordForDelete,
   parseAndValidateRequestBody,
 } from "@/lib/routeUtils";
 import { deletePost, getPostById, updatePost } from "@/services/post";
-import { UpdatePostSchema } from "@/types/post";
+import { PostUpdateSchema } from "@/types/post";
 import { NextRequest, NextResponse } from "next/server";
 
 interface RouteContext {
@@ -50,7 +49,7 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
       );
 
     const { data: validatedData, errorResponse } =
-      await parseAndValidateRequestBody(request, UpdatePostSchema);
+      await parseAndValidateRequestBody(request, PostUpdateSchema);
     if (errorResponse) return errorResponse;
     if (!validatedData)
       throw new Error("Validated data is unexpectedly undefined.");
@@ -65,7 +64,7 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
       );
     }
 
-    const post = await updatePost(postId, validatedData); // 서비스에서 NotFound, Unauthorized 에러 throw
+    const post = await updatePost(postId, validatedData);
     return NextResponse.json(post);
   } catch (error) {
     if (error instanceof UnauthorizedError)

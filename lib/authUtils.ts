@@ -15,6 +15,13 @@ export async function verifyResourcePassword(
   return bcrypt.compare(plainPassword, hashedPassword);
 }
 
+export class BadRequestError extends Error {
+  constructor(message = "Bad Request") {
+    super(message);
+    this.name = "BadRequestError";
+  }
+}
+
 export class UnauthorizedError extends Error {
   constructor(message = "Unauthorized: Incorrect or missing credentials.") {
     super(message);
@@ -35,5 +42,19 @@ export class ForbiddenError extends Error {
   ) {
     super(message);
     this.name = "ForbiddenError";
+  }
+}
+
+export class MaxApplicantsError extends Error {
+  constructor(message = "Maximum number of applicants reached.") {
+    super(message);
+    this.name = "MaxApplicantsError";
+  }
+}
+
+export class InternalServerError extends Error {
+  constructor(message = "Internal Server Error") {
+    super(message);
+    this.name = "InternalServerError";
   }
 }

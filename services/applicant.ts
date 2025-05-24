@@ -1,14 +1,17 @@
+import { MAX_APPLICANTS } from "@/constants";
 import {
+  MaxApplicantsError,
   NotFoundError,
   UnauthorizedError,
   verifyResourcePassword,
 } from "@/lib/authUtils";
 import { prisma } from "@/lib/prisma";
 import {
+  ApplicantInput,
   applicantPublicSelection,
-  CreateApplicantInput, // types에서 import
-  UpdateApplicantInput,
+  ApplicantUpdateInput,
 } from "@/types/applicant";
+import { projectPublicSelection } from "@/types/project";
 import { PasswordOmittedType } from "@/types/utils";
 import { Applicant } from "@prisma/client";
 import bcrypt from "bcryptjs";
@@ -19,18 +22,24 @@ type PasswordOmittedApplicant = PasswordOmittedType<Applicant>;
 // 지원자 생성 (비밀번호 해싱)
 export async function createApplicant(
   projectId: number,
-  data: CreateApplicantInput
+  data: ApplicantInput
 ): Promise<PasswordOmittedApplicant> {
   const { password: plainTextPassword, ...applicantData } = data;
   const passwordHash = await bcrypt.hash(plainTextPassword, SALT_ROUNDS);
 
-  // 연결할 프로젝트 존재 확인 (선택적)
-  const projectExists = await prisma.project.findUnique({
+  const project = await prisma.project.findUnique({
     where: { id: projectId },
+    select: projectPublicSelection,
   });
-  if (!projectExists) {
+  if (!project) {
     throw new NotFoundError(
       `Project with id ${projectId} not found to associate applicant.`
+    );
+  }
+
+  if (project.applicants.length >= MAX_APPLICANTS) {
+    throw new MaxApplicantsError(
+      `Maximum number of applicants (${MAX_APPLICANTS}) reached for this project.`
     );
   }
 
@@ -76,7 +85,7 @@ export async function getApplicantByIdForProject(
 export async function updateApplicant(
   applicantId: number,
   projectId: number,
-  data: UpdateApplicantInput
+  data: ApplicantUpdateInput
 ): Promise<PasswordOmittedApplicant> {
   const {
     currentPassword,

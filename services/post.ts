@@ -5,10 +5,10 @@ import {
 } from "@/lib/authUtils";
 import { prisma } from "@/lib/prisma";
 import {
-  CreatePostInput,
   GetPostsQueryInput,
+  PostInput,
   postPublicSelection,
-  UpdatePostInput,
+  PostUpdateInput,
 } from "@/types/post";
 import { PaginatedType, PasswordOmittedType } from "@/types/utils";
 import { Post, Prisma } from "@prisma/client";
@@ -19,7 +19,7 @@ type PasswordOmittedPost = PasswordOmittedType<Post>;
 
 // 포스트 생성 (비밀번호 해싱)
 export async function createPost(
-  data: CreatePostInput
+  data: PostInput
 ): Promise<PasswordOmittedPost> {
   const { password: plainTextPassword, ...postData } = data;
   const passwordHash = await bcrypt.hash(plainTextPassword, SALT_ROUNDS);
@@ -100,7 +100,7 @@ export async function getPostById(
 // 포스트 수정 (비밀번호 검증)
 export async function updatePost(
   id: number,
-  data: UpdatePostInput
+  data: PostUpdateInput
 ): Promise<PasswordOmittedPost> {
   const {
     currentPassword,

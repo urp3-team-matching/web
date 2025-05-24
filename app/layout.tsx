@@ -3,17 +3,20 @@ import type { Metadata } from "next";
 import { Noto_Sans_KR } from "next/font/google";
 import "./globals.css";
 
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/Header/AppSidebar";
-
-export const pretendard = Noto_Sans_KR({
+const notoSansKR = Noto_Sans_KR({
   variable: "--font-noto-sans-kr",
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
   title: "융합연구학점제 팀 모집 플랫폼",
   description: "성균관대학교 융합연구학점제 팀 모집 플랫폼",
+  icons: {
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 export default function RootLayout({
@@ -23,6 +26,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
+      <body className={cn(notoSansKR.className, "flex flex-col items-center")}>
+        <NuqsAdapter>
+          <Header />
+          <div className="container">{children}</div>
+        </NuqsAdapter>
       <body className={`${pretendard.variable} antialiased`}>
         <SidebarProvider>
           <div className="flex min-h-screen w-full overflow-hidden">

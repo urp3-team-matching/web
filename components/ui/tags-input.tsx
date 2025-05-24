@@ -25,7 +25,7 @@ const TagsInputLabel = React.forwardRef<
     ref={ref}
     className={cn(
       "font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
-      className,
+      className
     )}
     {...props}
   />
@@ -41,7 +41,7 @@ const TagsInputList = React.forwardRef<
     ref={ref}
     className={cn(
       "flex min-h-10 w-full flex-wrap items-center gap-1.5 rounded-md border border-input bg-background px-3 py-2 text-sm focus-within:ring-1 focus-within:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
-      className,
+      className
     )}
     {...props}
   />
@@ -57,7 +57,7 @@ const TagsInputInput = React.forwardRef<
     ref={ref}
     className={cn(
       "flex-1 bg-transparent outline-hidden placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50",
-      className,
+      className
     )}
     {...props}
   />
@@ -73,7 +73,7 @@ const TagsInputItem = React.forwardRef<
     ref={ref}
     className={cn(
       "inline-flex max-w-[calc(100%-8px)] items-center gap-1.5 rounded border bg-transparent px-2.5 py-1 text-sm focus:outline-hidden data-disabled:cursor-not-allowed data-editable:select-none data-editing:bg-transparent data-disabled:opacity-50 data-editing:ring-1 data-editing:ring-ring [&:not([data-editing])]:pr-1.5 [&[data-highlighted]:not([data-editing])]:bg-accent [&[data-highlighted]:not([data-editing])]:text-accent-foreground",
-      className,
+      className
     )}
     {...props}
   >
@@ -91,15 +91,20 @@ const TagsInputClear = React.forwardRef<
   React.ComponentRef<typeof TagsInputPrimitive.Clear>,
   React.ComponentPropsWithoutRef<typeof TagsInputPrimitive.Clear>
 >(({ className, ...props }, ref) => (
-  <TagsInputPrimitive.Clear data-slot="tags-input-clear" ref={ref} {...props} />
+  <TagsInputPrimitive.Clear
+    data-slot="tags-input-clear"
+    ref={ref}
+    {...props}
+    className={className}
+  />
 ));
 TagsInputClear.displayName = TagsInputPrimitive.Clear.displayName;
 
 export {
   TagsInput,
-  TagsInputLabel,
-  TagsInputList,
+  TagsInputClear,
   TagsInputInput,
   TagsInputItem,
-  TagsInputClear,
+  TagsInputLabel,
+  TagsInputList,
 };

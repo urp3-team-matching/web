@@ -1,26 +1,20 @@
+import { passwordField } from "@/types/utils";
 import { Prisma } from "@prisma/client";
 import { z } from "zod";
 
-export const CreateApplicantSchema = z.object({
+export const ApplicantSchema = z.object({
   name: z.string().min(1, "Name is required."),
   email: z.string().email("Invalid email format."),
   major: z.string().min(1, "Major is required."),
   phone: z.string().min(1, "Phone number is required."),
-  introduction: z.string(),
-  password: z.string().min(6, "Password is required (min 6 chars)."),
+  introduction: z.string().min(1, "Introduction is required."),
+  password: passwordField,
 });
-export type CreateApplicantInput = z.infer<typeof CreateApplicantSchema>;
-
-export const UpdateApplicantSchema = z.object({
-  currentPassword: z.string().min(1, "Current password is required."),
-  name: z.string().min(1).optional(),
-  email: z.string().email().optional(),
-  major: z.string().min(1).optional(),
-  phone: z.string().min(1).optional(),
-  introduction: z.string().optional(),
-  password: z.string().min(6).optional(),
+export const ApplicantUpdateSchema = ApplicantSchema.extend({
+  currentPassword: passwordField,
 });
-export type UpdateApplicantInput = z.infer<typeof UpdateApplicantSchema>;
+export type ApplicantInput = z.infer<typeof ApplicantSchema>;
+export type ApplicantUpdateInput = z.infer<typeof ApplicantUpdateSchema>;
 
 export const applicantPublicSelection: Prisma.ApplicantSelect = {
   id: true,

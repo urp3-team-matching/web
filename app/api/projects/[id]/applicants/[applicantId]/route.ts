@@ -8,7 +8,7 @@ import {
   getApplicantByIdForProject,
   updateApplicant,
 } from "@/services/applicant";
-import { UpdateApplicantSchema } from "@/types/applicant";
+import { ApplicantUpdateSchema } from "@/types/applicant";
 import { NextRequest, NextResponse } from "next/server";
 
 interface ApplicantContext {
@@ -49,7 +49,7 @@ export async function PUT(request: NextRequest, { params }: ApplicantContext) {
       return NextResponse.json({ error: "Invalid ID format" }, { status: 400 });
 
     const { data: validatedData, errorResponse } =
-      await parseAndValidateRequestBody(request, UpdateApplicantSchema);
+      await parseAndValidateRequestBody(request, ApplicantUpdateSchema);
     if (errorResponse) return errorResponse;
     if (!validatedData)
       throw new Error("Validated data is unexpectedly undefined.");
