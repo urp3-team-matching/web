@@ -23,8 +23,8 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
       );
     }
 
-    const isValid = await verifyProjectPassword(projectId, password);
-    if (!isValid) {
+    const isVerified = await verifyProjectPassword(projectId, password);
+    if (!isVerified) {
       return NextResponse.json({ error: "Invalid password" }, { status: 401 });
     }
     return NextResponse.json(

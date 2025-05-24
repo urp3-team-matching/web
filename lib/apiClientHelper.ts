@@ -201,7 +201,7 @@ class ApiClient {
   public async verifyProjectPassword(
     id: number,
     password: string
-  ): Promise<void> {
+  ): Promise<boolean> {
     const request = await this._request(`/api/projects/${id}/verify`, "POST", {
       password,
     });
@@ -211,7 +211,7 @@ class ApiClient {
         case 400:
           throw new BadRequestError();
         case 401:
-          throw new UnauthorizedError();
+          return false;
         case 404:
           throw new NotFoundError();
         case 500:
@@ -221,7 +221,7 @@ class ApiClient {
       }
     }
 
-    return await request.json();
+    return true;
   }
 
   // --- Post API Methods ---
