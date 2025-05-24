@@ -15,6 +15,11 @@ const notoSansKR = Noto_Sans_KR({
 export const metadata: Metadata = {
   title: "융합연구학점제 팀 모집 플랫폼",
   description: "성균관대학교 융합연구학점제 팀 모집 플랫폼",
+  icons: {
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 export default function RootLayout({

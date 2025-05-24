@@ -6,7 +6,12 @@ export default function BottomHeaderBox() {
     <div className="flex justify-center w-full h-24">
       <div className="h-full mx-5 flex items-center justify-between w-full container">
         <Link className="flex gap-2 items-center" href="/">
-          <Image src="/logo.png" alt="logo" width={200} height={45} />
+          <Image
+            src="/skku/signature.png"
+            alt="signature"
+            width={200}
+            height={45}
+          />
           <div className="w-[1px] h-5 bg-black" />
           <span className="text-[26px] pb-1 font-semibold text-gray-600 tracking-[-3px]">
             융합연구학점제 팀모집
