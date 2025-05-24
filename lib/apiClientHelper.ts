@@ -29,37 +29,24 @@ export type PaginatedPosts = PaginatedType<PublicPost>;
 export type PaginatedPublicProjects =
   PaginatedType<PublicProjectWithForeignKeys>;
 
-interface ApiClientConfig {
-  baseUrl: string; // 예: "http://localhost:3000", "https://api.yourdomain.com"
-}
-
 class ApiClient {
   private static instance: ApiClient | null = null;
-  private baseUrl: string;
 
-  // 생성자는 private으로 선언하여 외부에서 직접 인스턴스 생성 방지
-  private constructor(config: ApiClientConfig) {
-    // baseUrl이 '/'로 끝나면 제거하여 일관성 유지
-    this.baseUrl = config.baseUrl.endsWith("/")
-      ? config.baseUrl.slice(0, -1)
-      : config.baseUrl;
-  }
+  private constructor() {}
 
   /**
    * ApiClient 싱글톤 인스턴스를 초기화합니다.
    * 이미 초기화된 경우 오류를 발생시킵니다.
    * @param config ApiClient 설정 객체 (baseUrl 포함)
    */
-  public static initialize(config: ApiClientConfig): void {
+  public static initialize(): void {
     if (ApiClient.instance) {
       console.warn("ApiClient has already been initialized.");
       // 또는 throw new Error("ApiClient has already been initialized.");
       return;
     }
-    ApiClient.instance = new ApiClient(config);
-    console.log(
-      `ApiClient initialized with baseUrl: ${ApiClient.instance.baseUrl}`
-    );
+    ApiClient.instance = new ApiClient();
+    console.log("ApiClient initialized");
   }
 
   /**
@@ -89,8 +76,6 @@ class ApiClient {
       headers: {},
     };
 
-    const url = `${this.baseUrl}${endpoint}`; // baseUrl과 엔드포인트 결합
-
     if (
       body &&
       (method === "POST" || method === "PUT" || method === "DELETE")
@@ -99,7 +84,7 @@ class ApiClient {
       options.body = JSON.stringify(body);
     }
 
-    return await fetch(url, options);
+    return await fetch(endpoint, options);
   }
 
   // --- Project API Methods ---
@@ -375,12 +360,9 @@ class ApiClient {
   }
 }
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_VERCEL_URL || "http://localhost:3000"; // "/api"를 사용하지 않고 다른 도메인이라면 설정
-
 // 애플리케이션 로드 시 한번만 호출되도록 처리
 try {
-  ApiClient.initialize({ baseUrl: API_BASE_URL });
+  ApiClient.initialize();
 } catch (error) {
   console.error("Failed to initialize ApiClient:", error);
 }
