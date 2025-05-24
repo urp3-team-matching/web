@@ -376,7 +376,7 @@ class ApiClient {
 }
 
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000"; // "/api"를 사용하지 않고 다른 도메인이라면 설정
+  process.env.NEXT_PUBLIC_VERCEL_URL || "http://localhost:3000"; // "/api"를 사용하지 않고 다른 도메인이라면 설정
 
 // 애플리케이션 로드 시 한번만 호출되도록 처리
 try {
