@@ -72,7 +72,7 @@ export default function Project({ params }: { params: { id: string } }) {
     router.push(`/projects/${projectId}`);
   }
 
-  function togglemode() {
+  function toggleMode() {
     if (mode === ProjectPageModeEnum.ADMIN) {
       setmode(null);
       return;
@@ -98,7 +98,7 @@ export default function Project({ params }: { params: { id: string } }) {
         project={project}
         projectFormControl={projectFormControl}
         mode={mode}
-        togglemode={togglemode}
+        toggleMode={toggleMode}
       />
 
       {/* 본문 */}
@@ -116,7 +116,7 @@ export default function Project({ params }: { params: { id: string } }) {
           project={project}
           mode={mode}
           control={projectFormControl}
-          togglemode={togglemode}
+          toggleMode={toggleMode}
           onSubmit={handleSubmit(onSuccess)}
           loading={loading}
           onApplySuccess={(newApplicant) => {

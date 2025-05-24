@@ -19,7 +19,7 @@ interface ProjectDetailRightPanelProps {
   project: PublicProjectWithForeignKeys;
   mode: ProjectPageMode;
   control: Control<ProjectInput>;
-  togglemode: () => void;
+  toggleMode: () => void;
   onSubmit: () => void;
   loading?: boolean;
   onApplySuccess: (project: PublicApplicant) => void;
@@ -30,7 +30,7 @@ const ProjectDetailRightPanel = ({
   project,
   mode,
   control,
-  togglemode,
+  toggleMode,
   onSubmit,
   loading = false,
   onApplySuccess,
@@ -66,7 +66,7 @@ const ProjectDetailRightPanel = ({
       {/* 프로젝트 취소 및 저장 버튼 */}
       {mode === ProjectPageModeEnum.ADMIN && (
         <CancelAndSubmitButton
-          onCancel={togglemode}
+          onCancel={toggleMode}
           onSubmit={onSubmit}
           loading={loading}
         />

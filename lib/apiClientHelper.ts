@@ -198,6 +198,32 @@ class ApiClient {
     return await request.json();
   }
 
+  public async verifyProjectPassword(
+    id: number,
+    password: string
+  ): Promise<boolean> {
+    const request = await this._request(`/api/projects/${id}/verify`, "POST", {
+      password,
+    });
+
+    if (!request.ok) {
+      switch (request.status) {
+        case 400:
+          throw new BadRequestError();
+        case 401:
+          return false;
+        case 404:
+          throw new NotFoundError();
+        case 500:
+          throw new InternalServerError("Internal Server Error");
+        default:
+          throw new Error("Failed to verify project password");
+      }
+    }
+
+    return true;
+  }
+
   // --- Post API Methods ---
   // TODO: Post API 메소드 구현
   // public getPosts(params?: GetPostsQueryInput): Promise<PaginatedPosts> {
