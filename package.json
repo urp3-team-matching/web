@@ -5,7 +5,7 @@
   "packageManager": "pnpm@10.6.3",
   "scripts": {
     "dev": "NODE_ENV=development next dev --turbo",
-    "build": "NODE_ENV=production next build",
+    "build": "NODE_ENV=production && prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
     "prisma:generate": "prisma generate",

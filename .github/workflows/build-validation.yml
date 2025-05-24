@@ -39,9 +39,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Prisma generate
-        run: pnpm prisma generate
-
       - name: Build Next.js app
         run: pnpm next build
         env:
