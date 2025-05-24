@@ -42,11 +42,9 @@ class ApiClient {
   public static initialize(): void {
     if (ApiClient.instance) {
       console.warn("ApiClient has already been initialized.");
-      // 또는 throw new Error("ApiClient has already been initialized.");
       return;
     }
     ApiClient.instance = new ApiClient();
-    console.log("ApiClient initialized");
   }
 
   /**
