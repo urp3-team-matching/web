@@ -291,3 +291,20 @@ export async function deleteProject(
     throw new Error("Failed to delete project and associated data."); // 일반적인 실패 에러
   }
 }
+
+// 비밀번호 검증
+export async function validateProjectPassword(
+  id: number,
+  password: string
+): Promise<boolean> {
+  const project = await prisma.project.findUnique({
+    where: { id },
+    select: { passwordHash: true },
+  });
+
+  if (!project) {
+    throw new NotFoundError("Project not found.");
+  }
+
+  return await verifyResourcePassword(password, project.passwordHash);
+}
