@@ -1,10 +1,9 @@
-import { ProjectPageModeEnum } from "@/app/projects/[id]/_components/constants";
+import AdminSwitch from "@/app/projects/[id]/_components/Header/AdminSwitch";
 import { ProjectPageMode } from "@/app/projects/[id]/page";
 import ApplyStatueBadge from "@/components/Badge/ApplyStatueBadge";
 import KeywordBadge from "@/components/Badge/KeywordBadge";
 import ProposalBadge from "@/components/Badge/ProposalBadge";
 import ProjectNameForm from "@/components/Project/Form/ProjectNameForm";
-import { Switch } from "@/components/ui/switch";
 import { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
 import { getProjectStatus, parseDate } from "@/lib/utils";
 import { ProjectInput } from "@/types/project";
@@ -16,7 +15,7 @@ interface ProjectDetailHeaderProps {
   className?: string;
   projectFormControl: Control<ProjectInput>;
   mode: ProjectPageMode;
-  togglemode: () => void;
+  toggleMode: () => void;
 }
 
 const ProjectDetailHeader = ({
@@ -24,7 +23,7 @@ const ProjectDetailHeader = ({
   className,
   projectFormControl,
   mode,
-  togglemode,
+  toggleMode,
 }: ProjectDetailHeaderProps) => {
   const projectStatus = getProjectStatus(project);
 
@@ -47,9 +46,10 @@ const ProjectDetailHeader = ({
         </div>
 
         <div className="flex gap-x-2 items-center">
-          <Switch
-            checked={mode === ProjectPageModeEnum.ADMIN}
-            onClick={togglemode}
+          <AdminSwitch
+            mode={mode}
+            toggleMode={toggleMode}
+            projectId={project.id}
           />
           <span className="text-sm font-medium text-nowrap">관리자</span>
         </div>
