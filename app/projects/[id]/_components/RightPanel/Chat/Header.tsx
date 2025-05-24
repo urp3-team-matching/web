@@ -1,5 +1,6 @@
+import { ProjectPageModeEnum } from "@/app/projects/[id]/_components/constants";
 import { Tab } from "@/app/projects/[id]/_components/RightPanel/Chat";
-import { ProjectPageMode, ProjectPageModeEnum } from "@/app/projects/[id]/page";
+import { ProjectPageMode } from "@/app/projects/[id]/page";
 import { cn } from "@/lib/utils";
 
 interface ChatHeaderProps {

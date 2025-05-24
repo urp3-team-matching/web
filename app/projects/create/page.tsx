@@ -1,6 +1,6 @@
 "use client";
 
-import { ProjectPageModeEnum } from "@/app/projects/[id]/page";
+import { ProjectPageModeEnum } from "@/app/projects/[id]/_components/constants";
 import ProjectCreateRightPanel from "@/app/projects/create/_components/RightPanel";
 import ProjectForm from "@/components/Project/Form/ProjectForm";
 import ProjectNameForm from "@/components/Project/Form/ProjectNameForm";

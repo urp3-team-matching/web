@@ -1,5 +1,6 @@
 "use client";
 
+import { ProjectPageModeEnum } from "@/app/projects/[id]/_components/constants";
 import ProjectDetailHeader from "@/app/projects/[id]/_components/Header";
 import ProjectDetailRightPanel from "@/app/projects/[id]/_components/RightPanel";
 import ProjectForm from "@/components/Project/Form/ProjectForm";
@@ -11,10 +12,6 @@ import { useRouter } from "next/navigation";
 import { parseAsStringEnum, useQueryState } from "nuqs";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-
-export enum ProjectPageModeEnum {
-  ADMIN = "admin",
-}
 
 export type ProjectPageMode = ProjectPageModeEnum | null;
 

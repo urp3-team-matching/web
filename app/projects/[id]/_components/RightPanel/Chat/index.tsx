@@ -1,6 +1,7 @@
+import { ProjectPageModeEnum } from "@/app/projects/[id]/_components/constants";
 import ManageApplicants from "@/app/projects/[id]/_components/RightPanel/Chat/ApplicantsManage";
 import ChatHeader from "@/app/projects/[id]/_components/RightPanel/Chat/Header";
-import { ProjectPageMode, ProjectPageModeEnum } from "@/app/projects/[id]/page";
+import { ProjectPageMode } from "@/app/projects/[id]/page";
 import { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
 import { parseAsStringEnum, useQueryState } from "nuqs";
 import { useEffect } from "react";

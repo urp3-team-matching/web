@@ -1,4 +1,5 @@
-import { ProjectPageMode, ProjectPageModeEnum } from "@/app/projects/[id]/page";
+import { ProjectPageModeEnum } from "@/app/projects/[id]/_components/constants";
+import { ProjectPageMode } from "@/app/projects/[id]/page";
 import ApplyStatueBadge from "@/components/Badge/ApplyStatueBadge";
 import KeywordBadge from "@/components/Badge/KeywordBadge";
 import ProposalBadge from "@/components/Badge/ProposalBadge";

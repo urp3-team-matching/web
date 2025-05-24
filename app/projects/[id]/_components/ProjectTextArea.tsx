@@ -1,4 +1,5 @@
-import { ProjectPageMode, ProjectPageModeEnum } from "@/app/projects/[id]/page";
+import { ProjectPageModeEnum } from "@/app/projects/[id]/_components/constants";
+import { ProjectPageMode } from "@/app/projects/[id]/page";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { forwardRef } from "react";
