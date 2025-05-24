@@ -1,6 +1,10 @@
 import Header from "@/components/Header";
+import { AppSidebar } from "@/components/Header/AppSidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 import { Noto_Sans_KR } from "next/font/google";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import "./globals.css";
 
 const notoSansKR = Noto_Sans_KR({
@@ -28,22 +32,19 @@ export default function RootLayout({
     <html lang="ko">
       <body className={cn(notoSansKR.className, "flex flex-col items-center")}>
         <NuqsAdapter>
-          <Header />
-          <div className="container">{children}</div>
-        </NuqsAdapter>
-      <body className={`${pretendard.variable} antialiased`}>
-        <SidebarProvider>
-          <div className="flex min-h-screen w-full overflow-hidden">
-            {/* 사이드바 (좌측 고정) */}
-            <AppSidebar />
+          <SidebarProvider>
+            <div className="flex min-h-screen w-full overflow-hidden">
+              {/* 사이드바 (좌측 고정) */}
+              <AppSidebar />
 
-            {/* 본문 영역 */}
-            <div className="flex flex-col flex-1 min-w-0">
-              <Header />
-              <main className="flex-1 overflow-y-auto">{children}</main>
+              {/* 본문 영역 */}
+              <div className="flex flex-col flex-1 min-w-0">
+                <Header />
+                <main className="container">{children}</main>
+              </div>
             </div>
-          </div>
-        </SidebarProvider>
+          </SidebarProvider>
+        </NuqsAdapter>
       </body>
     </html>
   );
