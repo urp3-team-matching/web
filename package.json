@@ -53,20 +53,15 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4.0.0",
     "@types/node": "^20.17.23",
-    "@types/react": "19.0.10",
-    "@types/react-dom": "19.0.4",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
     "bcryptjs": "^3.0.2",
     "eslint": "^8",
-    "eslint-config-next": "15.2.1",
+    "eslint-config-next": "14.2.29",
     "postcss": "^8",
-    "prisma": "^6.7.0",
     "tailwindcss": "^4.0.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.2"
-  },
-  "overrides": {
-    "@types/react": "19.0.10",
-    "@types/react-dom": "19.0.4"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
@@ -76,7 +71,6 @@
       "@prisma/client",
       "@prisma/engines",
       "@tailwindcss/oxide",
-      "prisma",
       "unrs-resolver"
     ],
     "onlyBuiltDependencies": [
