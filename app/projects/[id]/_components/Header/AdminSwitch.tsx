@@ -70,8 +70,11 @@ const AdminSwitch = forwardRef<HTMLDivElement, AdminSwitchProps>(
         />
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>비밀번호</DialogTitle>
-            <DialogDescription>비밀번호를 입력해주세요!</DialogDescription>
+            <DialogTitle>비밀번호 입력</DialogTitle>
+            <DialogDescription>
+              해당 프로젝트를 편집하기 위해서는 생성시 설정한 비밀번호를
+              입력해야 합니다.
+            </DialogDescription>
             <form
               onSubmit={(e) => {
                 e.preventDefault();
