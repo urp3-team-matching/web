@@ -2,7 +2,7 @@ import { Menubar, MenubarMenu, MenubarTrigger } from "@/components/ui/menubar";
 
 export function ApplyStatueMenubar() {
   return (
-    <Menubar className="w-44 text-nowrap h-10">
+    <Menubar className="w-44  text-nowrap h-10">
       <MenubarMenu>
         <MenubarTrigger className="w-1/3  focus:cursor-pointer flex justify-center ">
           전체

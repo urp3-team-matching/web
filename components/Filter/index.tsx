@@ -17,7 +17,7 @@ const Filter = () => {
   );
 
   return (
-    <div className="w-full h-10 *:cursor-pointer items-center border-b-[1px] *:border-black border-b-black flex">
+    <div className="w-full max-sm:hidden h-10 *:cursor-pointer items-center border-b-[1px] *:border-black border-b-black flex">
       <TabTrigger active={filter === null} onClick={() => setFilter(null)}>
         전체
       </TabTrigger>

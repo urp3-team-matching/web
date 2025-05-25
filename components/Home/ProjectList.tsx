@@ -83,7 +83,9 @@ const ProjectList = () => {
         {projects.map((project, i) => (
           <Link key={i} href={`/projects/${project.id}`}>
             <ProjectCard
-              className={i === projects.length - 1 ? "border-b-[1px]" : ""}
+              className={`${i === 0 ? "border-t-black border-t-[2px]" : ""} ${
+                i === projects.length - 1 ? "border-b-[1px]" : ""
+              }`}
               project={project}
             />
           </Link>
