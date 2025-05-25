@@ -51,6 +51,9 @@ export const projectPublicSelection: Prisma.ProjectSelect = {
   proposerName: true,
   proposerType: true,
   proposerMajor: true,
+  applicantCount: true,
+  acceptedApplicantCount: true,
+  passwordHash: false,
   applicants: {
     select: {
       id: true,
@@ -59,6 +62,7 @@ export const projectPublicSelection: Prisma.ProjectSelect = {
       major: true,
       phone: true,
       introduction: true,
+      accepted: true,
       createdDatetime: true,
       updatedDatetime: true,
     },

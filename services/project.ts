@@ -308,3 +308,51 @@ export async function validateProjectPassword(
 
   return await verifyResourcePassword(password, project.passwordHash);
 }
+
+// 프로젝트의 지원자 통계 조회
+export async function getProjectApplicantStats(
+  projectId: number
+): Promise<{ total: number; accepted: number; pending: number }> {
+  const project = await prisma.project.findUnique({
+    where: { id: projectId },
+    select: {
+      applicantCount: true,
+      acceptedApplicantCount: true,
+    },
+  });
+
+  if (!project) {
+    throw new NotFoundError("Project not found");
+  }
+
+  return {
+    total: project.applicantCount,
+    accepted: project.acceptedApplicantCount,
+    pending: project.applicantCount - project.acceptedApplicantCount,
+  };
+}
+
+// 프로젝트 지원자 카운트 동기화 (필요시 호출)
+export async function syncProjectApplicantCounts(
+  projectId: number
+): Promise<void> {
+  const [totalCount, acceptedCount] = await prisma.$transaction([
+    prisma.applicant.count({
+      where: { projectId },
+    }),
+    prisma.applicant.count({
+      where: {
+        projectId,
+        accepted: true,
+      },
+    }),
+  ]);
+
+  await prisma.project.update({
+    where: { id: projectId },
+    data: {
+      applicantCount: totalCount,
+      acceptedApplicantCount: acceptedCount,
+    },
+  });
+}

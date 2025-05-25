@@ -236,7 +236,9 @@ async function main() {
     ]),
     proposerMajor: getRandomItem(majors),
     passwordHash: passwordHash,
-    viewCount: getRandomInt(100, 100000), // 조회수 100~100000 사이 랜덤 설정
+    viewCount: getRandomInt(100, 100000),
+    applicantCount: 0, // 초기값 설정
+    acceptedApplicantCount: 0, // 초기값 설정
   }));
 
   // createMany를 사용해 프로젝트 일괄 생성
@@ -255,30 +257,46 @@ async function main() {
 
   // 지원자 생성 데이터 준비
   console.log("Preparing applicant data...");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const applicantsData: any[] = [];
+  const projectApplicantCounts: Record<
+    number,
+    { total: number; accepted: number }
+  > = {};
 
   for (const project of allProjects) {
+    // 초기화
+    projectApplicantCounts[project.id] = { total: 0, accepted: 0 };
+
     // 각 프로젝트당 0~4명의 지원자 랜덤 생성
     const applicantCount = getRandomInt(0, 4);
+    projectApplicantCounts[project.id].total = applicantCount;
 
     for (let i = 0; i < applicantCount; i++) {
       const firstName = getRandomItem(applicantFirstNames);
       const lastName = getRandomItem(applicantLastNames);
       const name = lastName + firstName;
 
-      // 이메일 생성 (중복 방지를 위해 프로젝트 ID와 인덱스 추가)
+      // 이메일 생성
       const emailPrefix = getRandomItem(emails);
       const emailDomain = getRandomItem(emailDomains);
       const email = `${emailPrefix}${project.id}_${i}@${emailDomain}`;
+
+      // 일부 지원자는 accepted를 true로 설정 (33% 확률)
+      const accepted = Math.random() < 0.33;
+      if (accepted) {
+        projectApplicantCounts[project.id].accepted++;
+      }
 
       applicantsData.push({
         projectId: project.id,
         name: name,
         email: email,
         major: getRandomItem(majors),
-        phone: `010-${getRandomInt(1000, 9999)}-${getRandomInt(1000, 9999)}`,
+        phone: `010${getRandomInt(1000, 9999)}${getRandomInt(1000, 9999)}`,
         introduction: getRandomItem(introductions),
         passwordHash: passwordHash,
+        accepted,
       });
     }
   }
@@ -288,6 +306,19 @@ async function main() {
   if (applicantsData.length > 0) {
     await prisma.applicant.createMany({
       data: applicantsData,
+    });
+  }
+
+  // 각 프로젝트의 applicantCount와 acceptedApplicantCount 업데이트
+  console.log("Updating project applicant counts...");
+  for (const projectId in projectApplicantCounts) {
+    const counts = projectApplicantCounts[projectId];
+    await prisma.project.update({
+      where: { id: parseInt(projectId) },
+      data: {
+        applicantCount: counts.total,
+        acceptedApplicantCount: counts.accepted,
+      },
     });
   }
 
@@ -331,48 +362,9 @@ async function main() {
 
   console.log("Seeding completed successfully!");
 
-  // 통계 정보 출력
-  const projectStats = await prisma.project.groupBy({
-    by: ["proposerType"],
-    _count: {
-      id: true,
-    },
-  });
-
-  // 평균 조회수 계산을 위한 쿼리 추가
-  const avgViewCount = await prisma.project.aggregate({
-    _avg: {
-      viewCount: true,
-    },
-  });
-
+  // 통계 출력
   console.log("\n=== 시드 데이터 통계 ===");
   console.log(`총 프로젝트 수: ${allProjects.length}`);
-  console.log(`총 지원자 수: ${totalApplicants}`);
-  console.log(
-    `프로젝트 평균 조회수: ${Math.round(avgViewCount._avg.viewCount || 0)}`
-  );
-  console.log("프로젝트 제안자 유형 분포:", projectStats);
-
-  // 조회수가 가장 많은 프로젝트 추가
-  const mostViewedProjects = await prisma.project.findMany({
-    select: {
-      id: true,
-      name: true,
-      viewCount: true,
-    },
-    orderBy: {
-      viewCount: "desc",
-    },
-    take: 3,
-  });
-
-  console.log(
-    "조회수가 가장 많은 프로젝트(상위 3개):",
-    mostViewedProjects.map(
-      (p) => `${p.name}: ${p.viewCount.toLocaleString()}회`
-    )
-  );
 }
 
 main()
