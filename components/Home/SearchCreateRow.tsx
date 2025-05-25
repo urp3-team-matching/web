@@ -31,7 +31,7 @@ export default function SearchCreateRow({ className }: SearchBarProps) {
     <div className="w-full max-sm:h-22 h-11 max-sm:flex-col flex gap-3">
       <form
         className={cn(
-          "relative w-full max-sm:flex-col h-full flex max-sm:gap-2 items-center gap-x-3",
+          "relative w-full max-sm:flex-col h-full flex  items-center gap-3",
           className
         )}
         onSubmit={(e) => {

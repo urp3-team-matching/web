@@ -8,7 +8,7 @@ import { Suspense } from "react";
 export default function Home() {
   return (
     <Suspense fallback={<Spinner />}>
-      <div className="mt-5 flex-col flex w-full h-auto gap-5 justify-between">
+      <div className="mt-5 flex-col flex w-full h-auto max-sm:gap-3 gap-5 justify-between">
         <Filter />
 
         <SearchCreateRow />

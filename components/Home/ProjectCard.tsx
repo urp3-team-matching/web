@@ -16,7 +16,7 @@ export default function ProjectCard({ project, className }: ProjectCardProps) {
   return (
     <div
       className={cn(
-        "w-full border-t-[1px]  py-2.5 px-4.5 max-sm:px-1  bg-white  hover:bg-slate-50 transition-colors duration-200 ease-in-out",
+        "w-full border-t-[1px]  py-2.5 px-2 md:px-3 lg:px-4 max-sm:px-1  bg-white  hover:bg-slate-50 transition-colors duration-200 ease-in-out",
         className
       )}
     >
@@ -28,7 +28,7 @@ export default function ProjectCard({ project, className }: ProjectCardProps) {
         </div>
 
         {/* 제목 */}
-        <span className="text-base max-sm:text-[16px] font-medium min-sm:pl-1 py-[1px]">
+        <span className="text-base max-sm:text-[16px] max-sm:pr-5 font-medium min-sm:pl-1 py-[1px]">
           {project.name}
         </span>
 
