@@ -82,7 +82,10 @@ const ProjectList = () => {
       <div className="w-full flex flex-col">
         {projects.map((project, i) => (
           <Link key={i} href={`/projects/${project.id}`}>
-            <ProjectCard project={project} />
+            <ProjectCard
+              className={i === projects.length - 1 ? "border-b-[1px]" : ""}
+              project={project}
+            />
           </Link>
         ))}
       </div>

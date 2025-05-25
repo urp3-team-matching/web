@@ -16,7 +16,7 @@ export default function ProjectCard({ project, className }: ProjectCardProps) {
   return (
     <div
       className={cn(
-        "w-full border-[1px] my-[1px] py-2.5 px-4.5 shadow-[0px_4px_4px_0px_rgba(174,174,174,0.25)] bg-white rounded-lg hover:bg-slate-50 transition-colors duration-200 ease-in-out",
+        "w-full border-t-[1px]  py-2.5 px-4.5  bg-white  hover:bg-slate-50 transition-colors duration-200 ease-in-out",
         className
       )}
     >
@@ -32,14 +32,7 @@ export default function ProjectCard({ project, className }: ProjectCardProps) {
           {project.name}
         </span>
 
-        {/* 키워드 */}
-        <div className="flex gap-1 my-[2px]">
-          {project.keywords.map((keyword, index) => (
-            <KeywordBadge key={index} keyword={keyword} />
-          ))}
-        </div>
-
-        {/* 하단: 조회수, 생성일 */}
+        {/* 하단: 조회수, 생성일, 키워드 */}
         <div className="gap-3 flex  font-medium text-xs">
           {/* 조회수 */}
           <div className="flex items-center gap-1">
@@ -51,6 +44,13 @@ export default function ProjectCard({ project, className }: ProjectCardProps) {
           <div className="flex items-center gap-1">
             <Calendar className="size-5 mt-0.5" />
             <span>{parseDate(project.createdDatetime)}</span>
+          </div>
+
+          {/*키워드*/}
+          <div className="flex gap-1 my-[2px]">
+            {project.keywords.map((keyword, index) => (
+              <KeywordBadge key={index} keyword={keyword} />
+            ))}
           </div>
         </div>
       </div>

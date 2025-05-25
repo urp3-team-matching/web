@@ -15,7 +15,7 @@ export default function ApplyStatueBadge({ status }: ApplyStatueBadgeProps) {
   }
   return (
     <Badge
-      className={`${badgeColor} w-[72px] h-7 font-medium text-sm rounded-3xl`}
+      className={`${badgeColor} w-[72px] h-7 font-medium text-sm rounded-sm`}
     >
       {badgeText}
     </Badge>
