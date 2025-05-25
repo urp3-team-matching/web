@@ -30,6 +30,9 @@ model Project {
   proposerType  ProposerType
   proposerMajor String?
 
+  applicantCount         Int @default(0)
+  acceptedApplicantCount Int @default(0)
+
   passwordHash String @map("password")
 
   createdDatetime DateTime @default(now()) @db.Timestamptz(6)
@@ -40,12 +43,14 @@ model Project {
 }
 
 model Applicant {
-  id           Int    @id @default(autoincrement())
+  id           Int     @id @default(autoincrement())
   name         String
   email        String
   major        String
   phone        String
   introduction String
+  accepted     Boolean @default(false)
+
   passwordHash String @map("password")
 
   createdDatetime DateTime @default(now()) @db.Timestamptz(6)
