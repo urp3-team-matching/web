@@ -43,7 +43,7 @@ export default function MajorGraph({ project, className }: MajorGraphProps) {
     acc[major] = (acc[major] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
-  const ObjectMajorsCount = Object.entries(majorsCount);
+  const objectMajorsCount = Object.entries(majorsCount);
 
   return (
     <div
@@ -54,16 +54,15 @@ export default function MajorGraph({ project, className }: MajorGraphProps) {
     >
       {/* 유저 아이콘 */}
       <div className="w-full justify-between flex">
-        {ObjectMajorsCount.map(([major, count]) =>
+        {objectMajorsCount.map(([major, count]) =>
           [...Array(count)].map((_, i) => (
             <CircleUser
               size={50}
               key={`${major}-${i}`}
-              className={`text-black ${getMajorColor(
-                major,
-                uniqueMajors,
-                "text"
-              )} font-thin stroke-1`}
+              className={cn(
+                "text-black font-thin stroke-1",
+                getMajorColor(major, uniqueMajors, "text")
+              )}
             />
           ))
         )}
@@ -78,17 +77,17 @@ export default function MajorGraph({ project, className }: MajorGraphProps) {
 
       {/* 그래프 */}
       <div className="w-full h-4 rounded-2xl overflow-hidden flex ">
-        {ObjectMajorsCount.map(([major, count]) =>
+        {objectMajorsCount.map(([major, count]) =>
           [...Array(count)].map((_, i) => (
             <div
               key={`${major}-${i}`}
-              className={`w-1/4 h-full ${getMajorColor(major, uniqueMajors)}`}
-            ></div>
+              className={cn("w-1/4 h-full", getMajorColor(major, uniqueMajors))}
+            />
           ))
         )}
-        {[...Array(restApplicantsCount)].map((_, i) => {
-          return <div key={i} className="w-1/4 bg-gray-100 h-full"></div>;
-        })}
+        {[...Array(restApplicantsCount)].map((_, i) => (
+          <div key={i} className="w-1/4 bg-gray-100 h-full"></div>
+        ))}
       </div>
 
       {/* 전공 */}
