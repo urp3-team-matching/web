@@ -24,7 +24,7 @@ export default function ProposalBadge({ proposerType }: ProposalBadgeProps) {
   }
 
   return (
-    <Badge className="w-[72px] h-7 max-sm:w-14 max-sm:h-6 max-sm:text-[11px] rounded-sm flex justify-center items-center bg-third text-sm font-medium text-white">
+    <Badge className="sm:w-[72px] sm:h-7 w-14 h-6 text-[11px] rounded-sm flex justify-center items-center bg-third sm:text-sm font-medium text-white">
       {proposerText}
     </Badge>
   );

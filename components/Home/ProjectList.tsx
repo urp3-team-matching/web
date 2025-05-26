@@ -10,6 +10,7 @@ import Spinner from "@/components/ui/spinner";
 import ApiClient, { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
 import { GetProjectsQuerySchema } from "@/types/project";
 import ProjectCard from "./ProjectCard";
+import { cn } from "@/lib/utils";
 
 function safeParseSearchParams<T extends z.ZodTypeAny>(
   searchParams: URLSearchParams,
@@ -80,16 +81,22 @@ const ProjectList = () => {
     <div className="w-full space-y-3 pb-3">
       {/* 프로젝트 목록 */}
       <div className="w-full flex flex-col">
-        {projects.map((project, i) => (
-          <Link key={i} href={`/projects/${project.id}`}>
-            <ProjectCard
-              className={`${i === 0 ? "border-t-black border-t-[2px]" : ""} ${
-                i === projects.length - 1 ? "border-b-[1px]" : ""
-              }`}
-              project={project}
-            />
-          </Link>
-        ))}
+        {projects.map((project, i) => {
+          const isFirst = i === 0;
+          const isLast = i === projects.length - 1;
+
+          return (
+            <Link key={project.id} href={`/projects/${project.id}`}>
+              <ProjectCard
+                className={cn(
+                  isFirst && "border-t-black border-t-[2px]",
+                  isLast && "border-b-[1px]"
+                )}
+                project={project}
+              />
+            </Link>
+          );
+        })}
       </div>
 
       {/* 페이지네이션 */}

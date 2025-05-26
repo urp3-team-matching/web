@@ -28,10 +28,10 @@ export default function SearchCreateRow({ className }: SearchBarProps) {
   };
 
   return (
-    <div className="w-full max-sm:h-22 h-11 max-sm:flex-col flex gap-3">
+    <div className="w-full h-22 sm:h-11 flex-col sm:flex-row flex gap-3">
       <form
         className={cn(
-          "relative w-full max-sm:flex-col h-full flex  items-center gap-3",
+          "relative w-full sm:flex-row flex-col h-full flex items-center gap-3",
           className
         )}
         onSubmit={(e) => {
@@ -53,17 +53,17 @@ export default function SearchCreateRow({ className }: SearchBarProps) {
             }
           }}
         />
-        <Search className="absolute max-sm:top-1/4 top-1/2 -translate-y-1/2 left-3" />
-        <div className="flex gap-3  max-sm:w-full h-full">
+        <Search className="absolute top-1/4 sm:top-1/2 -translate-y-1/2 left-3" />
+        <div className="flex gap-3 sm:w-auto w-full h-full">
           <Button
-            className="max-sm:flex-1 w-24 h-full bg-third hover:bg-third/90 hover:cursor-pointer"
+            className="flex-1 w-24 h-full bg-third hover:bg-third/90 hover:cursor-pointer"
             type="submit"
           >
             검색
           </Button>
           <Button
             asChild
-            className="max-sm:flex-1 w-24 h-full bg-secondary hover:bg-secondary/90 hover:cursor-pointer"
+            className="flex-1 w-24 h-full bg-secondary hover:bg-secondary/90 hover:cursor-pointer"
           >
             <Link href="/projects/create">생성</Link>
           </Button>

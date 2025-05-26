@@ -16,43 +16,44 @@ export default function ProjectCard({ project, className }: ProjectCardProps) {
   return (
     <div
       className={cn(
-        "w-full border-t-[1px]  py-2.5 px-2 md:px-3 lg:px-4 max-sm:px-1  bg-white  hover:bg-slate-50 transition-colors duration-200 ease-in-out",
+        "w-full border-t-[1px] py-2.5 px-1 sm:px-2 md:px-3 lg:px-4 bg-white hover:bg-slate-50 transition-colors duration-200 ease-in-out",
         className
       )}
     >
-      <div className="flex flex-col gap-2 max-sm:gap-1 justify-between h-full pt-1">
+      <div className="flex flex-col sm:gap-2 gap-1 justify-between h-full pt-1">
         {/* 헤더: 상태, 제안 타입 */}
-        <div className="flex max-sm:gap-[5px] gap-[10px]">
+        <div className="flex gap-[5px] sm:gap-[10px]">
           <ApplyStatueBadge status={projectStatus} />
           <ProposalBadge proposerType={project.proposerType} />
         </div>
 
         {/* 제목 */}
-        <span className="text-base max-sm:text-[16px] max-sm:pr-5 font-medium min-sm:pl-1 py-[1px]">
+        <span className="sm:text-base text-[14px] sm:pr-0 pr-5 font-medium sm:pl-1 py-[1px]">
           {project.name}
         </span>
 
         {/* 하단: 작성자, 조회수, 생성일, 키워드 */}
-        <div className="gap-3 max-sm:gap-1  flex max-sm:flex-col  font-medium text-sm max-sm:text-xs">
+        <div className="sm:gap-3 gap-1 flex sm:flex-row flex-col font-medium sm:text-sm text-xs">
           {/* 작성자, 조회수, 생성일 */}
-          <div className="flex text-slate-500 *:items-center max-sm:gap-[6px] gap-3">
+          <div className="flex text-slate-500 *:items-center gap-[6px] sm:gap-3">
             <span className="flex ">{project.proposerName}</span>
-            <div className="flex  gap-1">
-              <Eye className="size-5 max-sm:size-[14px] mt-0.5" />
+            <div className="flex gap-1">
+              <Eye className="sm:size-5 size-[14px] mt-0.5" />
               <span>{project.viewCount}</span>
             </div>
 
             <div className="flex items-center gap-1">
-              <Calendar className="size-5 max-sm:size-[14px] mt-0.5" />
+              <Calendar className="sm:size-5 size-[14px] mt-0.5" />
               <span>{parseDate(project.createdDatetime)}</span>
             </div>
           </div>
 
           {/*키워드*/}
           <div
-            className={`flex gap-1 my-[2px] ${
-              project.keywords.length > 0 ? "" : "hidden"
-            }`}
+            className={cn(
+              "flex gap-1 my-[2px]",
+              !project.keywords.length && "hidden"
+            )}
           >
             {project.keywords.map((keyword, index) => (
               <KeywordBadge key={index} keyword={keyword} />
