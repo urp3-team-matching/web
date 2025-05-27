@@ -13,20 +13,13 @@ import { X } from "lucide-react";
 import Link from "next/link";
 import { Separator } from "../ui/separator";
 
-const items = [
+const sidebarMenus = [
   { title: "프로젝트", url: "/" },
   { title: "공지사항", url: "/notice" },
 ];
 
 export function AppSidebar() {
-  const { setOpen, isMobile, setOpenMobile } = useSidebar();
-  const handleClose = () => {
-    if (isMobile) {
-      setOpenMobile(false);
-    } else {
-      setOpen(false); // 혹은 toggleSidebar();
-    }
-  };
+  const { toggleSidebar } = useSidebar();
 
   return (
     <Sidebar>
@@ -34,20 +27,21 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              <div className="w-full h-14 flex mb-5 items-center justify-end">
-                <button className="cursor-pointer" onClick={handleClose}>
-                  <X className="size-12 stroke-1" />
-                </button>
+              <div
+                onClick={toggleSidebar}
+                className="w-full cursor-pointer h-14 flex mb-5 items-center justify-end"
+              >
+                <X className="size-12 stroke-1" />
               </div>
-              {items.map((item) => (
-                <SidebarMenuItem className="h-14" key={item.title}>
-                  <Separator></Separator>
-                  <SidebarMenuButton asChild>
+              {sidebarMenus.map((menu) => (
+                <SidebarMenuItem className="h-14" key={menu.title}>
+                  <Separator />
+                  <SidebarMenuButton className="text-2xl" asChild>
                     <Link
-                      className="flex justify-end h-full  items-center gap-2"
-                      href={item.url}
+                      className="flex justify-end h-full items-center gap-2"
+                      href={menu.url}
                     >
-                      <span className="text-2xl">{item.title}</span>
+                      {menu.title}
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
