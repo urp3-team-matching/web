@@ -39,6 +39,11 @@ export default function MajorGraph({ project, className }: MajorGraphProps) {
   const majors = project.applicants.map((applicant) => applicant.major);
   const uniqueMajors = [...new Set(majors)];
   const restApplicantsCount = MAX_APPLICANTS - majors.length;
+  const majorsCount = majors.reduce((acc, major) => {
+    acc[major] = (acc[major] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+  const objectMajorsCount = Object.entries(majorsCount);
 
   return (
     <div
@@ -49,14 +54,18 @@ export default function MajorGraph({ project, className }: MajorGraphProps) {
     >
       {/* 유저 아이콘 */}
       <div className="w-full justify-between flex">
-        {majors.map((major, i) => (
-          <CircleUser
-            key={i}
-            size={50}
-            className={`flex-1 ${getMajorColor(major, uniqueMajors, "text")}`}
-            strokeWidth={1}
-          />
-        ))}
+        {objectMajorsCount.map(([major, count]) =>
+          [...Array(count)].map((_, i) => (
+            <CircleUser
+              size={50}
+              key={`${major}-${i}`}
+              className={cn(
+                "text-black font-thin stroke-1",
+                getMajorColor(major, uniqueMajors, "text")
+              )}
+            />
+          ))
+        )}
         {[...Array(restApplicantsCount)].map((_, i) => (
           <CircleUser
             key={i}
@@ -67,12 +76,17 @@ export default function MajorGraph({ project, className }: MajorGraphProps) {
       </div>
 
       {/* 그래프 */}
-      <div className="w-full h-4 rounded-2xl overflow-hidden flex justify-between">
-        {majors.map((major, i) => (
-          <div
-            key={i}
-            className={`h-full flex-1 ${getMajorColor(major, uniqueMajors)}`}
-          />
+      <div className="w-full h-4 rounded-2xl overflow-hidden flex ">
+        {objectMajorsCount.map(([major, count]) =>
+          [...Array(count)].map((_, i) => (
+            <div
+              key={`${major}-${i}`}
+              className={cn("w-1/4 h-full", getMajorColor(major, uniqueMajors))}
+            />
+          ))
+        )}
+        {[...Array(restApplicantsCount)].map((_, i) => (
+          <div key={i} className="w-1/4 bg-gray-100 h-full"></div>
         ))}
       </div>
 
