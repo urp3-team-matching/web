@@ -1,6 +1,7 @@
 "use client";
 
 import ProjectTextArea from "@/app/projects/[id]/_components/ProjectTextArea";
+import ProposerInfoCard from "@/app/projects/[id]/_components/PropoeserInfoCard";
 import { ProjectPageMode } from "@/app/projects/[id]/page";
 import { KeywordInput } from "@/components/Project/KeywordInput";
 import { ProjectInput } from "@/types/project";

@@ -18,7 +18,12 @@ export default function ContactCard(ContactCardProps: ContactCardProps) {
         <Link
           href={ContactCardProps.openChatLink as string}
           className="pl-2 text-sm font-normal"
-        >{`오픈채팅:  ${ContactCardProps.openChatLink}`}</Link>
+        >
+          {`오픈채팅:`}{" "}
+          <span className="underline underline-offset-4">
+            {ContactCardProps.openChatLink}
+          </span>{" "}
+        </Link>
       </div>
     </div>
   );

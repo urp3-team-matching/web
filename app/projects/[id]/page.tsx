@@ -115,7 +115,6 @@ export default function Project({ params }: { params: { id: string } }) {
           className="w-[30%]"
           project={project}
           mode={mode}
-          control={projectFormControl}
           toggleMode={toggleMode}
           onSubmit={handleSubmit(onSuccess)}
           loading={loading}
