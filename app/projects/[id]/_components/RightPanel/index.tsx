@@ -13,6 +13,8 @@ import {
 import { cn } from "@/lib/utils";
 import { ProjectInput } from "@/types/project";
 import { Control } from "react-hook-form";
+import ContactCard from "../ContactCard";
+import ApplicationStatusCard from "../ApplicationStatusCard";
 
 interface ProjectDetailRightPanelProps {
   className?: string;
@@ -30,7 +32,6 @@ const ProjectDetailRightPanel = ({
   project,
   mode,
   control,
-  toggleMode,
   onSubmit,
   loading = false,
   onApplySuccess,
@@ -39,22 +40,13 @@ const ProjectDetailRightPanel = ({
 
   return (
     <div className={cn("flex flex-col gap-5 h-auto mt-12", className)}>
-      {mode === null && <MajorGraph project={project} />}
-
-      {/* 프로젝트 제안자 입력 */}
-      {mode === ProjectPageModeEnum.ADMIN && (
-        <ProjectProposerForm
-          control={control}
-          className="w-full p-5 flex flex-col gap-3 border rounded-lg h-auto"
+      {mode === null && (
+        <ContactCard
+          email="2000dudwn@naver.com"
+          openChatLink="https://open.kakao.com"
         />
       )}
 
-      {/* 프로젝트 대화방 및 모집관리 */}
-      <Chat
-        className="w-full text-sm font-medium flex flex-col shadow-md rounded-lg h-[500px]"
-        project={project}
-        mode={mode}
-      />
       {mode === null && (
         <ProjectApplyButton
           projectId={project.id}
@@ -63,14 +55,31 @@ const ProjectDetailRightPanel = ({
         />
       )}
 
-      {/* 프로젝트 취소 및 저장 버튼 */}
+      <MajorGraph project={project} />
+
+      {/* 프로젝트 제안자 입력   */}
       {mode === ProjectPageModeEnum.ADMIN && (
-        <CancelAndSubmitButton
-          onCancel={toggleMode}
-          onSubmit={onSubmit}
-          loading={loading}
+        <ProjectProposerForm
+          control={control}
+          className="w-full p-5 flex flex-col gap-3 border rounded-lg h-auto"
         />
       )}
+
+      {/* 프로젝트 대화방 및 모집관리 
+      <Chat
+        className="w-full text-sm font-medium flex flex-col shadow-md rounded-lg h-[500px]"
+        project={project}
+        mode={mode}
+      />
+      */}
+      {mode === ProjectPageModeEnum.ADMIN && (
+        <ApplicationStatusCard project={project} />
+      )}
+      {/* 프로젝트 취소 및 저장 버튼 */}
+      {mode === ProjectPageModeEnum.ADMIN && (
+        <CancelAndSubmitButton onSubmit={onSubmit} loading={loading} />
+      )}
+      {mode === null && <ApplicationStatusCard project={project} />}
     </div>
   );
 };
