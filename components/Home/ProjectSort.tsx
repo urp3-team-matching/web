@@ -16,7 +16,7 @@ const ProjectSort = () => {
   );
 
   return (
-    <div className="flex *:cursor-pointer text-[14px] gap-4">
+    <div className="sm:flex hidden *:cursor-pointer text-[14px] gap-4">
       <button
         className={sort === Sort.LATEST ? "text-secondary" : ""}
         onClick={() => setSort(Sort.LATEST)}

@@ -1,18 +1,74 @@
+"use client";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { GetProjectsQuerySchema } from "@/types/project";
+import { Search } from "lucide-react";
 import Link from "next/link";
-import { Button } from "../ui/button";
-import SearchBar from "./SearchBar";
+import { useQueryState } from "nuqs";
+import z from "zod";
 
-export default function SearchCreateRow() {
+interface SearchBarProps {
+  className?: string;
+}
+
+export default function SearchCreateRow({ className }: SearchBarProps) {
+  const searchQueryKey = "searchTerm" as keyof z.infer<
+    typeof GetProjectsQuerySchema
+  >;
+  const [searchQuery, setSearchQuery] = useQueryState(searchQueryKey);
+
+  const handleSearch = (value: string) => {
+    if (!value || value.trim() === "") {
+      setSearchQuery(null);
+    } else {
+      setSearchQuery(value);
+    }
+  };
+
   return (
-    <div className="w-full h-11 flex gap-3">
-      <SearchBar className="flex-1" />
-
-      <Button
-        asChild
-        className="w-24 h-full bg-secondary hover:bg-secondary/90 hover:cursor-pointer"
+    <div className="w-full h-22 sm:h-11 flex-col sm:flex-row flex gap-3">
+      <form
+        className={cn(
+          "relative w-full sm:flex-row flex-col h-full flex items-center gap-3",
+          className
+        )}
+        onSubmit={(e) => {
+          e.preventDefault();
+          const formData = new FormData(e.currentTarget);
+          const searchValue = formData.get(searchQueryKey) as string;
+          handleSearch(searchValue);
+        }}
       >
-        <Link href="/projects/create">생성</Link>
-      </Button>
+        <Input
+          name="search"
+          className="w-full text-sm h-full rounded-md px-11 border-[1px] border-black"
+          placeholder="프로젝트 또는 연구키워드로 검색해보세요"
+          defaultValue={searchQuery || ""}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              handleSearch(e.currentTarget.value);
+            }
+          }}
+        />
+        <Search className="absolute top-1/4 sm:top-1/2 -translate-y-1/2 left-3" />
+        <div className="flex gap-3 sm:w-auto w-full h-full">
+          <Button
+            className="flex-1 w-24 h-full bg-third hover:bg-third/90 hover:cursor-pointer"
+            type="submit"
+          >
+            검색
+          </Button>
+          <Button
+            asChild
+            className="flex-1 w-24 h-full bg-secondary hover:bg-secondary/90 hover:cursor-pointer"
+          >
+            <Link href="/projects/create">생성</Link>
+          </Button>
+        </div>
+      </form>
     </div>
   );
 }

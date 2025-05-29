@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import { Badge } from "../ui/badge";
 export interface ApplyStatueBadgeProps {
   status: "recruiting" | "closed";
@@ -15,7 +16,10 @@ export default function ApplyStatueBadge({ status }: ApplyStatueBadgeProps) {
   }
   return (
     <Badge
-      className={`${badgeColor} w-[72px] h-7 font-medium text-sm rounded-3xl`}
+      className={cn(
+        badgeColor,
+        "sm:w-[72px] w-14 h-6 text-[11px] sm:h-7 font-medium sm:text-sm rounded-sm"
+      )}
     >
       {badgeText}
     </Badge>

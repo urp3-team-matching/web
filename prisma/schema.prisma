@@ -7,79 +7,69 @@ datasource db {
   provider   = "postgresql"
   url        = env("DATABASE_URL")
   directUrl  = env("DIRECT_URL")
-  extensions = [pgcrypto]
+  extensions = [pgcrypto, uuid_ossp(map: "uuid-ossp", schema: "extensions")]
+}
+
+model Project {
+  id              Int          @id @default(autoincrement())
+  name            String
+  viewCount       Int          @default(0)
+  background      String
+  method          String
+  objective       String
+  result          String
+  attachments     String[]
+  keywords        String[]
+  proposerName    String
+  proposerType    ProposerType
+  proposerMajor   String?
+  passwordHash    String       @map("password")
+  createdDatetime DateTime     @default(now()) @db.Timestamptz(6)
+  updatedDatetime DateTime     @updatedAt @db.Timestamptz(6)
+  applicants      Applicant[]
+  messages        Message[]
+}
+
+model Applicant {
+  id              Int      @id @default(autoincrement())
+  name            String
+  email           String
+  major           String
+  phone           String
+  introduction    String
+  passwordHash    String   @map("password")
+  createdDatetime DateTime @default(now()) @db.Timestamptz(6)
+  updatedDatetime DateTime @updatedAt @db.Timestamptz(6)
+  projectId       Int
+  project         Project  @relation(fields: [projectId], references: [id])
+}
+
+model Post {
+  id              Int      @id @default(autoincrement())
+  title           String
+  content         String
+  author          String
+  attachments     String[]
+  viewCount       Int      @default(0)
+  passwordHash    String   @map("password")
+  createdDatetime DateTime @default(now()) @db.Timestamptz(6)
+  updatedDatetime DateTime @updatedAt @db.Timestamptz(6)
+}
+
+model Message {
+  id              BigInt   @id @default(autoincrement())
+  content         String
+  userId          String
+  username        String
+  projectId       Int
+  createdDatetime DateTime @default(now()) @db.Timestamptz(6)
+  project         Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
 }
 
 enum ProposerType {
   PROFESSOR
   STUDENT
   HOST
-}
-
-model Project {
-  id            Int          @id @default(autoincrement())
-  name          String
-  viewCount     Int          @default(0)
-  background    String
-  method        String
-  objective     String
-  result        String
-  attachments   String[]
-  keywords      String[]
-  proposerName  String
-  proposerType  ProposerType
-  proposerMajor String?
-
-  passwordHash String @map("password")
-
-  createdDatetime DateTime @default(now()) @db.Timestamptz(6)
-  updatedDatetime DateTime @updatedAt @db.Timestamptz(6)
-
-  applicants Applicant[]
-  messages   Message[]
-}
-
-model Applicant {
-  id           Int    @id @default(autoincrement())
-  name         String
-  email        String
-  major        String
-  phone        String
-  introduction String
-  passwordHash String @map("password")
-
-  createdDatetime DateTime @default(now()) @db.Timestamptz(6)
-  updatedDatetime DateTime @updatedAt @db.Timestamptz(6)
-
-  // Relations
-  projectId Int
-  project   Project @relation(fields: [projectId], references: [id])
-}
-
-model Post {
-  id           Int      @id @default(autoincrement())
-  title        String
-  content      String
-  author       String
-  attachments  String[]
-  viewCount    Int      @default(0)
-  passwordHash String   @map("password")
-
-  createdDatetime DateTime @default(now()) @db.Timestamptz(6)
-  updatedDatetime DateTime @updatedAt @db.Timestamptz(6)
-}
-
-model Message {
-  id      BigInt @id @default(autoincrement())
-  content String
-
-  userId   String
-  username String
-
-  projectId Int
-  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-
-  createdDatetime DateTime @default(now()) @db.Timestamptz(6)
-
-  @@index([projectId])
 }
