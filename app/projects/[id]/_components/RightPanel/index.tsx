@@ -18,6 +18,7 @@ interface ProjectDetailRightPanelProps {
   mode: ProjectPageMode;
   toggleMode: () => void;
   onSubmit: () => void;
+  onDelete: () => void;
   loading?: boolean;
   onApplySuccess: (project: PublicApplicant) => void;
 }
@@ -26,6 +27,7 @@ const ProjectDetailRightPanel = ({
   className,
   project,
   mode,
+  onDelete,
   onSubmit,
   loading = false,
   onApplySuccess,
@@ -33,7 +35,7 @@ const ProjectDetailRightPanel = ({
   const isProjectFull = project.applicants.length >= MAX_APPLICANTS;
 
   return (
-    <div className={cn("flex flex-col gap-5 h-auto mt-12", className)}>
+    <div className={cn("flex flex-col gap-5 h-auto pt-5", className)}>
       {mode === null && (
         <ContactCard
           email="2000dudwn@naver.com"
@@ -72,9 +74,13 @@ const ProjectDetailRightPanel = ({
         <ApplicationStatusCard project={project} />
       )}
 
-      {/* 프로젝트 취소 및 저장 버튼 */}
+      {/* 프로젝트 삭제, 모집마감, 저장 버튼 */}
       {mode === ProjectPageModeEnum.ADMIN && (
-        <CancelAndSubmitButton onSubmit={onSubmit} loading={loading} />
+        <CancelAndSubmitButton
+          onDelete={onDelete}
+          onSubmit={onSubmit}
+          loading={loading}
+        />
       )}
 
       {mode === null && <ApplicationStatusCard project={project} />}
