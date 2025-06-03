@@ -25,7 +25,7 @@ const ProjectForm = ({ className, mode, control }: ProjectBodyProps) => {
     <div
       className={cn(
         { className },
-        "border flex flex-col gap-5 rounded-lg shadow-sm p-5"
+        "border flex flex-col w-full gap-5 rounded-lg shadow-sm p-5"
       )}
     >
       <span className="text-2xl font-semibold">프로젝트 정보</span>
