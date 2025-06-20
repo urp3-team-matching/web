@@ -2,6 +2,7 @@
 
 import { ProjectPageModeEnum } from "@/app/projects/[id]/_components/constants";
 import ProjectCreateRightPanel from "@/app/projects/create/_components/RightPanel";
+import { FileInput } from "@/components/Project/FileInput";
 import ProjectForm from "@/components/Project/Form/ProjectForm";
 import ProjectNameForm from "@/components/Project/Form/ProjectNameForm";
 import apiClient from "@/lib/apiClientHelper";
@@ -9,7 +10,7 @@ import { ProjectInput, ProjectSchema } from "@/types/project";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 
 export default function Create() {
   const router = useRouter();
@@ -38,15 +39,16 @@ export default function Create() {
         className="mx-5 h-16 border-b-[1px] border-black"
       />
 
-      {/* <Controller
+      <Controller
         name="attachments"
         control={control}
         render={({ field }) => <FileInput className="px-5 w-full" {...field} />}
-      /> */}
+      />
       <div className="w-full mt-5 flex justify-center">
         <ProjectForm
           className="w-2/3 h-full flex flex-col gap-5"
           control={control}
+          mode={ProjectPageModeEnum.ADMIN}
         />
         <ProjectCreateRightPanel
           className="w-[30%] pl-5"
