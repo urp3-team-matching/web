@@ -3,6 +3,7 @@
 import ProjectTextArea from "@/app/projects/[id]/_components/ProjectTextArea";
 import { ProjectPageMode } from "@/app/projects/[id]/page";
 import { KeywordInput } from "@/components/Project/KeywordInput";
+import { cn } from "@/lib/utils";
 import { ProjectInput } from "@/types/project";
 import { Control, Controller } from "react-hook-form";
 
@@ -21,7 +22,13 @@ interface ProjectBodyProps {
 
 const ProjectForm = ({ className, mode, control }: ProjectBodyProps) => {
   return (
-    <div className={className}>
+    <div
+      className={cn(
+        { className },
+        "border flex flex-col w-full gap-5 rounded-lg shadow-sm p-5"
+      )}
+    >
+      <span className="text-2xl font-semibold">프로젝트 정보</span>
       {/* 필드: 키워드 */}
       {mode === undefined ||
         (mode !== undefined && mode && (

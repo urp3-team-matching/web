@@ -4,8 +4,10 @@ import { ProjectPageModeEnum } from "@/app/projects/[id]/_components/constants";
 import ProjectDetailHeader from "@/app/projects/[id]/_components/Header";
 import ProjectDetailRightPanel from "@/app/projects/[id]/_components/RightPanel";
 import ProjectForm from "@/components/Project/Form/ProjectForm";
+import ProjectProposerForm from "@/components/Project/Form/ProjectProposerForm";
 import Spinner from "@/components/ui/spinner";
 import apiClient, { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
+import { deleteProject } from "@/services/project";
 import { ProjectInput, ProjectSchema } from "@/types/project";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -102,6 +104,46 @@ export default function Project({ params }: { params: { id: string } }) {
     router.push(`/projects/${projectId}`);
   }
 
+  // TODO: 비밀번호 입력 받을건지 OR 바로 삭제가능하게 할 건지
+  async function handleDelete() {
+    setLoading(true);
+    try {
+      await deleteProject(projectId, "");
+      alert("프로젝트 삭제 완료");
+      router.push("/");
+    } catch (error) {
+      console.log("Error deleting project:", error);
+      alert("프로젝트 삭제 실패");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // TODO: 모집마감 상태 백엔드에서 추가되면 작업 시작하기
+  {
+    /*
+  async function onCloseRecruit() {
+    if (!project) {
+      alert("프로젝트 정보가 없습니다.");
+      return;
+    }
+    setLoading(true);
+    try {
+      const updatedProject = await apiClient.updateProject(projectId, {
+        ...project,
+        isClosed: true,
+      });
+      setProject(updatedProject);
+      alert("모집이 마감되었습니다.");
+    } catch (error) {
+      console.error("Error closing recruitment:", error);
+      alert("모집 마감 실패");
+    } finally {
+      setLoading(false);
+    }
+  } */
+  }
+
   function toggleMode() {
     if (mode === ProjectPageModeEnum.ADMIN) {
       setmode(null);
@@ -132,20 +174,24 @@ export default function Project({ params }: { params: { id: string } }) {
       />
 
       {/* 본문 */}
-      <div className="w-full flex justify-between">
+      <div className="w-full pt-5 flex justify-between">
         {/* 좌측 */}
-        <ProjectForm
-          className="w-2/3 h-full mt-9 flex flex-col gap-5"
-          mode={mode}
-          control={projectFormControl}
-        />
-
+        <div className="w-[70%] pr-5 pt-5 flex flex-col gap-5">
+          {mode === ProjectPageModeEnum.ADMIN && (
+            <ProjectProposerForm control={projectFormControl} />
+          )}
+          <ProjectForm
+            className="w-full h-full flex flex-col gap-5"
+            mode={mode}
+            control={projectFormControl}
+          />
+        </div>
         {/* 우측 */}
         <ProjectDetailRightPanel
           className="w-[30%]"
           project={project}
+          onDelete={handleDelete}
           mode={mode}
-          control={projectFormControl}
           toggleMode={toggleMode}
           onSubmit={handleSubmit(onSuccess)}
           loading={loading}

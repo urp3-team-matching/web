@@ -2,6 +2,7 @@ import { MAX_APPLICANTS } from "@/constants";
 import { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
 import { cn } from "@/lib/utils";
 import { CircleUser } from "lucide-react";
+import Image from "next/image";
 
 const majorBackgroundColor = [
   "bg-secondary",
@@ -48,24 +49,26 @@ export default function MajorGraph({ project, className }: MajorGraphProps) {
   return (
     <div
       className={cn(
-        "w-full h-auto flex flex-col gap-3 shadow-md rounded-lg p-2",
+        "w-full h-auto flex p-5 flex-col gap-3 shadow-md border rounded-lg",
         className
       )}
     >
+      <span className="text-xl font-semibold">확정 현황</span>
       {/* 유저 아이콘 */}
       <div className="w-full justify-between flex">
-        {objectMajorsCount.map(([major, count]) =>
-          [...Array(count)].map((_, i) => (
-            <CircleUser
-              size={50}
-              key={`${major}-${i}`}
-              className={cn(
-                "text-black font-thin stroke-1",
-                getMajorColor(major, uniqueMajors, "text")
-              )}
-            />
-          ))
-        )}
+        {majors.map((major, i) => (
+          <Image
+            key={i}
+            src={
+              i % 2 === 0
+                ? "/skku/characters/myungryun.svg"
+                : "/skku/characters/yuljeon.svg"
+            }
+            alt="명륜이"
+            width={52}
+            height={72}
+          />
+        ))}
         {[...Array(restApplicantsCount)].map((_, i) => (
           <CircleUser
             key={i}
