@@ -20,6 +20,8 @@ export default function Project({ params }: { params: { id: string } }) {
   const [loading, setLoading] = useState(true);
   const projectId = parseInt(params.id);
   const [project, setProject] = useState<PublicProjectWithForeignKeys>();
+
+  // 프로젝트 ID를 기반으로 프로젝트 데이터를 가져옵니다.
   useEffect(() => {
     (async () => {
       const response = await apiClient.getProjectById(projectId);
@@ -36,6 +38,23 @@ export default function Project({ params }: { params: { id: string } }) {
     "mode",
     parseAsStringEnum<ProjectPageModeEnum>(Object.values(ProjectPageModeEnum))
   );
+  // 페이지가 로드될 때, 현재 프로젝트의 비밀번호를 로컬 스토리지에서 가져옵니다.
+  useEffect(() => {
+    (async () => {
+      const currentPassword = localStorage.getItem(
+        `currentPassword/${projectId}`
+      );
+      if (currentPassword) {
+        const isVerified = await apiClient.verifyProjectPassword(
+          projectId,
+          currentPassword
+        );
+        if (isVerified) {
+          setmode(ProjectPageModeEnum.ADMIN);
+        }
+      }
+    })();
+  }, [projectId, setmode]);
 
   // 프로젝트 정보 폼
   const { handleSubmit, control: projectFormControl } = useForm<ProjectInput>({
@@ -46,8 +65,7 @@ export default function Project({ params }: { params: { id: string } }) {
       method: project?.method || "",
       objective: project?.objective || "",
       result: project?.result || "",
-      // TODO: 첨부파일 처리 로직 추가
-      // attachments: project?.attachments  || "",
+      attachments: project?.attachments || [],
       keywords: project?.keywords || [],
       password: "",
       proposerName: project?.proposerName || "",
@@ -59,7 +77,19 @@ export default function Project({ params }: { params: { id: string } }) {
   async function onSuccess(data: ProjectInput) {
     setLoading(true);
     try {
-      const response = await apiClient.updateProject(projectId, data);
+      const currentPassword = localStorage.getItem(
+        `currentPassword/${projectId}`
+      );
+      if (currentPassword === null) {
+        alert("비밀번호를 입력해주세요.");
+        setmode(null);
+        setLoading(false);
+        return;
+      }
+      const response = await apiClient.updateProject(projectId, {
+        ...data,
+        currentPassword,
+      });
       setProject(response);
     } catch (error) {
       console.error("Error updating project:", error);

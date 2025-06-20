@@ -51,6 +51,10 @@ const AdminSwitch = forwardRef<HTMLDivElement, AdminSwitchProps>(
         });
         return;
       }
+      localStorage.setItem(
+        `currentPassword/${projectId}`,
+        data.currentPassword
+      );
       setOpen(false);
       toggleMode();
     }
@@ -64,7 +68,22 @@ const AdminSwitch = forwardRef<HTMLDivElement, AdminSwitchProps>(
             if (mode === ProjectPageModeEnum.ADMIN) {
               toggleMode();
             } else {
-              setOpen(true);
+              const currentPassword = localStorage.getItem(
+                `currentPassword/${projectId}`
+              );
+              if (currentPassword) {
+                apiClient
+                  .verifyProjectPassword(projectId, currentPassword)
+                  .then((isVerified) => {
+                    if (isVerified) {
+                      toggleMode();
+                      return;
+                    }
+                  });
+              } else {
+                // 비밀번호가 없거나 틀린 경우, 모달 열기
+                setOpen(true);
+              }
             }
           }}
         />

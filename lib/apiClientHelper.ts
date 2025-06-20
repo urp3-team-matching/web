@@ -12,6 +12,7 @@ import type {
   ApplicantForProject,
   GetProjectsQueryInput,
   ProjectInput,
+  ProjectUpdateInput,
 } from "@/types/project";
 import { PaginatedType, PublicType } from "@/types/utils";
 import { Applicant, Post, Project } from "@prisma/client";
@@ -150,7 +151,7 @@ class ApiClient {
 
   public async updateProject(
     id: number,
-    data: ProjectInput
+    data: ProjectUpdateInput
   ): Promise<PublicProjectWithForeignKeys> {
     const request = await this._request(`/api/projects/${id}`, "PUT", data);
 
