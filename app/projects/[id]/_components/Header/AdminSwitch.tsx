@@ -78,10 +78,13 @@ const AdminSwitch = forwardRef<HTMLDivElement, AdminSwitchProps>(
                     if (isVerified) {
                       toggleMode();
                       return;
+                    } else {
+                      // 저장된 비밀번호가 틀린 경우, 모달 열기
+                      setOpen(true);
                     }
                   });
               } else {
-                // 비밀번호가 없거나 틀린 경우, 모달 열기
+                // 비밀번호가 없는 경우, 모달 열기
                 setOpen(true);
               }
             }
