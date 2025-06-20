@@ -95,6 +95,9 @@ importers:
       tailwindcss-animate:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@4.1.7)
+      uuid:
+        specifier: ^11.1.0
+        version: 11.1.0
       zod:
         specifier: ^3.24.4
         version: 3.25.20
@@ -2495,6 +2498,10 @@ packages:
     peerDependenciesMeta:
       '@types/react':
         optional: true
+
+  uuid@11.1.0:
+    resolution: {integrity: sha512-0/A9rDy9P7cJ+8w1c9WD9V//9Wj15Ce2MPz8Ri6032usz+NfePxx5AcN3bN+r6ZL6jEo066/yNYB3tn4pQEx+A==}
+    hasBin: true
 
   v8-compile-cache-lib@3.0.1:
     resolution: {integrity: sha512-wa7YjyUGfNZngI/vtK0UHAN+lgDCxBPCylVXGp0zu59Fz5aiGtNXaq3DhIov063MorB+VfufLh3JlF2KdTK3xg==}
@@ -5124,6 +5131,8 @@ snapshots:
       tslib: 2.8.1
     optionalDependencies:
       '@types/react': 18.3.22
+
+  uuid@11.1.0: {}
 
   v8-compile-cache-lib@3.0.1: {}
 
