@@ -22,6 +22,7 @@ export default function Create() {
     setLoading(true);
     try {
       const response = await apiClient.createProject(data);
+      localStorage.setItem(`currentPassword/${response.id}`, data.password);
       router.push(`/projects/${response.id}`);
     } catch {
       alert("프로젝트 생성 실패!");
