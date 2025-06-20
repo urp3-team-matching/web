@@ -195,7 +195,9 @@ class ApiClient {
           throw new Error("Failed to delete project");
       }
     }
-
+    if (request.status === 204) {
+      return; // No content, deletion successful
+    }
     return await request.json();
   }
 

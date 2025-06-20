@@ -7,7 +7,6 @@ import ProjectForm from "@/components/Project/Form/ProjectForm";
 import ProjectProposerForm from "@/components/Project/Form/ProjectProposerForm";
 import Spinner from "@/components/ui/spinner";
 import apiClient, { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
-import { deleteProject } from "@/services/project";
 import { ProjectInput, ProjectSchema } from "@/types/project";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -107,8 +106,10 @@ export default function Project({ params }: { params: { id: string } }) {
   // TODO: 비밀번호 입력 받을건지 OR 바로 삭제가능하게 할 건지
   async function handleDelete() {
     setLoading(true);
+    const currentPassword =
+      localStorage.getItem(`currentPassword/${projectId}`) || "";
     try {
-      await deleteProject(projectId, "");
+      await apiClient.deleteProject(projectId, currentPassword);
       alert("프로젝트 삭제 완료");
       router.push("/");
     } catch (error) {

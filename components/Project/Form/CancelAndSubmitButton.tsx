@@ -26,18 +26,18 @@ const CancelAndSubmitButton = ({
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className={cn("flex justify-center gap-2", className)}>
+    <div className={cn("flex w-full justify-between gap-2", className)}>
       {/* 취소 버튼 */}
       <Button
         onClick={onDelete}
         type="button"
-        className="text-white cursor-pointer text-base font-normal flex-1 h-10 bg-red-400 hover:bg-red-300 rounded-lg"
+        className="text-white flex-1 cursor-pointer text-base font-normal  h-10 bg-red-400 hover:bg-red-300 rounded-lg"
       >
         삭제
       </Button>
       <Button
         type="button"
-        className="text-white cursor-pointer text-base font-normal flex-1 h-10 bg-orange-400 hover:bg-orange-300 rounded-lg"
+        className="text-white flex-1 cursor-pointer text-base font-normal  h-10 bg-orange-400 hover:bg-orange-300 rounded-lg"
       >
         모집마감
       </Button>
@@ -45,9 +45,9 @@ const CancelAndSubmitButton = ({
       {/* 저장 버튼 */}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild disabled={loading}>
-          <div className="text-white flex-1 flex justify-center items-center cursor-pointer text-base font-normal h-10 bg-secondary hover:bg-secondary/90 rounded-lg">
+          <Button className="text-white flex-1 flex justify-center items-center cursor-pointer text-base font-normal h-10 bg-secondary hover:bg-secondary/90 rounded-lg">
             저장
-          </div>
+          </Button>
         </DialogTrigger>
         <DialogContent className="w-56">
           <DialogTitle>저장하시겠습니까?</DialogTitle>

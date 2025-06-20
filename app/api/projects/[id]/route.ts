@@ -110,7 +110,7 @@ export async function DELETE(request: NextRequest, { params }: RouteContext) {
       throw new UnauthorizedError("Current password is required for deletion.");
 
     await deleteProject(projectId, currentPassword);
-    return NextResponse.json(null, { status: 204 });
+    return new NextResponse(null, { status: 204 });
   } catch (error) {
     if (error instanceof UnauthorizedError)
       return NextResponse.json({ error: error.message }, { status: 403 });

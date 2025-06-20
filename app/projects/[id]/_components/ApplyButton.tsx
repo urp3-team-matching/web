@@ -58,7 +58,6 @@ const ProjectApplyButton = ({
   async function onApply(data: ApplicantInput) {
     try {
       setIsSubmitting(true);
-
       const response = await apiClient.createApplicant(projectId, data);
       onSuccess(response);
       reset(); // 폼 초기화
