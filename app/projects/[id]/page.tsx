@@ -58,7 +58,11 @@ export default function Project({ params }: { params: { id: string } }) {
   }, [projectId, setmode]);
 
   // 프로젝트 정보 폼
-  const { handleSubmit, control: projectFormControl } = useForm<ProjectInput>({
+  const {
+    handleSubmit,
+    control: projectFormControl,
+    getValues,
+  } = useForm<ProjectInput>({
     resolver: zodResolver(ProjectSchema),
     values: {
       name: project?.name || "",
@@ -106,14 +110,21 @@ export default function Project({ params }: { params: { id: string } }) {
   // TODO: 비밀번호 입력 받을건지 OR 바로 삭제가능하게 할 건지
   async function handleDelete() {
     setLoading(true);
-    const currentPassword =
+    let currentPassword =
       localStorage.getItem(`currentPassword/${projectId}`) || "";
+    if (currentPassword === "") {
+      currentPassword = getValues("password");
+    }
     try {
       await apiClient.deleteProject(projectId, currentPassword);
       alert("프로젝트 삭제 완료");
       router.push("/");
     } catch (error) {
       console.log("Error deleting project:", error);
+      if (currentPassword === "") {
+        alert("비밀번호를 입력해주세요.");
+        return;
+      }
       alert("프로젝트 삭제 실패");
     } finally {
       setLoading(false);

@@ -24,15 +24,30 @@ const proposerTypes: { label: string; value: ProposerType }[] = [
 interface ProposerFieldProps {
   className?: string;
   control: Control<ProjectInput>;
+  variant?: "default" | "sm";
 }
 
-const ProjectProposerForm = ({ className, control }: ProposerFieldProps) => {
+const ProjectProposerForm = ({
+  className,
+  control,
+  variant = "default",
+}: ProposerFieldProps) => {
   return (
     <div className={cn({ className }, "border rounded-lg shadow-sm p-5")}>
       <span className="text-2xl font-semibold">작성자정보</span>
-      <div className="w-full grid grid-cols-2 grid-rows-2 pt-6 justify-center gap-3">
+      <div
+        className={cn(
+          variant === "default" ? "grid-cols-2" : "grid-cols-1",
+          "grid grid-rows-2 pt-6 justify-center gap-3"
+        )}
+      >
         <div className="flex items-center">
-          <span className="text-sm whitespace-nowrap w-14 text-center font-semibold">
+          <span
+            className={cn(
+              variant === "sm" ? "mr-3" : "",
+              "text-sm whitespace-nowrap w-14 text-center font-semibold"
+            )}
+          >
             이름
           </span>
           <div className="w-2/3">
@@ -75,8 +90,18 @@ const ProjectProposerForm = ({ className, control }: ProposerFieldProps) => {
           control={control}
           render={({ field: proposerTypeField }) => (
             <>
-              <div className="flex items-center">
-                <span className="text-sm px-3 font-semibold w-14 text-center">
+              <div
+                className={cn(
+                  variant === "sm" ? "my-2" : "",
+                  "flex items-center"
+                )}
+              >
+                <span
+                  className={cn(
+                    variant === "sm" ? "mr-3" : "",
+                    "text-sm px-3 font-semibold w-14 text-center"
+                  )}
+                >
                   구분
                 </span>
                 <div>
@@ -108,7 +133,12 @@ const ProjectProposerForm = ({ className, control }: ProposerFieldProps) => {
 
               {proposerTypeField.value === ProposerType.STUDENT && (
                 <div className="flex items-center">
-                  <span className="text-sm font-semibold w-14 text-start mr-3">
+                  <span
+                    className={cn(
+                      variant === "sm" ? "flex justify-center" : "",
+                      "text-sm font-semibold w-14 text-start mr-3"
+                    )}
+                  >
                     전공
                   </span>
                   <div className="w-2/3">
