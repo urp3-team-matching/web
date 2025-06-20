@@ -8,6 +8,7 @@ export const ApplicantSchema = z.object({
   major: z.string().min(1, "Major is required."),
   phone: z.string().min(1, "Phone number is required."),
   introduction: z.string().min(1, "Introduction is required."),
+  status: z.enum(["PENDING", "ACCEPTED", "REJECTED"]).default("PENDING"),
   password: passwordField,
 });
 export const ApplicantUpdateSchema = ApplicantSchema.extend({

@@ -14,6 +14,9 @@ export const ProjectSchema = z.object({
   proposerName: z.string().min(1, "Proposer name is required."),
   proposerType: z.nativeEnum(ProposerType),
   proposerMajor: z.string().optional(),
+  email: z.string().email("Invalid email format").optional(),
+  chatLink: z.string().url("Invalid URL format").optional(),
+  isClosed: z.boolean().default(false),
 });
 export const ProjectUpdateSchema = ProjectSchema.extend({
   currentPassword: passwordField,
