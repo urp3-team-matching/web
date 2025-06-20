@@ -81,16 +81,12 @@ export default function Project({ params }: { params: { id: string } }) {
 
   async function onSuccess(data: ProjectInput) {
     setLoading(true);
+    let currentPassword =
+      localStorage.getItem(`currentPassword/${projectId}`) || "";
+    if (currentPassword === "") {
+      currentPassword = getValues("password");
+    }
     try {
-      const currentPassword = localStorage.getItem(
-        `currentPassword/${projectId}`
-      );
-      if (currentPassword === null) {
-        alert("비밀번호를 입력해주세요.");
-        setmode(null);
-        setLoading(false);
-        return;
-      }
       const response = await apiClient.updateProject(projectId, {
         ...data,
         currentPassword,
