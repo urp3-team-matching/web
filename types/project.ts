@@ -10,7 +10,7 @@ export const ProjectSchema = z.object({
   result: z.string(),
   attachments: z.array(z.string()).optional(),
   keywords: z.array(z.string()).optional(),
-  password: passwordField,
+  password: passwordField.optional(),
   proposerName: z.string().min(1, "Proposer name is required."),
   proposerType: z.nativeEnum(ProposerType),
   proposerMajor: z.string().optional(),
