@@ -1,5 +1,6 @@
 import { MAX_APPLICANTS } from "@/constants";
 import {
+  BadRequestError,
   MaxApplicantsError,
   NotFoundError,
   UnauthorizedError,
@@ -11,7 +12,7 @@ import {
   applicantPublicSelection,
   ApplicantUpdateInput,
 } from "@/types/applicant";
-import { projectPublicSelection } from "@/types/project";
+import { ApplicantForProject, projectPublicSelection } from "@/types/project";
 import { PasswordOmittedType } from "@/types/utils";
 import { Applicant } from "@prisma/client";
 import bcrypt from "bcryptjs";
@@ -20,7 +21,7 @@ const SALT_ROUNDS = 10;
 type PasswordOmittedApplicant = PasswordOmittedType<Applicant>;
 
 // 지원자 생성 (비밀번호 해싱)
-export async function createApplicant(
+export async function applyToProject(
   projectId: number,
   data: ApplicantInput
 ): Promise<PasswordOmittedApplicant> {
@@ -172,4 +173,88 @@ export async function deleteApplicant(
     select: applicantPublicSelection, // passwordHash 제외 확인
   });
   return deletedApplicant;
+}
+
+export async function acceptApplicant(
+  projectId: number,
+  applicantId: number
+): Promise<ApplicantForProject> {
+  // 프로젝트와 지원자 존재 여부 확인
+  const project = await prisma.project.findUnique({
+    where: { id: projectId },
+    select: { id: true, applicants: true },
+  });
+
+  if (!project) {
+    throw new NotFoundError("Project not found.");
+  }
+
+  const applicant = await prisma.applicant.findUnique({
+    where: { id: applicantId },
+    select: applicantPublicSelection,
+  });
+
+  if (!applicant || applicant.projectId !== projectId) {
+    throw new NotFoundError("Applicant not found for this project.");
+  }
+
+  // 지원자 상태가 이미 승인된 경우
+  if (applicant.status === "APPROVED") {
+    throw new BadRequestError("Applicant is already approved.");
+  }
+
+  // 지원자 수가 최대 지원자 수를 초과하는 경우
+  const currentApplicantsCount = await prisma.applicant.count({
+    where: { projectId, status: "APPROVED" },
+  });
+  if (currentApplicantsCount >= MAX_APPLICANTS) {
+    throw new MaxApplicantsError();
+  }
+
+  // 지원자 승인
+  const updatedApplicant = await prisma.applicant.update({
+    where: { id: applicantId },
+    data: { status: "APPROVED" },
+    select: applicantPublicSelection,
+  });
+
+  return updatedApplicant;
+}
+
+export async function rejectApplicant(
+  projectId: number,
+  applicantId: number
+): Promise<ApplicantForProject> {
+  // 프로젝트와 지원자 존재 여부 확인
+  const project = await prisma.project.findUnique({
+    where: { id: projectId },
+    select: { id: true, applicants: true },
+  });
+
+  if (!project) {
+    throw new NotFoundError("Project not found.");
+  }
+
+  const applicant = await prisma.applicant.findUnique({
+    where: { id: applicantId },
+    select: applicantPublicSelection,
+  });
+
+  if (!applicant || applicant.projectId !== projectId) {
+    throw new NotFoundError("Applicant not found for this project.");
+  }
+
+  // 지원자 상태가 이미 거절된 경우
+  if (applicant.status === "REJECTED") {
+    throw new BadRequestError("Applicant is already rejected.");
+  }
+
+  // 지원자 거절
+  const updatedApplicant = await prisma.applicant.update({
+    where: { id: applicantId },
+    data: { status: "REJECTED" },
+    select: applicantPublicSelection,
+  });
+
+  return updatedApplicant;
 }

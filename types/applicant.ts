@@ -1,5 +1,5 @@
 import { passwordField } from "@/types/utils";
-import { Prisma } from "@prisma/client";
+import { ApplicantStatus, Prisma } from "@prisma/client";
 import { z } from "zod";
 
 export const ApplicantSchema = z.object({
@@ -8,6 +8,7 @@ export const ApplicantSchema = z.object({
   major: z.string().min(1, "Major is required."),
   phone: z.string().min(1, "Phone number is required."),
   introduction: z.string().min(1, "Introduction is required."),
+  status: z.nativeEnum(ApplicantStatus),
   password: passwordField,
 });
 export const ApplicantUpdateSchema = ApplicantSchema.extend({
@@ -23,6 +24,7 @@ export const applicantPublicSelection: Prisma.ApplicantSelect = {
   major: true,
   phone: true,
   introduction: true,
+  status: true,
   projectId: true, // 어떤 프로젝트의 지원자인지 표시
   createdDatetime: true,
   updatedDatetime: true,

@@ -300,7 +300,7 @@ class ApiClient {
     return await response.json();
   }
 
-  public async createApplicant(
+  public async applyToProject(
     projectId: number,
     data: ApplicantInput
   ): Promise<PublicApplicant> {
@@ -380,6 +380,110 @@ class ApiClient {
           throw new InternalServerError();
         default:
           throw new Error("Failed to delete applicant");
+      }
+    }
+
+    return await response.json();
+  }
+
+  public async acceptApplicant(
+    projectId: number,
+    applicantId: number
+  ): Promise<PublicApplicant> {
+    const response = await this._request(
+      `/api/projects/${projectId}/applicants/${applicantId}/accept`,
+      "POST"
+    );
+
+    if (!response.ok) {
+      switch (response.status) {
+        case 400:
+          throw new BadRequestError();
+        case 404:
+          throw new NotFoundError();
+        case 409:
+          throw new MaxApplicantsError();
+        case 500:
+          throw new InternalServerError();
+        default:
+          throw new Error("Failed to accept applicant");
+      }
+    }
+
+    return await response.json();
+  }
+
+  public async rejectApplicant(
+    projectId: number,
+    applicantId: number
+  ): Promise<PublicApplicant> {
+    const response = await this._request(
+      `/api/projects/${projectId}/applicants/${applicantId}/reject`,
+      "POST"
+    );
+
+    if (!response.ok) {
+      switch (response.status) {
+        case 400:
+          throw new BadRequestError();
+        case 404:
+          throw new NotFoundError();
+        case 500:
+          throw new InternalServerError();
+        default:
+          throw new Error("Failed to reject applicant");
+      }
+    }
+
+    return await response.json();
+  }
+
+  public async closeProject(
+    id: number,
+    currentPassword: string
+  ): Promise<PublicProjectWithForeignKeys> {
+    const response = await this._request(`/api/projects/${id}/close`, "POST", {
+      currentPassword,
+    });
+
+    if (!response.ok) {
+      switch (response.status) {
+        case 400:
+          throw new BadRequestError();
+        case 401:
+          throw new UnauthorizedError();
+        case 404:
+          throw new NotFoundError();
+        case 500:
+          throw new InternalServerError("Internal Server Error");
+        default:
+          throw new Error("Failed to close project");
+      }
+    }
+
+    return await response.json();
+  }
+
+  public async reopenProject(
+    id: number,
+    currentPassword: string
+  ): Promise<PublicProjectWithForeignKeys> {
+    const response = await this._request(`/api/projects/${id}/reopen`, "POST", {
+      currentPassword,
+    });
+
+    if (!response.ok) {
+      switch (response.status) {
+        case 400:
+          throw new BadRequestError();
+        case 401:
+          throw new UnauthorizedError();
+        case 404:
+          throw new NotFoundError();
+        case 500:
+          throw new InternalServerError("Internal Server Error");
+        default:
+          throw new Error("Failed to reopen project");
       }
     }
 
