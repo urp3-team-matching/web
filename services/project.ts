@@ -335,3 +335,65 @@ export async function validateProjectPassword(
 
   return await verifyResourcePassword(password, project.passwordHash);
 }
+
+export async function reopenProject(
+  id: number,
+  currentPassword: string
+): Promise<Project> {
+  const projectToReopen = await prisma.project.findUnique({
+    where: { id },
+    select: {
+      ...projectPublicSelection,
+      passwordHash: true, // 비밀번호 해시 포함
+    },
+  });
+
+  if (!projectToReopen) {
+    throw new NotFoundError("Project not found for reopening.");
+  }
+
+  const isAuthorized = await verifyResourcePassword(
+    currentPassword,
+    projectToReopen.passwordHash
+  );
+  if (!isAuthorized) {
+    throw new UnauthorizedError("Incorrect current password for reopening.");
+  }
+
+  return await prisma.project.update({
+    where: { id },
+    data: { status: "RECRUITING" },
+    select: projectPublicSelection, // passwordHash 제외 확인
+  });
+}
+
+export async function closeProject(
+  id: number,
+  currentPassword: string
+): Promise<Project> {
+  const projectToClose = await prisma.project.findUnique({
+    where: { id },
+    select: {
+      ...projectPublicSelection,
+      passwordHash: true, // 비밀번호 해시 포함
+    },
+  });
+
+  if (!projectToClose) {
+    throw new NotFoundError("Project not found for closing.");
+  }
+
+  const isAuthorized = await verifyResourcePassword(
+    currentPassword,
+    projectToClose.passwordHash
+  );
+  if (!isAuthorized) {
+    throw new UnauthorizedError("Incorrect current password for closing.");
+  }
+
+  return await prisma.project.update({
+    where: { id },
+    data: { status: "CLOSED" },
+    select: projectPublicSelection, // passwordHash 제외 확인
+  });
+}

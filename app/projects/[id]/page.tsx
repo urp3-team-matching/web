@@ -71,6 +71,7 @@ export default function Project({ params }: { params: { id: string } }) {
       proposerName: project?.proposerName || "",
       proposerType: project?.proposerType || "STUDENT",
       proposerMajor: project?.proposerMajor || "",
+      status: project?.status || "RECRUITING",
     },
   });
 

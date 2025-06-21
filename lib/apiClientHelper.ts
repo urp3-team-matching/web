@@ -435,6 +435,58 @@ class ApiClient {
 
     return await response.json();
   }
+
+  public async closeProject(
+    id: number,
+    currentPassword: string
+  ): Promise<PublicProjectWithForeignKeys> {
+    const response = await this._request(`/api/projects/${id}/close`, "POST", {
+      currentPassword,
+    });
+
+    if (!response.ok) {
+      switch (response.status) {
+        case 400:
+          throw new BadRequestError();
+        case 401:
+          throw new UnauthorizedError();
+        case 404:
+          throw new NotFoundError();
+        case 500:
+          throw new InternalServerError("Internal Server Error");
+        default:
+          throw new Error("Failed to close project");
+      }
+    }
+
+    return await response.json();
+  }
+
+  public async reopenProject(
+    id: number,
+    currentPassword: string
+  ): Promise<PublicProjectWithForeignKeys> {
+    const response = await this._request(`/api/projects/${id}/reopen`, "POST", {
+      currentPassword,
+    });
+
+    if (!response.ok) {
+      switch (response.status) {
+        case 400:
+          throw new BadRequestError();
+        case 401:
+          throw new UnauthorizedError();
+        case 404:
+          throw new NotFoundError();
+        case 500:
+          throw new InternalServerError("Internal Server Error");
+        default:
+          throw new Error("Failed to reopen project");
+      }
+    }
+
+    return await response.json();
+  }
 }
 
 // 애플리케이션 로드 시 한번만 호출되도록 처리
