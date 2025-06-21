@@ -1,4 +1,3 @@
-import CancelAndSubmitButton from "@/components/Project/Form/CancelAndSubmitButton";
 import ProjectProposerForm from "@/components/Project/Form/ProjectProposerForm";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -17,7 +16,6 @@ const ProjectCreateRightPanel = ({
   control,
   onSubmit,
   className,
-  loading = false,
 }: ProjectCreateRightPanelProps) => {
   const router = useRouter();
 
@@ -30,7 +28,6 @@ const ProjectCreateRightPanel = ({
       <ProjectProposerForm
         className="w-full p-5 flex flex-col gap-3 border rounded-lg h-auto"
         control={control}
-        variant="sm"
       />
       <div className="flex justify-between gap-3">
         <Button
