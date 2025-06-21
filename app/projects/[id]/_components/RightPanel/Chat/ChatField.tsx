@@ -132,7 +132,6 @@ export default function ChatField({ projectId }: ChatFieldProps) {
           filter: `projectId=eq.${projectId}`,
         },
         (payload) => {
-          // console.log("New message via Supabase (real-time):", payload.new);
           setRawMessages((prevMessages) => {
             if (prevMessages.some((m) => m.id === payload.new.id)) {
               return prevMessages;
@@ -143,12 +142,7 @@ export default function ChatField({ projectId }: ChatFieldProps) {
       )
       .subscribe((status) => {
         if (status === "SUBSCRIBED") {
-          // console.log(`Successfully subscribed to project chat: ${projectId}`);
         } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
-          // console.error(
-          //   `Supabase subscription error for project ${projectId}:`,
-          //   err || status
-          // );
         }
       });
 

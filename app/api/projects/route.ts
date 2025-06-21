@@ -34,8 +34,6 @@ export async function GET(request: NextRequest) {
 
     const validatedQuery = GetProjectsQuerySchema.parse(queryParams);
 
-    console.log(`validatedQuery:`, validatedQuery);
-
     const result = await getAllProjects(validatedQuery);
     return NextResponse.json(result, { status: 200 });
   } catch (error) {

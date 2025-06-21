@@ -141,8 +141,6 @@ export async function getAllProjects(
   // recruiting 필터링이 있는 경우, 전체 데이터를 대상으로 다시 계산 필요
   let finalTotalCount = totalCount;
 
-  console.log(status);
-
   if (status) {
     // 이 경우에는 모든 프로젝트를 가져와서 applicants 수로 필터링해야 함
     const allProjects = await prisma.project.findMany({
@@ -154,8 +152,6 @@ export async function getAllProjects(
     const filteredAllProjects = allProjects.filter((project) => {
       return project.status === status;
     });
-
-    console.log(filteredAllProjects);
 
     // 총 항목 수 업데이트
     finalTotalCount = filteredAllProjects.length;
