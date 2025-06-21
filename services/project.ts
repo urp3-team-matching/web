@@ -1,5 +1,6 @@
 import { MAX_APPLICANTS } from "@/constants";
 import {
+  BadRequestError,
   NotFoundError,
   UnauthorizedError,
   verifyResourcePassword,
@@ -30,14 +31,40 @@ export async function createProject(data: ProjectInput): Promise<Project> {
     SALT_ROUNDS
   );
 
-  const createdProject = await prisma.project.create({
-    data: {
-      ...projectDataRest,
-      passwordHash: projectPasswordHash,
-    },
-    select: projectPublicSelection, // passwordHash 제외 확인
-  });
-  return createdProject;
+  if (data.proposerType === "STUDENT") {
+    // 학생이 제안하는 경우 자동으로 해당 학생을 지원자로도 등록
+    if (!data.proposerMajor) {
+      throw new BadRequestError(
+        "Proposer major is required when proposer type is STUDENT."
+      );
+    }
+    return await prisma.project.create({
+      data: {
+        ...projectDataRest,
+        passwordHash: projectPasswordHash,
+        applicants: {
+          create: {
+            name: data.proposerName,
+            email: data.email || "", // 본인 이메일은 저장할 필요 없음
+            major: data.proposerMajor,
+            phone: "", // 본인 전화번호는 저장할 필요 없음
+            introduction: "",
+            status: "APPROVED",
+            passwordHash: projectPasswordHash, // 비밀번호 해시 저장
+          },
+        },
+      },
+      select: projectPublicSelection, // passwordHash 제외 확인
+    });
+  } else {
+    return await prisma.project.create({
+      data: {
+        ...projectDataRest,
+        passwordHash: projectPasswordHash,
+      },
+      select: projectPublicSelection, // passwordHash 제외 확인
+    });
+  }
 }
 
 // 모든 프로젝트 조회 (페이지네이션, 필터링, 정렬)
@@ -117,7 +144,7 @@ export async function getAllProjects(
 
   if (recruiting) {
     // recruiting 필터가 적용된 경우, 전체 데이터를 가져와서 필터링 및 카운트 해야 함
-    if (recruiting === "closed" || recruiting === "recruiting") {
+    if (recruiting === "CLOSED" || recruiting === "RECRUITING") {
       // 이 경우에는 모든 프로젝트를 가져와서 applicants 수로 필터링해야 함
       const allProjects = await prisma.project.findMany({
         where: whereConditions,
@@ -126,10 +153,10 @@ export async function getAllProjects(
 
       // 필터링 로직 적용
       const filteredAllProjects = allProjects.filter((project) => {
-        if (recruiting === "closed") {
+        if (recruiting === "CLOSED") {
           return project.applicants.length >= MAX_APPLICANTS;
         } else {
-          // recruiting === "recruiting"
+          // recruiting === "RECRUITING"
           return project.applicants.length < MAX_APPLICANTS;
         }
       });
@@ -143,11 +170,11 @@ export async function getAllProjects(
   }
 
   // 앱의 다른 부분과의 일관성을 위해 항상 filteredProjects를 사용하게 함
-  if (recruiting === "closed") {
+  if (recruiting === "CLOSED") {
     filteredProjects = projectsFromDb.filter(
       (project) => project.applicants.length >= MAX_APPLICANTS
     );
-  } else if (recruiting === "recruiting") {
+  } else if (recruiting === "RECRUITING") {
     filteredProjects = projectsFromDb.filter(
       (project) => project.applicants.length < MAX_APPLICANTS
     );
