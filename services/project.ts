@@ -1,4 +1,3 @@
-import { MAX_APPLICANTS } from "@/constants";
 import {
   BadRequestError,
   NotFoundError,
@@ -80,7 +79,7 @@ export async function getAllProjects(
     keyword,
     proposerType,
     searchTerm,
-    recruiting,
+    status,
   } = query;
   const skip = (page - 1) * limit;
   const take = limit;
@@ -142,42 +141,27 @@ export async function getAllProjects(
   // recruiting 필터링이 있는 경우, 전체 데이터를 대상으로 다시 계산 필요
   let finalTotalCount = totalCount;
 
-  if (recruiting) {
-    // recruiting 필터가 적용된 경우, 전체 데이터를 가져와서 필터링 및 카운트 해야 함
-    if (recruiting === "CLOSED" || recruiting === "RECRUITING") {
-      // 이 경우에는 모든 프로젝트를 가져와서 applicants 수로 필터링해야 함
-      const allProjects = await prisma.project.findMany({
-        where: whereConditions,
-        select: projectPublicSelection,
-      });
+  console.log(status);
 
-      // 필터링 로직 적용
-      const filteredAllProjects = allProjects.filter((project) => {
-        if (recruiting === "CLOSED") {
-          return project.applicants.length >= MAX_APPLICANTS;
-        } else {
-          // recruiting === "RECRUITING"
-          return project.applicants.length < MAX_APPLICANTS;
-        }
-      });
+  if (status) {
+    // 이 경우에는 모든 프로젝트를 가져와서 applicants 수로 필터링해야 함
+    const allProjects = await prisma.project.findMany({
+      where: whereConditions,
+      select: projectPublicSelection,
+    });
 
-      // 총 항목 수 업데이트
-      finalTotalCount = filteredAllProjects.length;
+    // 필터링 로직 적용
+    const filteredAllProjects = allProjects.filter((project) => {
+      return project.status === status;
+    });
 
-      // 현재 페이지의 데이터만 추출 (메모리에서 페이지네이션)
-      filteredProjects = filteredAllProjects.slice(skip, skip + take);
-    }
-  }
+    console.log(filteredAllProjects);
 
-  // 앱의 다른 부분과의 일관성을 위해 항상 filteredProjects를 사용하게 함
-  if (recruiting === "CLOSED") {
-    filteredProjects = projectsFromDb.filter(
-      (project) => project.applicants.length >= MAX_APPLICANTS
-    );
-  } else if (recruiting === "RECRUITING") {
-    filteredProjects = projectsFromDb.filter(
-      (project) => project.applicants.length < MAX_APPLICANTS
-    );
+    // 총 항목 수 업데이트
+    finalTotalCount = filteredAllProjects.length;
+
+    // 현재 페이지의 데이터만 추출 (메모리에서 페이지네이션)
+    filteredProjects = filteredAllProjects.slice(skip, skip + take);
   }
 
   return {

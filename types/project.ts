@@ -34,7 +34,7 @@ export const GetProjectsQuerySchema = z.object({
   keyword: z.string().optional(),
   proposerType: z.nativeEnum(ProposerType).optional(),
   searchTerm: z.string().optional(),
-  recruiting: z.nativeEnum(ProjectStatus).optional(),
+  status: z.nativeEnum(ProjectStatus).optional(),
 });
 export type GetProjectsQueryInput = z.infer<typeof GetProjectsQuerySchema>;
 

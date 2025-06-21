@@ -12,16 +12,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-enum ProjectFilter {
-  RECRUITING = "recruiting",
-  CLOSED = "closed",
-}
+import { ProjectStatus } from "@prisma/client";
 
 const Filter = () => {
   const [filter, setFilter] = useQueryState(
-    "recruiting" as keyof z.infer<typeof GetProjectsQuerySchema>,
-    parseAsStringEnum<ProjectFilter>(Object.values(ProjectFilter))
+    "status" as keyof z.infer<typeof GetProjectsQuerySchema>,
+    parseAsStringEnum<ProjectStatus>(Object.values(ProjectStatus))
   );
 
   return (
@@ -33,15 +29,15 @@ const Filter = () => {
         </TabTrigger>
 
         <TabTrigger
-          active={filter === ProjectFilter.RECRUITING}
-          onClick={() => setFilter(ProjectFilter.RECRUITING)}
+          active={filter === ProjectStatus.RECRUITING}
+          onClick={() => setFilter(ProjectStatus.RECRUITING)}
         >
           모집중
         </TabTrigger>
 
         <TabTrigger
-          active={filter === ProjectFilter.CLOSED}
-          onClick={() => setFilter(ProjectFilter.CLOSED)}
+          active={filter === ProjectStatus.CLOSED}
+          onClick={() => setFilter(ProjectStatus.CLOSED)}
         >
           모집마감
         </TabTrigger>
@@ -52,7 +48,7 @@ const Filter = () => {
           value={filter ?? "all"} // null이면 all로 보여줌
           onValueChange={(value) => {
             if (value === "all") setFilter(null);
-            else setFilter(value as ProjectFilter);
+            else setFilter(value as ProjectStatus);
           }}
         >
           <SelectTrigger className="w-[110px]">
@@ -60,8 +56,8 @@ const Filter = () => {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">전체</SelectItem>
-            <SelectItem value={ProjectFilter.RECRUITING}>모집중</SelectItem>
-            <SelectItem value={ProjectFilter.CLOSED}>모집마감</SelectItem>
+            <SelectItem value={ProjectStatus.RECRUITING}>모집중</SelectItem>
+            <SelectItem value={ProjectStatus.CLOSED}>모집마감</SelectItem>
           </SelectContent>
         </Select>
       </div>
