@@ -59,7 +59,7 @@ const ProjectApplyButton = ({
     try {
       setIsSubmitting(true);
 
-      const response = await apiClient.createApplicant(projectId, data);
+      const response = await apiClient.applyToProject(projectId, data);
       onSuccess(response);
       reset(); // 폼 초기화
       setOpen(false);
