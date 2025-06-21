@@ -1,5 +1,6 @@
 import CancelAndSubmitButton from "@/components/Project/Form/CancelAndSubmitButton";
 import ProjectProposerForm from "@/components/Project/Form/ProjectProposerForm";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ProjectInput } from "@/types/project";
 import { useRouter } from "next/navigation";
@@ -26,18 +27,25 @@ const ProjectCreateRightPanel = ({
 
   return (
     <div className={cn("text-lg font-semibold flex flex-col gap-5", className)}>
-      <div>프로젝트 제안자</div>
-
       <ProjectProposerForm
         className="w-full p-5 flex flex-col gap-3 border rounded-lg h-auto"
         control={control}
+        variant="sm"
       />
-
-      <CancelAndSubmitButton
-        onCancel={onCancel}
-        onSubmit={onSubmit}
-        loading={loading}
-      />
+      <div className="flex justify-between gap-3">
+        <Button
+          className="w-[30%] bg-slate-200 hover:bg-slate-300 text-black"
+          onClick={onCancel}
+        >
+          취소
+        </Button>
+        <Button
+          className="bg-green-400 w-[65%] hover:bg-green-500"
+          onClick={onSubmit}
+        >
+          등록
+        </Button>
+      </div>
     </div>
   );
 };

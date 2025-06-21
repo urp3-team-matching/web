@@ -58,7 +58,6 @@ const ProjectApplyButton = ({
   async function onApply(data: ApplicantInput) {
     try {
       setIsSubmitting(true);
-
       const response = await apiClient.applyToProject(projectId, data);
       onSuccess(response);
       reset(); // 폼 초기화
@@ -85,8 +84,11 @@ const ProjectApplyButton = ({
       <DialogTrigger asChild>
         <Button
           disabled={!active}
-          variant="secondary"
-          className={cn(`w-full h-[50px] bg-secondary`, className)}
+          variant="default"
+          className={cn(
+            `w-full h-[50px] hover:bg-green-400 bg-green-400`,
+            className
+          )}
         >
           {active ? "신청하기" : "신청 마감"}
         </Button>
