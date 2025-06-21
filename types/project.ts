@@ -1,5 +1,5 @@
 import { passwordField } from "@/types/utils";
-import { Applicant, Prisma, ProposerType } from "@prisma/client";
+import { Applicant, Prisma, ProjectStatus, ProposerType } from "@prisma/client";
 import { z } from "zod";
 
 export const ProjectSchema = z.object({
@@ -10,15 +10,16 @@ export const ProjectSchema = z.object({
   result: z.string(),
   attachments: z.array(z.string()).optional(),
   keywords: z.array(z.string()).optional(),
-  password: passwordField.optional(),
+  password: passwordField,
   proposerName: z.string().min(1, "Proposer name is required."),
   proposerType: z.nativeEnum(ProposerType),
   proposerMajor: z.string().optional(),
   email: z.string().email("Invalid email format").optional(),
   chatLink: z.string().url("Invalid URL format").optional(),
-  isClosed: z.boolean().default(false),
+  status: z.nativeEnum(ProjectStatus),
 });
 export const ProjectUpdateSchema = ProjectSchema.extend({
+  password: passwordField.optional(),
   currentPassword: passwordField,
 });
 export type ProjectInput = z.infer<typeof ProjectSchema>;
@@ -33,7 +34,7 @@ export const GetProjectsQuerySchema = z.object({
   keyword: z.string().optional(),
   proposerType: z.nativeEnum(ProposerType).optional(),
   searchTerm: z.string().optional(),
-  recruiting: z.enum(["recruiting", "closed"]).optional(),
+  recruiting: z.nativeEnum(ProjectStatus).optional(),
 });
 export type GetProjectsQueryInput = z.infer<typeof GetProjectsQuerySchema>;
 
@@ -54,6 +55,9 @@ export const projectPublicSelection: Prisma.ProjectSelect = {
   proposerName: true,
   proposerType: true,
   proposerMajor: true,
+  email: true,
+  chatLink: true,
+  status: true,
   applicants: {
     select: {
       id: true,
