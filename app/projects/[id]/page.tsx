@@ -10,7 +10,6 @@ import apiClient, {
   PublicApplicant,
   PublicProjectWithForeignKeys,
 } from "@/lib/apiClientHelper";
-import { getApplicantsByProjectId } from "@/services/applicant";
 import { ProjectInput, ProjectSchema } from "@/types/project";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -26,8 +25,6 @@ export default function Project({ params }: { params: { id: string } }) {
   const projectId = parseInt(params.id);
   const [project, setProject] = useState<PublicProjectWithForeignKeys>();
   const [applicants, setApplicants] = useState<PublicApplicant[]>();
-  console.log("이거", applicants);
-  console.log("프로젝트 ID:", apiClient.getApplicants(projectId));
 
   // 프로젝트 ID를 기반으로 프로젝트 데이터를 가져옵니다.
   useEffect(() => {
@@ -139,6 +136,29 @@ export default function Project({ params }: { params: { id: string } }) {
     }
   }
 
+  async function handleClose() {
+    setLoading(true);
+    let currentPassword =
+      localStorage.getItem(`currentPassword/${projectId}`) || "";
+    if (currentPassword === "") {
+      currentPassword = getValues("password");
+    }
+    try {
+      await apiClient.closeProject(projectId, currentPassword);
+      alert("프로젝트 모집마감 완료");
+      router.push("/");
+    } catch (error) {
+      console.log("Error deleting project:", error);
+      if (currentPassword === "") {
+        alert("비밀번호를 입력해주세요.");
+        return;
+      }
+      alert("프로젝트 모집마감 실패");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   // TODO: 모집마감 상태 백엔드에서 추가되면 작업 시작하기
   {
     /*
@@ -211,6 +231,7 @@ export default function Project({ params }: { params: { id: string } }) {
           className="w-[30%]"
           project={project}
           onDelete={handleDelete}
+          onClose={handleClose}
           mode={mode}
           toggleMode={toggleMode}
           onSubmit={handleSubmit(onSuccess)}

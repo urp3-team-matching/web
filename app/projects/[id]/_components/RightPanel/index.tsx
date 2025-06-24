@@ -3,7 +3,6 @@ import { ProjectPageModeEnum } from "@/app/projects/[id]/_components/constants";
 import MajorGraph from "@/app/projects/[id]/_components/MajorGraph";
 import { ProjectPageMode } from "@/app/projects/[id]/page";
 import CancelAndSubmitButton from "@/components/Project/Form/CancelAndSubmitButton";
-import { MAX_APPLICANTS } from "@/constants";
 import {
   PublicApplicant,
   PublicProjectWithForeignKeys,
@@ -19,6 +18,7 @@ interface ProjectDetailRightPanelProps {
   toggleMode: () => void;
   onSubmit: () => void;
   onDelete: () => void;
+  onClose: () => void;
   loading?: boolean;
   onApplySuccess: (project: PublicApplicant) => void;
   applicants?: PublicApplicant[];
@@ -29,15 +29,12 @@ const ProjectDetailRightPanel = ({
   project,
   mode,
   onDelete,
+  onClose,
   onSubmit,
   loading = false,
   onApplySuccess,
   applicants = [],
 }: ProjectDetailRightPanelProps) => {
-  const isProjectFull =
-    applicants.filter((applicant) => applicant.status === "APPROVED").length >=
-    MAX_APPLICANTS;
-
   return (
     <div className={cn("flex flex-col gap-5 h-auto pt-5", className)}>
       {mode === null && (
@@ -50,7 +47,7 @@ const ProjectDetailRightPanel = ({
       {mode === null && (
         <ProjectApplyButton
           projectId={project.id}
-          active={!isProjectFull}
+          active={project.status === "RECRUITING"}
           onSuccess={onApplySuccess}
         />
       )}
@@ -83,6 +80,7 @@ const ProjectDetailRightPanel = ({
       {mode === ProjectPageModeEnum.ADMIN && (
         <CancelAndSubmitButton
           onDelete={onDelete}
+          onClose={onClose}
           onSubmit={onSubmit}
           loading={loading}
         />

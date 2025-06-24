@@ -13,6 +13,7 @@ import { useState } from "react";
 interface CancelAndSubmitButtonProps {
   onDelete: () => void;
   onSubmit: () => void;
+  onClose: () => void;
   className?: string;
   loading?: boolean;
 }
@@ -20,6 +21,7 @@ interface CancelAndSubmitButtonProps {
 const CancelAndSubmitButton = ({
   onDelete,
   onSubmit,
+  onClose,
   className,
   loading = false,
 }: CancelAndSubmitButtonProps) => {
@@ -37,6 +39,7 @@ const CancelAndSubmitButton = ({
       </Button>
       <Button
         type="button"
+        onClick={onClose}
         className="text-white flex-1 cursor-pointer text-base font-normal  h-10 bg-orange-400 hover:bg-orange-300 rounded-lg"
       >
         모집마감
