@@ -1,5 +1,5 @@
 import { MAX_APPLICANTS } from "@/constants";
-import { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
+import { PublicApplicant } from "@/lib/apiClientHelper";
 import { cn } from "@/lib/utils";
 import { CircleUser } from "lucide-react";
 import Image from "next/image";
@@ -32,12 +32,22 @@ function getMajorColor(
 }
 
 interface MajorGraphProps {
-  project: PublicProjectWithForeignKeys;
+  applicants: PublicApplicant[];
   className?: string;
+  proposerMajor?: string;
 }
 
-export default function MajorGraph({ project, className }: MajorGraphProps) {
-  const majors = project.applicants.map((applicant) => applicant.major);
+export default function MajorGraph({
+  applicants,
+  className,
+  proposerMajor,
+}: MajorGraphProps) {
+  const majors = [
+    ...(proposerMajor ? [proposerMajor] : []),
+    ...applicants
+      .filter((applicant) => applicant.status === "APPROVED")
+      .map((applicant) => applicant.major),
+  ];
   const uniqueMajors = [...new Set(majors)];
   const restApplicantsCount = MAX_APPLICANTS - majors.length;
   const majorsCount = majors.reduce((acc, major) => {

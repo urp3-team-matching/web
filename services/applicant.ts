@@ -38,7 +38,10 @@ export async function applyToProject(
     );
   }
 
-  if (project.applicants.length >= MAX_APPLICANTS) {
+  if (
+    project.applicants.filter((applicant) => applicant.status === "APPROVED")
+      .length >= MAX_APPLICANTS
+  ) {
     throw new MaxApplicantsError(
       `Maximum number of applicants (${MAX_APPLICANTS}) reached for this project.`
     );
@@ -180,12 +183,14 @@ export async function acceptApplicant(
   applicantId: number
 ): Promise<ApplicantForProject> {
   // 프로젝트와 지원자 존재 여부 확인
+  console.log(">> Accepting applicant", projectId, applicantId);
   const project = await prisma.project.findUnique({
     where: { id: projectId },
     select: { id: true, applicants: true },
   });
 
   if (!project) {
+    console.log(">> Applicant not found");
     throw new NotFoundError("Project not found.");
   }
 

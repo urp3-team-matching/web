@@ -1,10 +1,13 @@
 import { NotFoundError } from "@/lib/authUtils";
-import { parseAndValidateRequestBody } from "@/lib/routeUtils";
+import { validateRequestBody } from "@/lib/routeUtils";
 import { applyToProject } from "@/services/applicant";
 import { ApplicantSchema } from "@/types/applicant";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(request: NextRequest, params: { id: string }) {
+export async function POST(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   const { id: projectId } = params;
 
   try {
@@ -15,23 +18,18 @@ export async function POST(request: NextRequest, params: { id: string }) {
         { status: 400 }
       );
     }
-    // 요청 본문에서 지원서 정보 추출
-    const requestBody = await request.json();
-    if (!requestBody || typeof requestBody !== "object") {
-      return NextResponse.json(
-        { error: "Invalid request body" },
-        { status: 400 }
-      );
-    }
-    // 지원서 정보 유효성 검사(zod schema 기반)
-    const { data: validatedData, errorResponse } =
-      await parseAndValidateRequestBody(request, ApplicantSchema);
-    if (!validatedData)
-      throw new Error("Validated data is unexpectedly undefined.");
 
-    if (errorResponse) {
-      return NextResponse.json(errorResponse, { status: 400 });
+    const requestBody = await request.json();
+
+    const { data: validatedData, errorResponse } = validateRequestBody(
+      requestBody,
+      ApplicantSchema
+    );
+
+    if (!validatedData) {
+      return errorResponse!;
     }
+
     const updatedApplicant = await applyToProject(
       projectIdNumber,
       validatedData

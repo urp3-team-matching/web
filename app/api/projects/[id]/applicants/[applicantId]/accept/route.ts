@@ -8,11 +8,11 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(
   request: NextRequest,
-  params: { id: string; applicantId: string }
+  context: { params: { id: string; applicantId: string } }
 ) {
-  const { id: projectId, applicantId } = params;
-
+  const { id: projectId, applicantId } = context.params;
   try {
+    console.log(">> Accepting applicant", projectId, applicantId);
     const updatedApplicant = await acceptApplicant(
       Number(projectId),
       Number(applicantId)

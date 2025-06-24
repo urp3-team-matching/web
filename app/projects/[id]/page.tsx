@@ -6,7 +6,11 @@ import ProjectDetailRightPanel from "@/app/projects/[id]/_components/RightPanel"
 import ProjectForm from "@/components/Project/Form/ProjectForm";
 import ProjectProposerForm from "@/components/Project/Form/ProjectProposerForm";
 import Spinner from "@/components/ui/spinner";
-import apiClient, { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
+import apiClient, {
+  PublicApplicant,
+  PublicProjectWithForeignKeys,
+} from "@/lib/apiClientHelper";
+import { getApplicantsByProjectId } from "@/services/applicant";
 import { ProjectInput, ProjectSchema } from "@/types/project";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -21,16 +25,23 @@ export default function Project({ params }: { params: { id: string } }) {
   const [loading, setLoading] = useState(true);
   const projectId = parseInt(params.id);
   const [project, setProject] = useState<PublicProjectWithForeignKeys>();
+  const [applicants, setApplicants] = useState<PublicApplicant[]>();
+  console.log("이거", applicants);
+  console.log("프로젝트 ID:", apiClient.getApplicants(projectId));
 
   // 프로젝트 ID를 기반으로 프로젝트 데이터를 가져옵니다.
   useEffect(() => {
     (async () => {
-      const response = await apiClient.getProjectById(projectId);
-      if (response) {
-        setProject(response);
+      const resProject = await apiClient.getProjectById(projectId);
+      const resApplicant = await apiClient.getApplicants(projectId);
+      if (resProject) {
+        setProject(resProject);
         setLoading(false);
       } else {
         console.error("Failed to fetch project data.");
+      }
+      if (resApplicant) {
+        setApplicants(resApplicant);
       }
     })();
   }, [projectId]);
@@ -213,6 +224,7 @@ export default function Project({ params }: { params: { id: string } }) {
               };
             });
           }}
+          applicants={applicants}
         />
       </div>
     </form>

@@ -21,6 +21,7 @@ interface ProjectDetailRightPanelProps {
   onDelete: () => void;
   loading?: boolean;
   onApplySuccess: (project: PublicApplicant) => void;
+  applicants?: PublicApplicant[];
 }
 
 const ProjectDetailRightPanel = ({
@@ -31,8 +32,11 @@ const ProjectDetailRightPanel = ({
   onSubmit,
   loading = false,
   onApplySuccess,
+  applicants = [],
 }: ProjectDetailRightPanelProps) => {
-  const isProjectFull = project.applicants.length >= MAX_APPLICANTS;
+  const isProjectFull =
+    applicants.filter((applicant) => applicant.status === "APPROVED").length >=
+    MAX_APPLICANTS;
 
   return (
     <div className={cn("flex flex-col gap-5 h-auto pt-5", className)}>
@@ -51,7 +55,7 @@ const ProjectDetailRightPanel = ({
         />
       )}
 
-      <MajorGraph project={project} />
+      <MajorGraph applicants={applicants} />
 
       {/* 프로젝트 제안자 입력  
       {mode === ProjectPageModeEnum.ADMIN && (
@@ -70,10 +74,11 @@ const ProjectDetailRightPanel = ({
       />
       */}
 
-      {mode === ProjectPageModeEnum.ADMIN && (
-        <ApplicationStatusCard project={project} />
-      )}
-
+      <ApplicationStatusCard
+        projectId={project.id}
+        mode={mode}
+        applicants={applicants}
+      />
       {/* 프로젝트 삭제, 모집마감, 저장 버튼 */}
       {mode === ProjectPageModeEnum.ADMIN && (
         <CancelAndSubmitButton
@@ -82,8 +87,6 @@ const ProjectDetailRightPanel = ({
           loading={loading}
         />
       )}
-
-      {mode === null && <ApplicationStatusCard project={project} />}
     </div>
   );
 };

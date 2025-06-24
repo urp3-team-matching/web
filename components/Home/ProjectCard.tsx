@@ -12,7 +12,7 @@ export interface ProjectCardProps {
 
 export default function ProjectCard({ project, className }: ProjectCardProps) {
   const projectStatus = getProjectStatus(project);
-
+  console.log("ProjectCard projectStatus:", projectStatus);
   return (
     <div
       className={cn(

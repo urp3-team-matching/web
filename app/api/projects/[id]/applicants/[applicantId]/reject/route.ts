@@ -4,9 +4,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(
   request: NextRequest,
-  params: { id: string; applicantId: string }
+  context: { params: { id: string; applicantId: string } }
 ) {
-  const { id: projectId, applicantId } = params;
+  const { id: projectId, applicantId } = context.params;
 
   try {
     const updatedApplicant = await rejectApplicant(
@@ -28,3 +28,4 @@ export async function POST(
     );
   }
 }
+

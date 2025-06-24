@@ -16,7 +16,6 @@ export const ProjectSchema = z.object({
   proposerMajor: z.string().optional(),
   email: z.string().email("Invalid email format").optional(),
   chatLink: z.string().url("Invalid URL format").optional(),
-  status: z.nativeEnum(ProjectStatus),
 });
 export const ProjectUpdateSchema = ProjectSchema.extend({
   password: passwordField.optional(),
