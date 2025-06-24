@@ -39,8 +39,8 @@ const ProjectDetailRightPanel = ({
     <div className={cn("flex flex-col gap-5 h-auto pt-5", className)}>
       {mode === null && (
         <ContactCard
-          email="2000dudwn@naver.com"
-          openChatLink="https://open.kakao.com"
+          email={project.email || "이메일 정보 없음"}
+          openChatLink={project.chatLink || "오픈채팅 정보 없음"}
         />
       )}
 
