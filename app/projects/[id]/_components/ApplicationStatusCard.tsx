@@ -9,11 +9,9 @@ interface ApplicationStatusCardProps {
   applicants: PublicApplicant[];
   mode: ProjectPageMode;
   projectId: number;
-  onClose?: (projectId: number, currentPassword: string) => void;
 }
 
 export default function ApplicationStatusCard({
-  onClose,
   applicants,
   mode,
   projectId,
@@ -36,17 +34,6 @@ export default function ApplicationStatusCard({
       window.location.reload();
     } catch (error) {
       alert("신청자 거절 요청에 실패했습니다" + error);
-      return;
-    }
-  }
-
-  async function handleClose(projectId: number) {
-    try {
-      await apiClient.closeProject(projectId, currentPassword);
-      alert("프로젝트 모집종료가 완료되었습니다.");
-      window.location.reload();
-    } catch (error) {
-      alert("프로젝트 모집종료에 실패했습니다: " + error);
       return;
     }
   }
