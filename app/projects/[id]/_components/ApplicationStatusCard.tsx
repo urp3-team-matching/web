@@ -53,14 +53,16 @@ export default function ApplicationStatusCard({
       <span className="text-xl font-semibold">신청 현황</span>
 
       {mode === ProjectPageModeEnum.ADMIN ? (
-        applicants.map((applicant) => (
-          <ApplicationStatusCardAdmin
-            key={applicant.id}
-            applicant={applicant}
-            handleAccept={handleAccept}
-            handleReject={handleReject}
-          />
-        ))
+        <div className="flex flex-col gap-1">
+          {applicants.map((applicant) => (
+            <ApplicationStatusCardAdmin
+              key={applicant.id}
+              applicant={applicant}
+              handleAccept={handleAccept}
+              handleReject={handleReject}
+            />
+          ))}
+        </div>
       ) : pendingApplicants.length > 0 ? (
         pendingApplicants.map((applicant) => (
           <div

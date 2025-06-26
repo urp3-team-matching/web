@@ -4,7 +4,7 @@ import {
   DialogHeader,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import apiClient, { PublicApplicant } from "@/lib/apiClientHelper";
+import { PublicApplicant } from "@/lib/apiClientHelper";
 import { Check, User, X } from "lucide-react";
 
 interface ApplicationStatusCardAdminProps {
@@ -21,7 +21,7 @@ export default function ApplicationStatusCardAdmin({
   return (
     <Dialog key={applicant.id}>
       <DialogTrigger asChild>
-        <div className="border flex justify-between p-3 rounded-sm items-center">
+        <div className="hover:bg-neutral-200 hover:cursor-pointer transition-color duration-200 border flex justify-between p-3 rounded-sm items-center">
           <User size={24} />
           <div className="flex gap-2">
             <span>{applicant.major}</span>
