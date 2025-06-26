@@ -115,73 +115,44 @@ export default function Project({ params }: { params: { id: string } }) {
   // TODO: 비밀번호 입력 받을건지 OR 바로 삭제가능하게 할 건지
   async function handleDelete() {
     setLoading(true);
-    let currentPassword =
+    const currentPassword =
       localStorage.getItem(`currentPassword/${projectId}`) || "";
-    if (currentPassword === "") {
-      currentPassword = getValues("password");
-    }
+
     try {
       await apiClient.deleteProject(projectId, currentPassword);
-      alert("프로젝트 삭제 완료");
-      router.push("/");
-    } catch (error) {
-      console.log("Error deleting project:", error);
-      if (currentPassword === "") {
-        alert("비밀번호를 입력해주세요.");
-        return;
-      }
+    } catch {
       alert("프로젝트 삭제 실패");
-    } finally {
-      setLoading(false);
     }
+    router.push("/");
+    setLoading(false);
   }
 
-  async function handleClose() {
+  async function handleToggleClose() {
     setLoading(true);
-    let currentPassword =
+    const currentPassword =
       localStorage.getItem(`currentPassword/${projectId}`) || "";
-    if (currentPassword === "") {
-      currentPassword = getValues("password");
-    }
-    try {
-      await apiClient.closeProject(projectId, currentPassword);
-      alert("프로젝트 모집마감 완료");
-      router.push("/");
-    } catch (error) {
-      console.log("Error deleting project:", error);
-      if (currentPassword === "") {
-        alert("비밀번호를 입력해주세요.");
-        return;
-      }
-      alert("프로젝트 모집마감 실패");
-    } finally {
-      setLoading(false);
-    }
-  }
 
-  // TODO: 모집마감 상태 백엔드에서 추가되면 작업 시작하기
-  {
-    /*
-  async function onCloseRecruit() {
-    if (!project) {
-      alert("프로젝트 정보가 없습니다.");
-      return;
-    }
-    setLoading(true);
     try {
-      const updatedProject = await apiClient.updateProject(projectId, {
-        ...project,
-        isClosed: true,
-      });
+      let updatedProject;
+      if (project?.status === "RECRUITING") {
+        // 모집 마감
+        updatedProject = await apiClient.closeProject(
+          projectId,
+          currentPassword
+        );
+      } else {
+        // 재모집
+        updatedProject = await apiClient.reopenProject(
+          projectId,
+          currentPassword
+        );
+      }
       setProject(updatedProject);
-      alert("모집이 마감되었습니다.");
-    } catch (error) {
-      console.error("Error closing recruitment:", error);
-      alert("모집 마감 실패");
-    } finally {
-      setLoading(false);
+    } catch {
+      alert("프로젝트 모집마감 실패");
     }
-  } */
+    router.push(`/projects/${projectId}`);
+    setLoading(false);
   }
 
   function toggleMode() {
@@ -231,7 +202,7 @@ export default function Project({ params }: { params: { id: string } }) {
           className="w-[30%]"
           project={project}
           onDelete={handleDelete}
-          onClose={handleClose}
+          onToggleClose={handleToggleClose}
           mode={mode}
           toggleMode={toggleMode}
           onSubmit={handleSubmit(onSuccess)}

@@ -88,29 +88,3 @@ export async function parseAndValidateRequestBody<T>(
     };
   }
 }
-
-export function validateRequestBody<T>(
-  body: unknown,
-  schema: ZodSchema<T>
-): { data?: T; errorResponse?: NextResponse } {
-  try {
-    const validatedData = schema.parse(body);
-    return { data: validatedData };
-  } catch (error) {
-    if (error instanceof ZodError) {
-      return {
-        errorResponse: NextResponse.json(
-          { error: "Invalid input", details: error.errors },
-          { status: 400 }
-        ),
-      };
-    }
-    console.error("Unexpected error in validateRequestBody:", error);
-    return {
-      errorResponse: NextResponse.json(
-        { error: "Error processing request body" },
-        { status: 500 }
-      ),
-    };
-  }
-}

@@ -11,7 +11,8 @@ export interface ProjectCardProps {
 }
 
 export default function ProjectCard({ project, className }: ProjectCardProps) {
-  const projectStatus = project.status.toLowerCase() as "recruiting" | "closed";
+  const projectStatus = project.status;
+
   return (
     <div
       className={cn(

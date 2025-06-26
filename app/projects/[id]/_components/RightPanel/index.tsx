@@ -8,8 +8,8 @@ import {
   PublicProjectWithForeignKeys,
 } from "@/lib/apiClientHelper";
 import { cn } from "@/lib/utils";
-import ContactCard from "../ContactCard";
 import ApplicationStatusCard from "../ApplicationStatusCard";
+import ContactCard from "../ContactCard";
 
 interface ProjectDetailRightPanelProps {
   className?: string;
@@ -18,7 +18,7 @@ interface ProjectDetailRightPanelProps {
   toggleMode: () => void;
   onSubmit: () => void;
   onDelete: () => void;
-  onClose: () => void;
+  onToggleClose: () => void;
   loading?: boolean;
   onApplySuccess: (project: PublicApplicant) => void;
   applicants?: PublicApplicant[];
@@ -29,7 +29,7 @@ const ProjectDetailRightPanel = ({
   project,
   mode,
   onDelete,
-  onClose,
+  onToggleClose,
   onSubmit,
   loading = false,
   onApplySuccess,
@@ -80,9 +80,10 @@ const ProjectDetailRightPanel = ({
       {mode === ProjectPageModeEnum.ADMIN && (
         <CancelAndSubmitButton
           onDelete={onDelete}
-          onClose={onClose}
+          onToggleClose={onToggleClose}
           onSubmit={onSubmit}
           loading={loading}
+          isProjectClosed={project.status !== "RECRUITING"}
         />
       )}
     </div>

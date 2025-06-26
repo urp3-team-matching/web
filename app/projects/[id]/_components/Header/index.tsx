@@ -4,10 +4,7 @@ import ApplyStatueBadge from "@/components/Badge/ApplyStatueBadge";
 import KeywordBadge from "@/components/Badge/KeywordBadge";
 import ProposalBadge from "@/components/Badge/ProposalBadge";
 import ProjectNameForm from "@/components/Project/Form/ProjectNameForm";
-import {
-  PublicApplicant,
-  PublicProjectWithForeignKeys,
-} from "@/lib/apiClientHelper";
+import { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
 import { parseDate } from "@/lib/utils";
 import { ProjectInput } from "@/types/project";
 import { Calendar, Eye } from "lucide-react";
@@ -18,7 +15,6 @@ interface ProjectDetailHeaderProps {
   className?: string;
   projectFormControl: Control<ProjectInput>;
   mode: ProjectPageMode;
-  applicants: PublicApplicant[];
   toggleMode: () => void;
 }
 
@@ -29,7 +25,7 @@ const ProjectDetailHeader = ({
   mode,
   toggleMode,
 }: ProjectDetailHeaderProps) => {
-  const projectStatus = project.status.toLowerCase() as "recruiting" | "closed";
+  const projectStatus = project.status;
   return (
     <div className={className}>
       {/* 최상단: 프로젝트 뱃지, 키워드, 관리자 스위치 */}

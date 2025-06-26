@@ -63,7 +63,6 @@ const ProjectApplyButton = ({
       reset(); // 폼 초기화
       setOpen(false);
       alert("신청서가 성공적으로 제출되었습니다.");
-      window.location.reload(); // 페이지 새로고침
     } catch (error) {
       if (error instanceof MaxApplicantsError) {
         alert("신청자가 최대 인원에 도달했습니다.");

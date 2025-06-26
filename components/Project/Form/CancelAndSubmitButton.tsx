@@ -13,7 +13,8 @@ import { useState } from "react";
 interface CancelAndSubmitButtonProps {
   onDelete: () => void;
   onSubmit: () => void;
-  onClose: () => void;
+  onToggleClose: () => void;
+  isProjectClosed?: boolean;
   className?: string;
   loading?: boolean;
 }
@@ -21,11 +22,12 @@ interface CancelAndSubmitButtonProps {
 const CancelAndSubmitButton = ({
   onDelete,
   onSubmit,
-  onClose,
+  onToggleClose,
   className,
   loading = false,
+  isProjectClosed = false,
 }: CancelAndSubmitButtonProps) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isDialogOpen, setDialogIsOpen] = useState(false);
 
   return (
     <div className={cn("flex w-full justify-between gap-2", className)}>
@@ -39,14 +41,14 @@ const CancelAndSubmitButton = ({
       </Button>
       <Button
         type="button"
-        onClick={onClose}
+        onClick={onToggleClose}
         className="text-white flex-1 cursor-pointer text-base font-normal  h-10 bg-orange-400 hover:bg-orange-300 rounded-lg"
       >
-        모집마감
+        {isProjectClosed ? "재모집" : "모집마감"}
       </Button>
 
       {/* 저장 버튼 */}
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <Dialog open={isDialogOpen} onOpenChange={setDialogIsOpen}>
         <DialogTrigger asChild disabled={loading}>
           <Button className="text-white flex-1 flex justify-center items-center cursor-pointer text-base font-normal h-10 bg-secondary hover:bg-secondary/90 rounded-lg">
             저장
@@ -68,7 +70,7 @@ const CancelAndSubmitButton = ({
               onClick={(e) => {
                 e.preventDefault();
                 onSubmit();
-                setIsOpen(false);
+                setDialogIsOpen(false);
               }}
               className="bg-secondary hover:bg-secondary/90 hover:cursor-pointer"
             >

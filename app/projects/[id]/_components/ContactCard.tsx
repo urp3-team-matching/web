@@ -16,7 +16,7 @@ export default function ContactCard({ email, openChatLink }: ContactCardProps) {
       {email && (
         <div className="flex items-center gap-2">
           <Mail size={24} />
-          <span className="text-sm font-normal">{`이메일: ${email}`}</span>
+          <span className="text-sm font-normal">이메일: {email}</span>
         </div>
       )}
 
@@ -31,7 +31,9 @@ export default function ContactCard({ email, openChatLink }: ContactCardProps) {
               오픈채팅: {openChatLink}
             </Link>
           ) : (
-            <span className="text-sm font-normal">{`오픈채팅: ${openChatLink}`}</span>
+            <span className="text-sm font-normal">
+              오픈채팅: {openChatLink}
+            </span>
           )}
         </div>
       )}
