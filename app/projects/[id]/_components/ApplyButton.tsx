@@ -35,7 +35,7 @@ interface ProjectApplyButtonProps {
   className?: string;
   projectId: number;
   active: boolean;
-  onSuccess: (project: PublicApplicant) => void;
+  onSuccess: (applicant: PublicApplicant) => void;
 }
 
 const ProjectApplyButton = ({
@@ -53,6 +53,9 @@ const ProjectApplyButton = ({
     reset,
   } = useForm<ApplicantInput>({
     resolver: zodResolver(ApplicantSchema),
+    defaultValues: {
+      status: "PENDING",
+    },
   });
 
   async function onApply(data: ApplicantInput) {
@@ -62,7 +65,6 @@ const ProjectApplyButton = ({
       onSuccess(response);
       reset(); // 폼 초기화
       setOpen(false);
-      alert("신청서가 성공적으로 제출되었습니다.");
     } catch (error) {
       if (error instanceof MaxApplicantsError) {
         alert("신청자가 최대 인원에 도달했습니다.");
@@ -105,7 +107,7 @@ const ProjectApplyButton = ({
           onSubmit={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            handleSubmit(onApply)();
+            handleSubmit(onApply, (error) => console.error(error))();
           }}
         >
           {/* 기본 필드들 */}

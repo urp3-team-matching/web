@@ -70,23 +70,44 @@ export default function Project({ params }: { params: { id: string } }) {
     handleSubmit,
     control: projectFormControl,
     getValues,
+    reset,
   } = useForm<ProjectInput>({
     resolver: zodResolver(ProjectSchema),
-    values: {
-      name: project?.name || "",
-      background: project?.background || "",
-      method: project?.method || "",
-      objective: project?.objective || "",
-      result: project?.result || "",
-      attachments: project?.attachments || [],
-      keywords: project?.keywords || [],
+    defaultValues: {
+      name: "",
+      background: "",
+      method: "",
+      objective: "",
+      result: "",
+      attachments: [],
+      keywords: [],
       password: "",
-      proposerName: project?.proposerName || "",
-      proposerType: project?.proposerType || "STUDENT",
-      proposerMajor: project?.proposerMajor || "",
-      status: project?.status || "RECRUITING",
+      proposerName: "",
+      proposerType: "STUDENT",
+      proposerMajor: "",
+      status: "RECRUITING",
     },
   });
+
+  // 프로젝트 데이터가 로드되면 폼을 초기화
+  useEffect(() => {
+    if (project) {
+      reset({
+        name: project.name || "",
+        background: project.background || "",
+        method: project.method || "",
+        objective: project.objective || "",
+        result: project.result || "",
+        attachments: project.attachments || [],
+        keywords: project.keywords || [],
+        password: "",
+        proposerName: project.proposerName || "",
+        proposerType: project.proposerType || "STUDENT",
+        proposerMajor: project.proposerMajor || "",
+        status: project.status || "RECRUITING",
+      });
+    }
+  }, [project, reset]);
 
   async function onSuccess(data: ProjectInput) {
     setLoading(true);
@@ -101,6 +122,10 @@ export default function Project({ params }: { params: { id: string } }) {
         currentPassword,
       });
       setProject(response);
+      reset({
+        ...data,
+        password: "", // 비밀번호는 다시 빈 값으로
+      });
     } catch (error) {
       console.error("Error updating project:", error);
       alert("프로젝트 수정 실패!");
@@ -209,11 +234,35 @@ export default function Project({ params }: { params: { id: string } }) {
           loading={loading}
           onApplySuccess={(newApplicant) => {
             setProject((prev) => {
-              if (!prev) return;
+              if (!prev) return prev;
+
+              // 기존 applicants 배열에 새로운 applicant 추가
+              const updatedApplicants = [...prev.applicants, newApplicant];
+
               return {
                 ...prev,
-                applicants: [...prev.applicants, newApplicant],
+                applicants: updatedApplicants,
               };
+            });
+
+            // applicants 상태도 별도로 업데이트
+            setApplicants((prev) => {
+              if (!prev) return [newApplicant];
+              return [...prev, newApplicant];
+            });
+          }}
+          onApplicantStatusChange={(applicantId, status) => {
+            setApplicants((prev) => {
+              if (!prev) return prev;
+              return prev.map((applicant) => {
+                if (applicant.id === applicantId) {
+                  return {
+                    ...applicant,
+                    status,
+                  };
+                }
+                return applicant;
+              });
             });
           }}
           applicants={applicants}

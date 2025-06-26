@@ -1,26 +1,32 @@
 import apiClient, { PublicApplicant } from "@/lib/apiClientHelper";
-import { ProjectPageMode } from "../page";
 import { User } from "lucide-react";
+import { ProjectPageMode } from "../page";
 
-import { ProjectPageModeEnum } from "./constants";
+import { ApplicantStatus } from "@prisma/client";
 import ApplicationStatusCardAdmin from "./ApplicationStatusCardAdmin";
+import { ProjectPageModeEnum } from "./constants";
 
 interface ApplicationStatusCardProps {
   applicants: PublicApplicant[];
   mode: ProjectPageMode;
   projectId: number;
+  onApplicantStatusChange: (
+    applicantId: number,
+    status: ApplicantStatus
+  ) => void;
 }
 
 export default function ApplicationStatusCard({
   applicants,
   mode,
   projectId,
+  onApplicantStatusChange,
 }: ApplicationStatusCardProps) {
   async function handleAccept(applicantId: number) {
     try {
       await apiClient.acceptApplicant(projectId, applicantId);
+      onApplicantStatusChange(applicantId, "APPROVED");
       alert("신청자 승인이 완료되었습니다");
-      window.location.reload();
     } catch (error) {
       alert("신청자 승인 요청에 실패했습니다" + error);
       return;
@@ -30,8 +36,8 @@ export default function ApplicationStatusCard({
   async function handleReject(applicantId: number) {
     try {
       await apiClient.rejectApplicant(projectId, applicantId);
+      onApplicantStatusChange(applicantId, "REJECTED");
       alert("신청자 거절이 완료되었습니다");
-      window.location.reload();
     } catch (error) {
       alert("신청자 거절 요청에 실패했습니다" + error);
       return;

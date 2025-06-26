@@ -8,6 +8,7 @@ import {
   PublicProjectWithForeignKeys,
 } from "@/lib/apiClientHelper";
 import { cn } from "@/lib/utils";
+import { ApplicantStatus } from "@prisma/client";
 import ApplicationStatusCard from "../ApplicationStatusCard";
 import ContactCard from "../ContactCard";
 
@@ -20,7 +21,11 @@ interface ProjectDetailRightPanelProps {
   onDelete: () => void;
   onToggleClose: () => void;
   loading?: boolean;
-  onApplySuccess: (project: PublicApplicant) => void;
+  onApplySuccess: (applicant: PublicApplicant) => void;
+  onApplicantStatusChange: (
+    applicantId: number,
+    status: ApplicantStatus
+  ) => void;
   applicants?: PublicApplicant[];
 }
 
@@ -33,6 +38,7 @@ const ProjectDetailRightPanel = ({
   onSubmit,
   loading = false,
   onApplySuccess,
+  onApplicantStatusChange,
   applicants = [],
 }: ProjectDetailRightPanelProps) => {
   return (
@@ -75,6 +81,7 @@ const ProjectDetailRightPanel = ({
         projectId={project.id}
         mode={mode}
         applicants={applicants}
+        onApplicantStatusChange={onApplicantStatusChange}
       />
       {/* 프로젝트 삭제, 모집마감, 저장 버튼 */}
       {mode === ProjectPageModeEnum.ADMIN && (
