@@ -1,7 +1,8 @@
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
+  DialogDescription,
+  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { PublicApplicant } from "@/lib/apiClientHelper";
@@ -54,16 +55,16 @@ export default function ApplicationStatusCardAdmin({
         </div>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader className="text-2xl font-semibold">
+        <DialogTitle className="text-2xl font-semibold">
           지원자 정보
-        </DialogHeader>
-        <div className="flex flex-col gap-2 text-sm font-normal">
-          <div>이름: {applicant.name}</div>
-          <div>전공: {applicant.major}</div>
-          <div>이메일: {applicant.email}</div>
-          <div>전화번호: {applicant.phone}</div>
-          <div>자기소개: {applicant.introduction}</div>
-        </div>
+        </DialogTitle>
+        <DialogDescription className="flex flex-col gap-2 text-sm font-normal">
+          <span>이름: {applicant.name}</span>
+          <span>전공: {applicant.major}</span>
+          <span>이메일: {applicant.email}</span>
+          <span>전화번호: {applicant.phone}</span>
+          <span>자기소개: {applicant.introduction}</span>
+        </DialogDescription>
       </DialogContent>
     </Dialog>
   );

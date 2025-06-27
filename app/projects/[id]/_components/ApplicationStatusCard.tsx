@@ -25,6 +25,13 @@ export default function ApplicationStatusCard({
   const pendingApplicants = applicants.filter(
     (applicant) => applicant.status === "PENDING"
   );
+  const pendingApplicantsByMajor: Record<string, PublicApplicant[]> = {};
+  pendingApplicants.forEach((applicant) => {
+    if (!pendingApplicantsByMajor[applicant.major]) {
+      pendingApplicantsByMajor[applicant.major] = [];
+    }
+    pendingApplicantsByMajor[applicant.major].push(applicant);
+  });
 
   async function handleAccept(applicantId: number) {
     try {
@@ -52,31 +59,41 @@ export default function ApplicationStatusCard({
     <div className="w-full h-auto border shadow-md rounded-lg p-5 flex flex-col gap-3">
       <span className="text-xl font-semibold">신청 현황</span>
 
-      {mode === ProjectPageModeEnum.ADMIN ? (
-        <div className="flex flex-col gap-1">
-          {applicants.map((applicant) => (
+      {/* 관리자 모드 */}
+      {mode === ProjectPageModeEnum.ADMIN &&
+        (applicants.length > 0 ? (
+          applicants.map((applicant) => (
             <ApplicationStatusCardAdmin
               key={applicant.id}
               applicant={applicant}
               handleAccept={handleAccept}
               handleReject={handleReject}
             />
-          ))}
-        </div>
-      ) : pendingApplicants.length > 0 ? (
-        pendingApplicants.map((applicant) => (
-          <div
-            key={applicant.id}
-            className="border flex justify-between p-3 rounded-sm items-center"
-          >
-            <User size={24} />
-            <span>{applicant.major}</span>
-            <div />
-          </div>
-        ))
-      ) : (
-        <div className="text-gray-500">신청자가 없습니다.</div>
-      )}
+          ))
+        ) : (
+          <div className="text-gray-500">신청자가 없습니다.</div>
+        ))}
+
+      {/* 일반 모드 */}
+      {mode !== ProjectPageModeEnum.ADMIN &&
+        (Object.keys(pendingApplicantsByMajor).length > 0 ? (
+          Object.entries(pendingApplicantsByMajor).map(
+            ([major, applicants]) => (
+              <div
+                key={major}
+                className="border flex justify-between p-3 rounded-sm items-center"
+              >
+                <User size={24} />
+                <span>
+                  {major}({applicants.length}명)
+                </span>
+                <div />
+              </div>
+            )
+          )
+        ) : (
+          <div className="text-gray-500">신청자가 없습니다.</div>
+        ))}
     </div>
   );
 }
