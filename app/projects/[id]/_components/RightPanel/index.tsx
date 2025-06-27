@@ -1,6 +1,7 @@
 import ProjectApplyButton from "@/app/projects/[id]/_components/ApplyButton";
 import { ProjectPageModeEnum } from "@/app/projects/[id]/_components/constants";
 import MajorGraph from "@/app/projects/[id]/_components/MajorGraph";
+import Chat from "@/app/projects/[id]/_components/RightPanel/Chat";
 import { ProjectPageMode } from "@/app/projects/[id]/page";
 import CancelAndSubmitButton from "@/components/Project/Form/CancelAndSubmitButton";
 import {
@@ -69,13 +70,14 @@ const ProjectDetailRightPanel = ({
       )}
       */}
 
-      {/* 프로젝트 대화방 및 모집관리 
-      <Chat
-        className="w-full text-sm font-medium flex flex-col shadow-md rounded-lg h-[500px]"
-        project={project}
-        mode={mode}
-      />
-      */}
+      {/* 프로젝트 대화방 및 모집관리  */}
+      <div className="hidden">
+        <Chat
+          className="w-full text-sm font-medium flex flex-col shadow-md rounded-lg h-[500px]"
+          project={project}
+          mode={mode}
+        />
+      </div>
 
       <ApplicationStatusCard
         projectId={project.id}
