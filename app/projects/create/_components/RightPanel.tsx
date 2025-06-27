@@ -28,6 +28,7 @@ const ProjectCreateRightPanel = ({
       <ProjectProposerForm
         className="w-full p-5 flex flex-col gap-3 border rounded-lg h-auto"
         control={control}
+        variant="sm"
       />
       <div className="flex justify-between gap-3">
         <Button
