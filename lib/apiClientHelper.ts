@@ -305,7 +305,7 @@ class ApiClient {
     data: ApplicantInput
   ): Promise<PublicApplicant> {
     const response = await this._request(
-      `/api/projects/${projectId}/applicants`,
+      `/api/projects/${projectId}/apply`,
       "POST",
       data
     );

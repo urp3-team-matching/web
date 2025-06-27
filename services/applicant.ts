@@ -38,7 +38,10 @@ export async function applyToProject(
     );
   }
 
-  if (project.applicants.length >= MAX_APPLICANTS) {
+  if (
+    project.applicants.filter((applicant) => applicant.status === "APPROVED")
+      .length >= MAX_APPLICANTS
+  ) {
     throw new MaxApplicantsError(
       `Maximum number of applicants (${MAX_APPLICANTS}) reached for this project.`
     );

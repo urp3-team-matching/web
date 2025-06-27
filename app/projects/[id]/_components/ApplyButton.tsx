@@ -35,7 +35,7 @@ interface ProjectApplyButtonProps {
   className?: string;
   projectId: number;
   active: boolean;
-  onSuccess: (project: PublicApplicant) => void;
+  onSuccess: (applicant: PublicApplicant) => void;
 }
 
 const ProjectApplyButton = ({
@@ -53,6 +53,9 @@ const ProjectApplyButton = ({
     reset,
   } = useForm<ApplicantInput>({
     resolver: zodResolver(ApplicantSchema),
+    defaultValues: {
+      status: "PENDING",
+    },
   });
 
   async function onApply(data: ApplicantInput) {
@@ -104,7 +107,7 @@ const ProjectApplyButton = ({
           onSubmit={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            handleSubmit(onApply)();
+            handleSubmit(onApply, (error) => console.error(error))();
           }}
         >
           {/* 기본 필드들 */}

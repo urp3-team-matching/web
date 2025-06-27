@@ -8,7 +8,8 @@ export function cn(...inputs: ClassValue[]) {
 
 export function getProjectStatus(project: PublicProjectWithForeignKeys) {
   return project
-    ? project.applicants.length >= 4
+    ? project.applicants.filter((applicant) => applicant.status === "APPROVED")
+        .length >= 4
       ? "closed"
       : "recruiting"
     : "recruiting";

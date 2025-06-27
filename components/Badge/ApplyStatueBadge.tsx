@@ -1,13 +1,15 @@
 import { cn } from "@/lib/utils";
+import { ProjectStatus } from "@prisma/client";
 import { Badge } from "../ui/badge";
+
 export interface ApplyStatueBadgeProps {
-  status: "recruiting" | "closed";
+  status: ProjectStatus;
 }
 
 export default function ApplyStatueBadge({ status }: ApplyStatueBadgeProps) {
   let badgeColor = "";
   let badgeText = "";
-  if (status === "recruiting") {
+  if (status === ProjectStatus.RECRUITING) {
     badgeColor = "bg-secondary";
     badgeText = "모집중";
   } else {

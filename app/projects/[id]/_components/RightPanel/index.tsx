@@ -3,14 +3,14 @@ import { ProjectPageModeEnum } from "@/app/projects/[id]/_components/constants";
 import MajorGraph from "@/app/projects/[id]/_components/MajorGraph";
 import { ProjectPageMode } from "@/app/projects/[id]/page";
 import CancelAndSubmitButton from "@/components/Project/Form/CancelAndSubmitButton";
-import { MAX_APPLICANTS } from "@/constants";
 import {
   PublicApplicant,
   PublicProjectWithForeignKeys,
 } from "@/lib/apiClientHelper";
 import { cn } from "@/lib/utils";
-import ContactCard from "../ContactCard";
+import { ApplicantStatus } from "@prisma/client";
 import ApplicationStatusCard from "../ApplicationStatusCard";
+import ContactCard from "../ContactCard";
 
 interface ProjectDetailRightPanelProps {
   className?: string;
@@ -19,8 +19,14 @@ interface ProjectDetailRightPanelProps {
   toggleMode: () => void;
   onSubmit: () => void;
   onDelete: () => void;
+  onToggleClose: () => void;
   loading?: boolean;
-  onApplySuccess: (project: PublicApplicant) => void;
+  onApplySuccess: (applicant: PublicApplicant) => void;
+  onApplicantStatusChange: (
+    applicantId: number,
+    status: ApplicantStatus
+  ) => void;
+  applicants?: PublicApplicant[];
 }
 
 const ProjectDetailRightPanel = ({
@@ -28,30 +34,31 @@ const ProjectDetailRightPanel = ({
   project,
   mode,
   onDelete,
+  onToggleClose,
   onSubmit,
   loading = false,
   onApplySuccess,
+  onApplicantStatusChange,
+  applicants = [],
 }: ProjectDetailRightPanelProps) => {
-  const isProjectFull = project.applicants.length >= MAX_APPLICANTS;
-
   return (
     <div className={cn("flex flex-col gap-5 h-auto pt-5", className)}>
       {mode === null && (
         <ContactCard
-          email="2000dudwn@naver.com"
-          openChatLink="https://open.kakao.com"
+          email={project.email || "이메일 정보 없음"}
+          openChatLink={project.chatLink || "오픈채팅 정보 없음"}
         />
       )}
 
       {mode === null && (
         <ProjectApplyButton
           projectId={project.id}
-          active={!isProjectFull}
+          active={project.status === "RECRUITING"}
           onSuccess={onApplySuccess}
         />
       )}
 
-      <MajorGraph project={project} />
+      <MajorGraph applicants={applicants} />
 
       {/* 프로젝트 제안자 입력  
       {mode === ProjectPageModeEnum.ADMIN && (
@@ -70,20 +77,22 @@ const ProjectDetailRightPanel = ({
       />
       */}
 
-      {mode === ProjectPageModeEnum.ADMIN && (
-        <ApplicationStatusCard project={project} />
-      )}
-
+      <ApplicationStatusCard
+        projectId={project.id}
+        mode={mode}
+        applicants={applicants}
+        onApplicantStatusChange={onApplicantStatusChange}
+      />
       {/* 프로젝트 삭제, 모집마감, 저장 버튼 */}
       {mode === ProjectPageModeEnum.ADMIN && (
         <CancelAndSubmitButton
           onDelete={onDelete}
+          onToggleClose={onToggleClose}
           onSubmit={onSubmit}
           loading={loading}
+          isProjectClosed={project.status !== "RECRUITING"}
         />
       )}
-
-      {mode === null && <ApplicationStatusCard project={project} />}
     </div>
   );
 };

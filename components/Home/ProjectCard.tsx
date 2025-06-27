@@ -1,7 +1,7 @@
 import ApplyStatueBadge from "@/components/Badge/ApplyStatueBadge";
 import ProposalBadge from "@/components/Badge/ProposalBadge";
 import { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
-import { cn, getProjectStatus, parseDate } from "@/lib/utils";
+import { cn, parseDate } from "@/lib/utils";
 import { Calendar, Eye } from "lucide-react";
 import KeywordBadge from "../Badge/KeywordBadge";
 
@@ -11,7 +11,7 @@ export interface ProjectCardProps {
 }
 
 export default function ProjectCard({ project, className }: ProjectCardProps) {
-  const projectStatus = getProjectStatus(project);
+  const projectStatus = project.status;
 
   return (
     <div

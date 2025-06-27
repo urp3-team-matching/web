@@ -5,7 +5,7 @@ import KeywordBadge from "@/components/Badge/KeywordBadge";
 import ProposalBadge from "@/components/Badge/ProposalBadge";
 import ProjectNameForm from "@/components/Project/Form/ProjectNameForm";
 import { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
-import { getProjectStatus, parseDate } from "@/lib/utils";
+import { parseDate } from "@/lib/utils";
 import { ProjectInput } from "@/types/project";
 import { Calendar, Eye } from "lucide-react";
 import { Control } from "react-hook-form";
@@ -25,8 +25,7 @@ const ProjectDetailHeader = ({
   mode,
   toggleMode,
 }: ProjectDetailHeaderProps) => {
-  const projectStatus = getProjectStatus(project);
-
+  const projectStatus = project.status;
   return (
     <div className={className}>
       {/* 최상단: 프로젝트 뱃지, 키워드, 관리자 스위치 */}

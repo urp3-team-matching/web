@@ -6,7 +6,10 @@ import ProjectDetailRightPanel from "@/app/projects/[id]/_components/RightPanel"
 import ProjectForm from "@/components/Project/Form/ProjectForm";
 import ProjectProposerForm from "@/components/Project/Form/ProjectProposerForm";
 import Spinner from "@/components/ui/spinner";
-import apiClient, { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
+import apiClient, {
+  PublicApplicant,
+  PublicProjectWithForeignKeys,
+} from "@/lib/apiClientHelper";
 import { ProjectInput, ProjectSchema } from "@/types/project";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -21,16 +24,21 @@ export default function Project({ params }: { params: { id: string } }) {
   const [loading, setLoading] = useState(true);
   const projectId = parseInt(params.id);
   const [project, setProject] = useState<PublicProjectWithForeignKeys>();
+  const [applicants, setApplicants] = useState<PublicApplicant[]>();
 
   // 프로젝트 ID를 기반으로 프로젝트 데이터를 가져옵니다.
   useEffect(() => {
     (async () => {
-      const response = await apiClient.getProjectById(projectId);
-      if (response) {
-        setProject(response);
+      const resProject = await apiClient.getProjectById(projectId);
+      const resApplicant = await apiClient.getApplicants(projectId);
+      if (resProject) {
+        setProject(resProject);
         setLoading(false);
       } else {
         console.error("Failed to fetch project data.");
+      }
+      if (resApplicant) {
+        setApplicants(resApplicant);
       }
     })();
   }, [projectId]);
@@ -62,23 +70,44 @@ export default function Project({ params }: { params: { id: string } }) {
     handleSubmit,
     control: projectFormControl,
     getValues,
+    reset,
   } = useForm<ProjectInput>({
     resolver: zodResolver(ProjectSchema),
-    values: {
-      name: project?.name || "",
-      background: project?.background || "",
-      method: project?.method || "",
-      objective: project?.objective || "",
-      result: project?.result || "",
-      attachments: project?.attachments || [],
-      keywords: project?.keywords || [],
+    defaultValues: {
+      name: "",
+      background: "",
+      method: "",
+      objective: "",
+      result: "",
+      attachments: [],
+      keywords: [],
       password: "",
-      proposerName: project?.proposerName || "",
-      proposerType: project?.proposerType || "STUDENT",
-      proposerMajor: project?.proposerMajor || "",
-      status: project?.status || "RECRUITING",
+      proposerName: "",
+      proposerType: "STUDENT",
+      proposerMajor: "",
+      status: "RECRUITING",
     },
   });
+
+  // 프로젝트 데이터가 로드되면 폼을 초기화
+  useEffect(() => {
+    if (project) {
+      reset({
+        name: project.name || "",
+        background: project.background || "",
+        method: project.method || "",
+        objective: project.objective || "",
+        result: project.result || "",
+        attachments: project.attachments || [],
+        keywords: project.keywords || [],
+        password: "",
+        proposerName: project.proposerName || "",
+        proposerType: project.proposerType || "STUDENT",
+        proposerMajor: project.proposerMajor || "",
+        status: project.status || "RECRUITING",
+      });
+    }
+  }, [project, reset]);
 
   async function onSuccess(data: ProjectInput) {
     setLoading(true);
@@ -93,6 +122,10 @@ export default function Project({ params }: { params: { id: string } }) {
         currentPassword,
       });
       setProject(response);
+      reset({
+        ...data,
+        password: "", // 비밀번호는 다시 빈 값으로
+      });
     } catch (error) {
       console.error("Error updating project:", error);
       alert("프로젝트 수정 실패!");
@@ -107,50 +140,44 @@ export default function Project({ params }: { params: { id: string } }) {
   // TODO: 비밀번호 입력 받을건지 OR 바로 삭제가능하게 할 건지
   async function handleDelete() {
     setLoading(true);
-    let currentPassword =
+    const currentPassword =
       localStorage.getItem(`currentPassword/${projectId}`) || "";
-    if (currentPassword === "") {
-      currentPassword = getValues("password");
-    }
+
     try {
       await apiClient.deleteProject(projectId, currentPassword);
-      alert("프로젝트 삭제 완료");
-      router.push("/");
-    } catch (error) {
-      console.log("Error deleting project:", error);
-      if (currentPassword === "") {
-        alert("비밀번호를 입력해주세요.");
-        return;
-      }
+    } catch {
       alert("프로젝트 삭제 실패");
-    } finally {
-      setLoading(false);
     }
+    router.push("/");
+    setLoading(false);
   }
 
-  // TODO: 모집마감 상태 백엔드에서 추가되면 작업 시작하기
-  {
-    /*
-  async function onCloseRecruit() {
-    if (!project) {
-      alert("프로젝트 정보가 없습니다.");
-      return;
-    }
+  async function handleToggleClose() {
     setLoading(true);
+    const currentPassword =
+      localStorage.getItem(`currentPassword/${projectId}`) || "";
+
     try {
-      const updatedProject = await apiClient.updateProject(projectId, {
-        ...project,
-        isClosed: true,
-      });
+      let updatedProject;
+      if (project?.status === "RECRUITING") {
+        // 모집 마감
+        updatedProject = await apiClient.closeProject(
+          projectId,
+          currentPassword
+        );
+      } else {
+        // 재모집
+        updatedProject = await apiClient.reopenProject(
+          projectId,
+          currentPassword
+        );
+      }
       setProject(updatedProject);
-      alert("모집이 마감되었습니다.");
-    } catch (error) {
-      console.error("Error closing recruitment:", error);
-      alert("모집 마감 실패");
-    } finally {
-      setLoading(false);
+    } catch {
+      alert("프로젝트 모집마감 실패");
     }
-  } */
+    router.push(`/projects/${projectId}`);
+    setLoading(false);
   }
 
   function toggleMode() {
@@ -200,19 +227,45 @@ export default function Project({ params }: { params: { id: string } }) {
           className="w-[30%]"
           project={project}
           onDelete={handleDelete}
+          onToggleClose={handleToggleClose}
           mode={mode}
           toggleMode={toggleMode}
           onSubmit={handleSubmit(onSuccess)}
           loading={loading}
           onApplySuccess={(newApplicant) => {
             setProject((prev) => {
-              if (!prev) return;
+              if (!prev) return prev;
+
+              // 기존 applicants 배열에 새로운 applicant 추가
+              const updatedApplicants = [...prev.applicants, newApplicant];
+
               return {
                 ...prev,
-                applicants: [...prev.applicants, newApplicant],
+                applicants: updatedApplicants,
               };
             });
+
+            // applicants 상태도 별도로 업데이트
+            setApplicants((prev) => {
+              if (!prev) return [newApplicant];
+              return [...prev, newApplicant];
+            });
           }}
+          onApplicantStatusChange={(applicantId, status) => {
+            setApplicants((prev) => {
+              if (!prev) return prev;
+              return prev.map((applicant) => {
+                if (applicant.id === applicantId) {
+                  return {
+                    ...applicant,
+                    status,
+                  };
+                }
+                return applicant;
+              });
+            });
+          }}
+          applicants={applicants}
         />
       </div>
     </form>
