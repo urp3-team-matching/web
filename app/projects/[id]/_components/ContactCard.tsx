@@ -24,12 +24,15 @@ export default function ContactCard({ email, openChatLink }: ContactCardProps) {
         <div className="flex items-center gap-2">
           <MessageSquare size={24} />
           {isValidLink ? (
-            <Link
-              href={openChatLink}
-              className="text-sm font-normal underline underline-offset-4"
-            >
-              오픈채팅: {openChatLink}
-            </Link>
+            <div>
+              <span className="text-sm font-normal">오픈채팅: </span>
+              <Link
+                href={openChatLink}
+                className="text-sm font-normal underline underline-offset-4"
+              >
+                {openChatLink}
+              </Link>
+            </div>
           ) : (
             <span className="text-sm font-normal">
               오픈채팅: {openChatLink}
