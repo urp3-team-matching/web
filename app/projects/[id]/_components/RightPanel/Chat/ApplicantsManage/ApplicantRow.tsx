@@ -18,10 +18,18 @@ type ApplicantRowType = {
 
 interface ApplicantRowProps {
   className?: string;
+  projectId: number;
+  handleAccept?: (applicantId: number) => void;
+  handleReject?: (applicantId: number) => void;
   applicant: PublicApplicantForProject;
 }
 
-const ApplicantRow = ({ className, applicant }: ApplicantRowProps) => {
+const ApplicantRow = ({
+  className,
+  applicant,
+  handleAccept,
+  handleReject,
+}: ApplicantRowProps) => {
   const applicantFields: ApplicantRowType[] = [
     { label: "이름", value: applicant.name },
     { label: "학과", value: applicant.major },
@@ -35,15 +43,33 @@ const ApplicantRow = ({ className, applicant }: ApplicantRowProps) => {
       <DialogTrigger asChild>
         <div
           className={cn(
-            "rounded-lg shadow-sm flex items-center px-3 w-full h-[45px] border cursor-pointer",
+            "rounded-lg shadow-sm flex items-center justify-between px-3 w-full h-[45px] border cursor-pointer",
             "active:bg-gray-200 hover:bg-gray-100 transition-colors duration-200",
             className
           )}
         >
           <User className="size-6 mr-3" />
-          <span>
+          <div className="flex-1">
             {applicant.name}({applicant.major})
-          </span>
+          </div>
+          <div>
+            {handleAccept && handleReject && (
+              <>
+                <button
+                  className="p-1 hover:cursor-pointer border rounded-md text-xs border-gray-300 bg-white hover:bg-white/80"
+                  onClick={() => handleAccept(applicant.id)}
+                >
+                  수락
+                </button>
+                <button
+                  className="p-1 hover:cursor-pointer rounded-md text-xs bg-destructive hover:bg-destructive/80 text-white"
+                  onClick={() => handleReject(applicant.id)}
+                >
+                  거절
+                </button>
+              </>
+            )}
+          </div>
         </div>
       </DialogTrigger>
       <DialogContent>
