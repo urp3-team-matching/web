@@ -33,7 +33,7 @@ const ApplicantGroup = ({
     } catch (error) {
       if (error instanceof MaxApplicantsError) {
         alert(
-          `최대 지원자 수(${MAX_APPLICANTS})를 초과했거나 해당 전공의 최대 지원자 수(${MAX_APPLICANT_MAJOR_COUNT})를 초과했습니다. 신청자를 승인할 수 없습니다.`
+          `신청자를 승인할 수 없습니다. 최대 지원자 수(${MAX_APPLICANTS}명)를 초과했거나 해당 전공의 최대 지원자 수(${MAX_APPLICANT_MAJOR_COUNT}명)를 초과했습니다.`
         );
         return;
       }
@@ -46,7 +46,6 @@ const ApplicantGroup = ({
     try {
       await apiClient.rejectApplicant(projectId, applicantId);
       onApplicantStatusChange(applicantId, "REJECTED");
-      alert("신청자 거절이 완료되었습니다");
     } catch (error) {
       alert("신청자 거절 요청에 실패했습니다" + error);
       return;

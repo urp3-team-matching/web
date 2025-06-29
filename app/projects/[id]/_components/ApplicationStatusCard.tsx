@@ -39,7 +39,6 @@ export default function ApplicationStatusCard({
     try {
       await apiClient.acceptApplicant(projectId, applicantId);
       onApplicantStatusChange(applicantId, "APPROVED");
-      alert("신청자 승인이 완료되었습니다");
     } catch (error) {
       if (error instanceof MaxApplicantsError) {
         alert(
@@ -56,7 +55,6 @@ export default function ApplicationStatusCard({
     try {
       await apiClient.rejectApplicant(projectId, applicantId);
       onApplicantStatusChange(applicantId, "REJECTED");
-      alert("신청자 거절이 완료되었습니다");
     } catch (error) {
       alert("신청자 거절 요청에 실패했습니다" + error);
       return;

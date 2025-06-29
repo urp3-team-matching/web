@@ -64,7 +64,10 @@ const ApplicantRow = ({
               <Button
                 onClick={(e) => {
                   e.stopPropagation();
+                  e.preventDefault();
                   handleAccept(applicant.id);
+                  // focus 방지
+                  (e.target as HTMLButtonElement).blur();
                 }}
                 size="sm"
                 variant="secondary"
@@ -76,7 +79,10 @@ const ApplicantRow = ({
               <Button
                 onClick={(e) => {
                   e.stopPropagation();
+                  e.preventDefault();
                   handleReject(applicant.id);
+                  // focus 방지
+                  (e.target as HTMLButtonElement).blur();
                 }}
                 size="sm"
                 variant="destructive"
@@ -88,12 +94,15 @@ const ApplicantRow = ({
               <Button
                 onClick={(e) => {
                   e.stopPropagation();
+                  e.preventDefault();
                   handlePending(applicant.id);
+                  // focus 방지
+                  (e.target as HTMLButtonElement).blur();
                 }}
                 size="sm"
-                variant="secondary"
+                variant="destructive"
               >
-                대기
+                취소
               </Button>
             )}
           </div>
@@ -124,6 +133,7 @@ const ApplicantRow = ({
                 handleAccept(applicant.id);
                 setOpen(false);
               }}
+              onFocus={(e) => e.target.blur()} // focus 방지
             >
               수락
             </Button>
@@ -135,6 +145,7 @@ const ApplicantRow = ({
                 handleReject(applicant.id);
                 setOpen(false);
               }}
+              onFocus={(e) => e.target.blur()} // focus 방지
             >
               거절
             </Button>
@@ -146,6 +157,7 @@ const ApplicantRow = ({
                 handlePending(applicant.id);
                 setOpen(false);
               }}
+              onFocus={(e) => e.target.blur()} // focus 방지
             >
               대기
             </Button>
