@@ -235,6 +235,12 @@ async function main() {
       ProposerType.HOST,
     ]),
     proposerMajor: getRandomItem(majors),
+    proposerPhone: `010-${getRandomInt(1000, 9999)}-${getRandomInt(
+      1000,
+      9999
+    )}`,
+    email: `${getRandomItem(emails)}@${getRandomItem(emailDomains)}`,
+    chatLink: `https://chat.${getRandomItem(emailDomains)}`,
     passwordHash: passwordHash,
     viewCount: getRandomInt(100, 100000), // 조회수 100~100000 사이 랜덤 설정
   }));
