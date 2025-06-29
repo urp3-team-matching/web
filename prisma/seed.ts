@@ -1,4 +1,4 @@
-import { PrismaClient, ProposerType } from "@prisma/client";
+import { PrismaClient, ProjectStatus, ProposerType } from "@prisma/client";
 import { hash } from "bcryptjs";
 
 const prisma = new PrismaClient();
@@ -241,6 +241,7 @@ async function main() {
     )}`,
     email: `${getRandomItem(emails)}@${getRandomItem(emailDomains)}`,
     chatLink: `https://chat.${getRandomItem(emailDomains)}`,
+    status: getRandomItem(Object.values(ProjectStatus)),
     passwordHash: passwordHash,
     viewCount: getRandomInt(100, 100000), // 조회수 100~100000 사이 랜덤 설정
   }));
