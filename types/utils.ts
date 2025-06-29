@@ -35,6 +35,5 @@ export type PaginatedType<T> = {
   itemsPerPage: number;
 };
 
-export const passwordField = z
-  .string()
-  .min(6, "Password is required (min 6 chars).");
+export const passwordField = z.string();
+// .min(6, "Password is required (min 6 chars).");

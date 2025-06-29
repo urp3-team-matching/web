@@ -1,4 +1,4 @@
-import { MAX_APPLICANTS } from "@/constants";
+import { MAX_APPLICANT_MAJOR_COUNT, MAX_APPLICANTS } from "@/constants";
 import {
   BadRequestError,
   MaxApplicantsError,
@@ -206,11 +206,24 @@ export async function acceptApplicant(
     throw new BadRequestError("Applicant is already approved.");
   }
 
+  // 지원자 상태가 거절된 경우
+  if (applicant.status === "REJECTED") {
+    throw new BadRequestError("Applicant is already rejected.");
+  }
+
   // 지원자 수가 최대 지원자 수를 초과하는 경우
   const currentApplicantsCount = await prisma.applicant.count({
     where: { projectId, status: "APPROVED" },
   });
   if (currentApplicantsCount >= MAX_APPLICANTS) {
+    throw new MaxApplicantsError();
+  }
+
+  // 전공 수가 최대 전공 수를 초과하는 경우
+  const currentApplicantMajorsCount = await prisma.applicant.count({
+    where: { projectId, status: "APPROVED", major: applicant.major },
+  });
+  if (currentApplicantMajorsCount >= MAX_APPLICANT_MAJOR_COUNT) {
     throw new MaxApplicantsError();
   }
 
@@ -256,6 +269,44 @@ export async function rejectApplicant(
   const updatedApplicant = await prisma.applicant.update({
     where: { id: applicantId },
     data: { status: "REJECTED" },
+    select: applicantPublicSelection,
+  });
+
+  return updatedApplicant;
+}
+
+export async function pendingApplicant(
+  projectId: number,
+  applicantId: number
+): Promise<ApplicantForProject> {
+  // 프로젝트와 지원자 존재 여부 확인
+  const project = await prisma.project.findUnique({
+    where: { id: projectId },
+    select: { id: true, applicants: true },
+  });
+
+  if (!project) {
+    throw new NotFoundError("Project not found.");
+  }
+
+  const applicant = await prisma.applicant.findUnique({
+    where: { id: applicantId },
+    select: applicantPublicSelection,
+  });
+
+  if (!applicant || applicant.projectId !== projectId) {
+    throw new NotFoundError("Applicant not found for this project.");
+  }
+
+  // 지원자 상태가 이미 대기 중인 경우
+  if (applicant.status === "PENDING") {
+    throw new BadRequestError("Applicant is already pending.");
+  }
+
+  // 지원자 대기 중으로 변경
+  const updatedApplicant = await prisma.applicant.update({
+    where: { id: applicantId },
+    data: { status: "PENDING" },
     select: applicantPublicSelection,
   });
 

@@ -1,8 +1,107 @@
 import ApplicantRow from "@/app/projects/[id]/_components/RightPanel/Chat/ApplicantsManage/ApplicantRow";
-import { MAX_APPLICANTS } from "@/constants";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { MAX_APPLICANT_MAJOR_COUNT, MAX_APPLICANTS } from "@/constants";
 import apiClient, { PublicApplicant } from "@/lib/apiClientHelper";
-import { cn } from "@/lib/utils";
+import { MaxApplicantsError } from "@/lib/authUtils";
 import { ApplicantStatus } from "@prisma/client";
+
+interface ApplicantGroupProps {
+  projectId: number;
+  status: ApplicantStatus;
+  applicants: PublicApplicant[];
+  onApplicantStatusChange: (
+    applicantId: number,
+    status: ApplicantStatus
+  ) => void;
+}
+
+const ApplicantGroup = ({
+  projectId,
+  status,
+  applicants,
+  onApplicantStatusChange,
+}: ApplicantGroupProps) => {
+  async function handleAccept(applicantId: number) {
+    try {
+      await apiClient.acceptApplicant(projectId, applicantId);
+      onApplicantStatusChange(applicantId, "APPROVED");
+    } catch (error) {
+      if (error instanceof MaxApplicantsError) {
+        alert(
+          `신청자를 승인할 수 없습니다. 최대 지원자 수(${MAX_APPLICANTS}명)를 초과했거나 해당 전공의 최대 지원자 수(${MAX_APPLICANT_MAJOR_COUNT}명)를 초과했습니다.`
+        );
+        return;
+      }
+      alert("신청자 승인 요청에 실패했습니다" + error);
+      return;
+    }
+  }
+
+  async function handleReject(applicantId: number) {
+    try {
+      await apiClient.rejectApplicant(projectId, applicantId);
+      onApplicantStatusChange(applicantId, "REJECTED");
+    } catch (error) {
+      alert("신청자 거절 요청에 실패했습니다" + error);
+      return;
+    }
+  }
+
+  async function handlePending(applicantId: number) {
+    try {
+      await apiClient.pendingApplicant(projectId, applicantId);
+      onApplicantStatusChange(applicantId, "PENDING");
+    } catch (error) {
+      alert("신청자 상태 변경 요청에 실패했습니다" + error);
+      return;
+    }
+  }
+
+  const groupAsKorean = {
+    APPROVED: "확정",
+    PENDING: "대기",
+    REJECTED: "거절",
+  };
+
+  return (
+    <AccordionItem value={status}>
+      <AccordionTrigger className="hover:cursor-pointer">
+        {groupAsKorean[status]}
+        {status === "APPROVED"
+          ? `(${applicants.length}/${MAX_APPLICANTS})`
+          : `(${applicants.length})`}
+      </AccordionTrigger>
+
+      <AccordionContent className="flex flex-col gap-y-1">
+        {applicants.length > 0 ? (
+          applicants.map((applicant) => (
+            <ApplicantRow
+              key={applicant.id}
+              applicant={applicant}
+              projectId={projectId}
+              handleAccept={status === "PENDING" ? handleAccept : undefined}
+              handleReject={status === "PENDING" ? handleReject : undefined}
+              handlePending={
+                status === "REJECTED" || status === "APPROVED"
+                  ? handlePending
+                  : undefined
+              }
+            />
+          ))
+        ) : (
+          <div className="w-full flex items-center justify-center text-gray-400">
+            없음
+          </div>
+        )}
+      </AccordionContent>
+    </AccordionItem>
+  );
+};
 
 interface ManageApplicantsProps {
   className?: string;
@@ -26,77 +125,30 @@ const ApplicantsManage = ({
   const pendingApplicants = applicants.filter(
     (applicant) => applicant.status === "PENDING"
   );
-
-  async function handleAccept(applicantId: number) {
-    try {
-      await apiClient.acceptApplicant(projectId, applicantId);
-      onApplicantStatusChange(applicantId, "APPROVED");
-      alert("신청자 승인이 완료되었습니다");
-    } catch (error) {
-      alert("신청자 승인 요청에 실패했습니다" + error);
-      return;
-    }
-  }
-
-  async function handleReject(applicantId: number) {
-    try {
-      await apiClient.rejectApplicant(projectId, applicantId);
-      onApplicantStatusChange(applicantId, "REJECTED");
-      alert("신청자 거절이 완료되었습니다");
-    } catch (error) {
-      alert("신청자 거절 요청에 실패했습니다" + error);
-      return;
-    }
-  }
+  const rejectedApplicants = applicants.filter(
+    (applicant) => applicant.status === "REJECTED"
+  );
 
   return (
-    <div className={cn("space-y-3", className)}>
-      {/* 섹션: 확정 인원 */}
-      <div>
-        <div className="py-2 px-1">
-          확정{`(${approvedApplicants.length}/${MAX_APPLICANTS})`}
-        </div>
-
-        <div className="flex flex-col gap-y-1">
-          {approvedApplicants.length === 0 && (
-            <div className="w-full flex items-center justify-center text-gray-400">
-              신청자가 없습니다.
-            </div>
-          )}
-          {approvedApplicants.map((applicant) => (
-            <ApplicantRow
-              key={applicant.id}
-              applicant={applicant}
-              projectId={projectId}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* 섹션: 대기 인원 */}
-      <div>
-        <div className="py-2 px-1">
-          대기{`(${pendingApplicants.length}/${MAX_APPLICANTS})`}
-        </div>
-
-        <div className="flex flex-col gap-y-1">
-          {pendingApplicants.length === 0 && (
-            <div className="w-full flex items-center justify-center text-gray-400">
-              신청자가 없습니다.
-            </div>
-          )}
-          {pendingApplicants.map((applicant) => (
-            <ApplicantRow
-              key={applicant.id}
-              applicant={applicant}
-              projectId={projectId}
-              handleAccept={handleAccept}
-              handleReject={handleReject}
-            />
-          ))}
-        </div>
-      </div>
-    </div>
+    <Accordion
+      type="multiple"
+      defaultValue={["APPROVED", "PENDING", "REJECTED"]}
+      className={className}
+    >
+      {Object.entries({
+        APPROVED: approvedApplicants,
+        PENDING: pendingApplicants,
+        REJECTED: rejectedApplicants,
+      }).map(([status, applicants]) => (
+        <ApplicantGroup
+          key={status}
+          projectId={projectId}
+          status={status as ApplicantStatus}
+          applicants={applicants}
+          onApplicantStatusChange={onApplicantStatusChange}
+        />
+      ))}
+    </Accordion>
   );
 };
 

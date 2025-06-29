@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { ProjectPageModeEnum } from "@/app/projects/[id]/_components/constants";
@@ -10,7 +11,7 @@ import apiClient, {
   PublicApplicant,
   PublicProjectWithForeignKeys,
 } from "@/lib/apiClientHelper";
-import { ProjectInput, ProjectSchema } from "@/types/project";
+import { ProjectUpdateInput, ProjectUpdateSchema } from "@/types/project";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { parseAsStringEnum, useQueryState } from "nuqs";
@@ -68,13 +69,8 @@ export default function Project({ params }: { params: { id: string } }) {
   }, [projectId, setmode]);
 
   // 프로젝트 정보 폼
-  const {
-    handleSubmit,
-    control: projectFormControl,
-    getValues,
-    reset,
-  } = useForm<ProjectInput>({
-    resolver: zodResolver(ProjectSchema),
+  const { handleSubmit, control, reset } = useForm<ProjectUpdateInput>({
+    resolver: zodResolver(ProjectUpdateSchema),
     defaultValues: {
       name: "",
       background: "",
@@ -84,6 +80,7 @@ export default function Project({ params }: { params: { id: string } }) {
       attachments: [],
       keywords: [],
       password: "",
+      currentPassword: "",
       proposerName: "",
       proposerType: "STUDENT",
       proposerMajor: "",
@@ -103,26 +100,20 @@ export default function Project({ params }: { params: { id: string } }) {
         attachments: project.attachments || [],
         keywords: project.keywords || [],
         password: "",
+        currentPassword:
+          localStorage.getItem(`currentPassword/${projectId}`) || "",
         proposerName: project.proposerName || "",
         proposerType: project.proposerType || "STUDENT",
         proposerMajor: project.proposerMajor || "",
         status: project.status || "RECRUITING",
       });
     }
-  }, [project, reset]);
+  }, [project, reset, projectId]);
 
-  async function onSuccess(data: ProjectInput) {
+  async function onSuccess(data: ProjectUpdateInput) {
     setLoading(true);
-    let currentPassword =
-      localStorage.getItem(`currentPassword/${projectId}`) || "";
-    if (currentPassword === "") {
-      currentPassword = getValues("password");
-    }
     try {
-      const response = await apiClient.updateProject(projectId, {
-        ...data,
-        currentPassword,
-      });
+      const response = await apiClient.updateProject(projectId, data);
       setProject(response);
       reset({
         ...data,
@@ -137,6 +128,11 @@ export default function Project({ params }: { params: { id: string } }) {
     }
 
     router.push(`/projects/${projectId}`);
+  }
+
+  function onInvalidSubmit() {
+    console.error(control._formState.errors);
+    alert("프로젝트 수정 실패! 입력값을 확인해주세요.");
   }
 
   // TODO: 비밀번호 입력 받을건지 OR 바로 삭제가능하게 할 건지
@@ -202,11 +198,14 @@ export default function Project({ params }: { params: { id: string } }) {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSuccess)} className="my-12 px-5 w-full">
+    <form
+      onSubmit={handleSubmit(onSuccess, onInvalidSubmit)}
+      className="my-12 px-5 w-full"
+    >
       {/* 헤더 */}
       <ProjectDetailHeader
         project={project}
-        projectFormControl={projectFormControl}
+        control={control as any}
         mode={mode}
         toggleMode={toggleMode}
       />
@@ -216,12 +215,12 @@ export default function Project({ params }: { params: { id: string } }) {
         {/* 좌측 */}
         <div className="w-[70%] pr-5 pt-5 flex flex-col gap-5">
           {mode === ProjectPageModeEnum.ADMIN && (
-            <ProjectProposerForm control={projectFormControl} />
+            <ProjectProposerForm control={control as any} />
           )}
           <ProjectForm
             className="w-full h-full flex flex-col gap-5"
             mode={mode}
-            control={projectFormControl}
+            control={control as any}
           />
         </div>
         {/* 우측 */}
@@ -232,7 +231,7 @@ export default function Project({ params }: { params: { id: string } }) {
           onToggleClose={handleToggleClose}
           mode={mode}
           toggleMode={toggleMode}
-          onSubmit={handleSubmit(onSuccess)}
+          onSubmit={handleSubmit(onSuccess, onInvalidSubmit)}
           loading={loading}
           onApplySuccess={(newApplicant) => {
             setProject((prev) => {

@@ -13,7 +13,7 @@ import { Control } from "react-hook-form";
 interface ProjectDetailHeaderProps {
   project: PublicProjectWithForeignKeys;
   className?: string;
-  projectFormControl: Control<ProjectInput>;
+  control: Control<ProjectInput>;
   mode: ProjectPageMode;
   toggleMode: () => void;
 }
@@ -21,7 +21,7 @@ interface ProjectDetailHeaderProps {
 const ProjectDetailHeader = ({
   project,
   className,
-  projectFormControl,
+  control,
   mode,
   toggleMode,
 }: ProjectDetailHeaderProps) => {
@@ -57,7 +57,7 @@ const ProjectDetailHeader = ({
       {/* 메인: 프로젝트 제목 */}
       <ProjectNameForm
         className="h-16 flex flex-col justify-end border-b-[1px] border-black"
-        control={projectFormControl}
+        control={control}
         mode={mode}
       />
 

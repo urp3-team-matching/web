@@ -1,7 +1,9 @@
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -9,6 +11,7 @@ import {
 import { PublicApplicantForProject } from "@/lib/apiClientHelper";
 import { cn } from "@/lib/utils";
 import { User } from "lucide-react";
+import { useState } from "react";
 
 type ApplicantRowType = {
   className?: string;
@@ -21,6 +24,7 @@ interface ApplicantRowProps {
   projectId: number;
   handleAccept?: (applicantId: number) => void;
   handleReject?: (applicantId: number) => void;
+  handlePending?: (applicantId: number) => void;
   applicant: PublicApplicantForProject;
 }
 
@@ -29,7 +33,10 @@ const ApplicantRow = ({
   applicant,
   handleAccept,
   handleReject,
+  handlePending,
 }: ApplicantRowProps) => {
+  const [open, setOpen] = useState(false);
+
   const applicantFields: ApplicantRowType[] = [
     { label: "이름", value: applicant.name },
     { label: "학과", value: applicant.major },
@@ -39,7 +46,7 @@ const ApplicantRow = ({
   ];
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <div
           className={cn(
@@ -52,22 +59,51 @@ const ApplicantRow = ({
           <div className="flex-1">
             {applicant.name}({applicant.major})
           </div>
-          <div>
-            {handleAccept && handleReject && (
-              <>
-                <button
-                  className="p-1 hover:cursor-pointer border rounded-md text-xs border-gray-300 bg-white hover:bg-white/80"
-                  onClick={() => handleAccept(applicant.id)}
-                >
-                  수락
-                </button>
-                <button
-                  className="p-1 hover:cursor-pointer rounded-md text-xs bg-destructive hover:bg-destructive/80 text-white"
-                  onClick={() => handleReject(applicant.id)}
-                >
-                  거절
-                </button>
-              </>
+          <div className="flex gap-x-1">
+            {handleAccept && (
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  handleAccept(applicant.id);
+                  // focus 방지
+                  (e.target as HTMLButtonElement).blur();
+                }}
+                size="sm"
+                variant="secondary"
+              >
+                수락
+              </Button>
+            )}
+            {handleReject && (
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  handleReject(applicant.id);
+                  // focus 방지
+                  (e.target as HTMLButtonElement).blur();
+                }}
+                size="sm"
+                variant="destructive"
+              >
+                거절
+              </Button>
+            )}
+            {handlePending && (
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  handlePending(applicant.id);
+                  // focus 방지
+                  (e.target as HTMLButtonElement).blur();
+                }}
+                size="sm"
+                variant="destructive"
+              >
+                취소
+              </Button>
             )}
           </div>
         </div>
@@ -89,6 +125,44 @@ const ApplicantRow = ({
             </div>
           </DialogDescription>
         </DialogHeader>
+        <DialogFooter className="flex justify-end gap-x-2">
+          {handleAccept && (
+            <Button
+              variant="secondary"
+              onClick={() => {
+                handleAccept(applicant.id);
+                setOpen(false);
+              }}
+              onFocus={(e) => e.target.blur()} // focus 방지
+            >
+              수락
+            </Button>
+          )}
+          {handleReject && (
+            <Button
+              variant="destructive"
+              onClick={() => {
+                handleReject(applicant.id);
+                setOpen(false);
+              }}
+              onFocus={(e) => e.target.blur()} // focus 방지
+            >
+              거절
+            </Button>
+          )}
+          {handlePending && (
+            <Button
+              variant="secondary"
+              onClick={() => {
+                handlePending(applicant.id);
+                setOpen(false);
+              }}
+              onFocus={(e) => e.target.blur()} // focus 방지
+            >
+              대기
+            </Button>
+          )}
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

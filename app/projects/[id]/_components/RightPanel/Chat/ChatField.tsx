@@ -327,7 +327,7 @@ export default function ChatField({ project }: ChatFieldProps) {
   };
 
   return (
-    <div className="w-full h-[460px] flex flex-col bg-white border border-gray-300 rounded-md shadow-sm">
+    <div className="w-full h-[460px] flex flex-col">
       <ScrollArea
         ref={scrollAreaRef}
         className="flex-grow h-[calc(100%-80px)] p-3"
@@ -345,7 +345,7 @@ export default function ChatField({ project }: ChatFieldProps) {
         </div>
       </ScrollArea>
 
-      <div className="w-full p-2 flex items-end border-t border-gray-200 bg-gray-50">
+      <div className="w-full p-2 flex items-end border-t bg-gray-50">
         <Dialog
           open={open}
           onOpenChange={(open) => {

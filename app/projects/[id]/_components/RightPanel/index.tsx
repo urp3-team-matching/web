@@ -10,7 +10,6 @@ import {
 } from "@/lib/apiClientHelper";
 import { cn } from "@/lib/utils";
 import { ApplicantStatus } from "@prisma/client";
-import ApplicationStatusCard from "../ApplicationStatusCard";
 import ContactCard from "../ContactCard";
 
 interface ProjectDetailRightPanelProps {
@@ -61,15 +60,6 @@ const ProjectDetailRightPanel = ({
 
       <MajorGraph applicants={applicants} />
 
-      {/* 프로젝트 제안자 입력  
-      {mode === ProjectPageModeEnum.ADMIN && (
-        <ProjectProposerForm
-          control={control}
-          className="w-full p-5 flex flex-col gap-3 border rounded-lg h-auto"
-        />
-      )}
-      */}
-
       {/* 프로젝트 대화방 및 모집관리  */}
       <Chat
         className="w-full text-sm font-medium flex flex-col shadow-md rounded-lg h-[500px]"
@@ -79,12 +69,12 @@ const ProjectDetailRightPanel = ({
         onApplicantStatusChange={onApplicantStatusChange}
       />
 
-      <ApplicationStatusCard
+      {/* <ApplicationStatusCard
         projectId={project.id}
         mode={mode}
         applicants={applicants}
         onApplicantStatusChange={onApplicantStatusChange}
-      />
+      /> */}
 
       {/* 프로젝트 삭제, 모집마감, 저장 버튼 */}
       {mode === ProjectPageModeEnum.ADMIN && (
