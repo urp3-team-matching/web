@@ -77,6 +77,7 @@ export default function Project({ params }: { params: { id: string } }) {
       method: "",
       objective: "",
       result: "",
+      etc: "",
       attachments: [],
       keywords: [],
       password: "",
@@ -84,6 +85,9 @@ export default function Project({ params }: { params: { id: string } }) {
       proposerName: "",
       proposerType: "STUDENT",
       proposerMajor: "",
+      proposerPhone: "",
+      email: "",
+      chatLink: "",
       status: "RECRUITING",
     },
   });
@@ -97,6 +101,7 @@ export default function Project({ params }: { params: { id: string } }) {
         method: project.method || "",
         objective: project.objective || "",
         result: project.result || "",
+        etc: project.etc || "",
         attachments: project.attachments || [],
         keywords: project.keywords || [],
         password: "",
@@ -105,6 +110,9 @@ export default function Project({ params }: { params: { id: string } }) {
         proposerName: project.proposerName || "",
         proposerType: project.proposerType || "STUDENT",
         proposerMajor: project.proposerMajor || "",
+        proposerPhone: project.proposerPhone || "",
+        email: project.email || "",
+        chatLink: project.chatLink || "",
         status: project.status || "RECRUITING",
       });
     }

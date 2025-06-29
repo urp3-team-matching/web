@@ -12,6 +12,7 @@ const fields = [
   { name: "method", label: "프로젝트 실행방법" },
   { name: "objective", label: "프로젝트 목표" },
   { name: "result", label: "프로젝트 기대효과" },
+  { name: "etc", label: "기타사항" },
 ] as const;
 
 interface ProjectBodyProps {

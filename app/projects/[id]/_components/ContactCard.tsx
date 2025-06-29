@@ -1,12 +1,17 @@
-import { Mail, MessageSquare } from "lucide-react";
+import { Mail, MessageSquare, Phone } from "lucide-react";
 import Link from "next/link";
 
 interface ContactCardProps {
   email?: string;
   openChatLink?: string;
+  proposerPhone?: string;
 }
 
-export default function ContactCard({ email, openChatLink }: ContactCardProps) {
+export default function ContactCard({
+  email,
+  openChatLink,
+  proposerPhone,
+}: ContactCardProps) {
   const isValidLink = openChatLink?.startsWith("http");
 
   return (
@@ -38,6 +43,13 @@ export default function ContactCard({ email, openChatLink }: ContactCardProps) {
               오픈채팅: {openChatLink}
             </span>
           )}
+        </div>
+      )}
+
+      {proposerPhone && (
+        <div className="flex items-center gap-2">
+          <Phone size={24} />
+          <span className="text-sm font-normal">연락처: {proposerPhone}</span>
         </div>
       )}
     </div>
