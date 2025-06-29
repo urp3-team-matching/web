@@ -63,6 +63,7 @@ const ProjectApplyButton = ({
       setIsSubmitting(true);
       const response = await apiClient.applyToProject(projectId, data);
       onSuccess(response);
+      alert("신청서가 성공적으로 제출되었습니다.");
       reset(); // 폼 초기화
       setOpen(false);
     } catch (error) {

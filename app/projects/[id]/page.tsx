@@ -60,8 +60,10 @@ export default function Project({ params }: { params: { id: string } }) {
         );
         if (isVerified) {
           setmode(ProjectPageModeEnum.ADMIN);
+          return;
         }
       }
+      setmode(null);
     })();
   }, [projectId, setmode]);
 

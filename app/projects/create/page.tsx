@@ -16,6 +16,9 @@ export default function Create() {
   const [loading, setLoading] = useState(true);
   const { handleSubmit, control } = useForm<ProjectInput>({
     resolver: zodResolver(ProjectSchema),
+    defaultValues: {
+      status: "RECRUITING",
+    },
   });
 
   async function onSuccess(data: ProjectInput) {
@@ -29,6 +32,11 @@ export default function Create() {
     } finally {
       setLoading(false);
     }
+  }
+
+  function onInvalidSubmit() {
+    console.error(control._formState.errors);
+    alert("프로젝트 생성 실패! 입력값을 확인해주세요.");
   }
 
   return (
@@ -55,7 +63,7 @@ export default function Create() {
         <ProjectCreateRightPanel
           className="w-[30%]"
           control={control}
-          onSubmit={handleSubmit(onSuccess)}
+          onSubmit={handleSubmit(onSuccess, onInvalidSubmit)}
           loading={loading}
         />
       </div>

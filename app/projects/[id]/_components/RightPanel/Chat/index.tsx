@@ -49,7 +49,7 @@ const Chat = ({
       <ChatHeader tab={tab} setTab={setTab} mode={mode} />
 
       {/* 탭: 대화방 */}
-      {tab === null && <ChatField projectId={project.id} />}
+      {tab === null && <ChatField project={project} />}
 
       {/* 탭: 모집 관리 */}
       {mode === ProjectPageModeEnum.ADMIN && tab === Tab.모집관리 && (
