@@ -181,7 +181,6 @@ export default function ChatField({ project }: ChatFieldProps) {
 
     fetchInitialMessages();
 
-    // 실시간 구독 로직: 사용자가 제공한 "Message" 테이블 이름 유지
     const channel = supabase
       .channel(`project-chat-room-${projectId}`)
       .on<MessageFromDB>(
@@ -213,11 +212,7 @@ export default function ChatField({ project }: ChatFieldProps) {
   }, [projectId]);
 
   useEffect(() => {
-    if (currentUserId) {
-      setDisplayedChats(
-        transformMessagesForDisplay(rawMessages, currentUserId)
-      );
-    }
+    setDisplayedChats(transformMessagesForDisplay(rawMessages, currentUserId));
   }, [rawMessages, currentUserId]);
 
   const scrollToBottom = () => {
@@ -234,13 +229,10 @@ export default function ChatField({ project }: ChatFieldProps) {
     }
   };
 
-  // --- 타이머 제거: displayedChats 변경 시 즉시 scrollToBottom 호출 ---
   useEffect(() => {
     scrollToBottom();
   }, [displayedChats]);
-  // --- 타이머 제거 완료 ---
 
-  // Optimistic Update 적용된 handleSendMessage
   const handleSendMessage = async () => {
     const textarea = textareaRef.current;
     if (!textarea || textarea.value.trim() === "") {
