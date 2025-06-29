@@ -63,7 +63,7 @@ export default function MajorGraph({
         className
       )}
     >
-      <span className="text-xl font-semibold">확정 현황</span>
+      <span className="text-xl font-semibold">팀 현황</span>
       {/* 유저 아이콘 */}
       <div className="w-full justify-between flex">
         {majors.map((major, i) => (
@@ -106,14 +106,21 @@ export default function MajorGraph({
       {/* 전공 */}
       <div className="w-full flex flex-col gap-1 justify-center h-auto">
         {uniqueMajors.map((major, i) => (
-          <div className="flex gap-x-1.5 items-center" key={i}>
-            <div
-              className={cn(
-                "h-5 w-5 rounded-full",
-                `${getMajorColor(major, uniqueMajors)}`
-              )}
-            />
-            <div className="flex-1 text-xs font-normal">{major}</div>
+          <div key={i} className="flex justify-between items-center">
+            <div className="flex gap-x-1.5 items-center">
+              <div
+                className={cn(
+                  "h-4 w-4 rounded-full",
+                  `${getMajorColor(major, uniqueMajors)}`
+                )}
+              />
+              <div className="flex-1 text-xs font-normal">{major}</div>
+            </div>
+            <div>
+              <span className="text-xs font-normal">
+                {majorsCount[major] || 0}명
+              </span>
+            </div>
           </div>
         ))}
       </div>
