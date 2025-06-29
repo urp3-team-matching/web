@@ -80,8 +80,7 @@ export default function Project({ params }: { params: { id: string } }) {
       attachments: [],
       keywords: [],
       password: "",
-      currentPassword:
-        localStorage.getItem(`currentPassword/${projectId}`) || "",
+      currentPassword: "",
       proposerName: "",
       proposerType: "STUDENT",
       proposerMajor: "",
