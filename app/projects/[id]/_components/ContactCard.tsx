@@ -1,3 +1,4 @@
+import { formatPhoneNumber } from "@/lib/phoneUtils";
 import { Mail, MessageSquare, Phone } from "lucide-react";
 import Link from "next/link";
 
@@ -49,7 +50,9 @@ export default function ContactCard({
       {proposerPhone && (
         <div className="flex items-center gap-2">
           <Phone size={24} />
-          <span className="text-sm font-normal">연락처: {proposerPhone}</span>
+          <span className="text-sm font-normal">
+            연락처: {formatPhoneNumber(proposerPhone)}
+          </span>
         </div>
       )}
     </div>

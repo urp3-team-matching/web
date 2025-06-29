@@ -23,19 +23,21 @@ const ProjectProposerFormField = ({
       <label htmlFor={name} className={cn("text-sm font-semibold w-20")}>
         {label}
       </label>
-      <Controller
-        name={name}
-        control={control}
-        render={({ field, fieldState }) => (
-          <Input
-            {...field}
-            value={field.value || ""}
-            fieldState={fieldState}
-            {...inputProps}
-            className=""
-          />
-        )}
-      />
+      <div>
+        <Controller
+          name={name}
+          control={control}
+          render={({ field, fieldState }) => (
+            <Input
+              {...field}
+              value={field.value || ""}
+              fieldState={fieldState}
+              {...inputProps}
+              className=""
+            />
+          )}
+        />
+      </div>
     </div>
   );
 };

@@ -86,8 +86,6 @@ export default function Project({ params }: { params: { id: string } }) {
       proposerType: "STUDENT",
       proposerMajor: "",
       proposerPhone: "",
-      email: "",
-      chatLink: "",
       status: "RECRUITING",
     },
   });
@@ -101,7 +99,7 @@ export default function Project({ params }: { params: { id: string } }) {
         method: project.method || "",
         objective: project.objective || "",
         result: project.result || "",
-        etc: project.etc || "",
+        etc: project.etc || undefined,
         attachments: project.attachments || [],
         keywords: project.keywords || [],
         password: "",
@@ -111,8 +109,8 @@ export default function Project({ params }: { params: { id: string } }) {
         proposerType: project.proposerType || "STUDENT",
         proposerMajor: project.proposerMajor || "",
         proposerPhone: project.proposerPhone || "",
-        email: project.email || "",
-        chatLink: project.chatLink || "",
+        email: project.email || undefined,
+        chatLink: project.chatLink || undefined,
         status: project.status || "RECRUITING",
       });
     }
@@ -140,7 +138,6 @@ export default function Project({ params }: { params: { id: string } }) {
 
   function onInvalidSubmit() {
     console.error(control._formState.errors);
-    alert("프로젝트 수정 실패! 입력값을 확인해주세요.");
   }
 
   // TODO: 비밀번호 입력 받을건지 OR 바로 삭제가능하게 할 건지
