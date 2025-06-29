@@ -438,6 +438,31 @@ class ApiClient {
     return await response.json();
   }
 
+  public async pendingApplicant(
+    projectId: number,
+    applicantId: number
+  ): Promise<PublicApplicant> {
+    const response = await this._request(
+      `/api/projects/${projectId}/applicants/${applicantId}/pending`,
+      "POST"
+    );
+
+    if (!response.ok) {
+      switch (response.status) {
+        case 400:
+          throw new BadRequestError();
+        case 404:
+          throw new NotFoundError();
+        case 500:
+          throw new InternalServerError();
+        default:
+          throw new Error("Failed to change applicant status to pending");
+      }
+    }
+
+    return await response.json();
+  }
+
   public async closeProject(
     id: number,
     currentPassword: string
