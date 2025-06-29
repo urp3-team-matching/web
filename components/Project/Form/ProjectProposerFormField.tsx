@@ -8,7 +8,6 @@ interface ProposerFieldProps {
   name: keyof ProjectInput;
   label: string;
   control: Control<ProjectInput>;
-  variant?: "default" | "sm";
   inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
 }
 
@@ -17,35 +16,26 @@ const ProjectProposerFormField = ({
   name,
   label,
   control,
-  variant,
   inputProps,
 }: ProposerFieldProps) => {
   return (
     <div className={cn("flex items-center", className)}>
-      <label
-        htmlFor={name}
-        className={cn(
-          variant === "sm" && "mr-3",
-          "text-sm whitespace-nowrap w-16 font-semibold"
-        )}
-      >
+      <label htmlFor={name} className={cn("text-sm font-semibold w-20")}>
         {label}
       </label>
-      <div className="flex-1">
-        <Controller
-          name={name}
-          control={control}
-          render={({ field, fieldState }) => (
-            <Input
-              {...field}
-              value={field.value || ""}
-              fieldState={fieldState}
-              className="w-full"
-              {...inputProps}
-            />
-          )}
-        />
-      </div>
+      <Controller
+        name={name}
+        control={control}
+        render={({ field, fieldState }) => (
+          <Input
+            {...field}
+            value={field.value || ""}
+            fieldState={fieldState}
+            {...inputProps}
+            className=""
+          />
+        )}
+      />
     </div>
   );
 };

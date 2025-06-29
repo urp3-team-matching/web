@@ -34,62 +34,66 @@ const ProjectProposerForm = ({
 }: ProjectProposerFormProps) => {
   return (
     <div className={cn({ className }, "border rounded-lg shadow-sm p-5")}>
-      <span className="text-2xl font-semibold">작성자정보</span>
+      <h3 className="text-2xl font-semibold mb-6">작성자정보</h3>
+
       <div
         className={cn(
-          variant === "default" ? "grid-cols-2" : "grid-cols-1",
-          "grid pt-6 justify-center gap-5"
+          "grid",
+          variant === "default" ? "grid-cols-2 gap-5" : "grid-cols-1 gap-2"
         )}
       >
         <ProjectProposerFormField
           name="proposerName"
           control={control}
           label="이름"
-          variant={variant}
+          inputProps={{ placeholder: "김학생" }}
         />
         <ProjectProposerFormField
           name="password"
           control={control}
           label="비밀번호"
-          variant={variant}
-          inputProps={{ type: "password" }}
+          inputProps={{ type: "password", placeholder: "비밀번호(6자 이상)" }}
         />
         <ProjectProposerFormField
           name="proposerPhone"
           control={control}
           label="연락처"
-          variant={variant}
-          inputProps={{ type: "tel" }}
+          inputProps={{ type: "tel", placeholder: "010-1234-5678" }}
         />
         <ProjectProposerFormField
           name="email"
           control={control}
           label="이메일"
-          variant={variant}
-          inputProps={{ type: "email" }}
+          inputProps={{ type: "email", placeholder: "example@domain.com" }}
         />
         <ProjectProposerFormField
           name="chatLink"
           control={control}
           label="채팅링크"
-          variant={variant}
-          inputProps={{ type: "url" }}
+          inputProps={{
+            type: "url",
+            placeholder: "https://open.kakao.com/o/example",
+          }}
         />
 
         <Controller
           name="proposerType"
           control={control}
           render={({ field: proposerTypeField }) => (
-            <div className="col-span-2 grid grid-cols-2 gap-5 h-9">
+            <div
+              className={cn(
+                variant === "default"
+                  ? "col-span-2 grid grid-cols-2 gap-5"
+                  : "col-span-1 flex flex-col gap-2",
+                "h-auto"
+              )}
+            >
               <div
                 className={cn(variant === "sm" && "my-2", "flex items-center")}
               >
                 <label
                   htmlFor={proposerTypeField.name}
-                  className={cn(
-                    variant === "sm" ? "mr-3" : "",
-                    "text-sm px-3 font-semibold w-14 text-center"
-                  )}
+                  className={cn("text-sm font-semibold w-20")}
                 >
                   구분
                 </label>
@@ -98,7 +102,7 @@ const ProjectProposerForm = ({
                   onValueChange={proposerTypeField.onChange}
                   onBlur={proposerTypeField.onBlur}
                   name={proposerTypeField.name}
-                  className="w-full flex gap-4 px-4"
+                  className="w-full flex gap-4"
                   ref={proposerTypeField.ref}
                 >
                   {proposerTypes.map((proposerType) => (
@@ -123,6 +127,9 @@ const ProjectProposerForm = ({
                   name="proposerMajor"
                   control={control}
                   label="전공"
+                  inputProps={{
+                    placeholder: "예: 컴퓨터공학과",
+                  }}
                 />
               )}
             </div>
