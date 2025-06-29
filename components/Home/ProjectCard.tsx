@@ -1,5 +1,7 @@
 import ApplyStatueBadge from "@/components/Badge/ApplyStatueBadge";
 import ProposalBadge from "@/components/Badge/ProposalBadge";
+import { Badge } from "@/components/ui/badge";
+import { MAX_APPLICANTS } from "@/constants";
 import { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
 import { cn, parseDate } from "@/lib/utils";
 import { Calendar, Eye } from "lucide-react";
@@ -12,6 +14,9 @@ export interface ProjectCardProps {
 
 export default function ProjectCard({ project, className }: ProjectCardProps) {
   const projectStatus = project.status;
+  const approvedApplicantCount = project.applicants.filter(
+    (applicant) => applicant.status === "APPROVED"
+  ).length;
 
   return (
     <div
@@ -21,10 +26,18 @@ export default function ProjectCard({ project, className }: ProjectCardProps) {
       )}
     >
       <div className="flex flex-col sm:gap-2 gap-1 justify-between h-full pt-1">
-        {/* 헤더: 상태, 제안 타입 */}
-        <div className="flex gap-[5px] sm:gap-[10px]">
-          <ApplyStatueBadge status={projectStatus} />
-          <ProposalBadge proposerType={project.proposerType} />
+        {/* 헤더: 상태, 제안 타입, 신청 현황 */}
+        <div className="flex justify-between items-center">
+          {/* 상태, 제안 타입 */}
+          <div className="flex items-center gap-1 sm:gap-2">
+            <ApplyStatueBadge status={projectStatus} />
+            <ProposalBadge proposerType={project.proposerType} />
+          </div>
+
+          {/* 신청 현황 */}
+          <Badge>
+            {approvedApplicantCount} / {MAX_APPLICANTS}
+          </Badge>
         </div>
 
         {/* 제목 */}
