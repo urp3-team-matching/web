@@ -64,7 +64,8 @@ model Message {
   id              BigInt   @id @default(autoincrement())
   content         String
   userId          String
-  username        String
+  major           String
+  nickname        String
   projectId       Int
   createdDatetime DateTime @default(now()) @db.Timestamptz(6)
   project         Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)

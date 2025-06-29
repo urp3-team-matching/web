@@ -2,7 +2,8 @@ export type MessageFromDB = {
   id: string | bigint | number;
   content: string;
   userId: string;
-  username: string;
+  major: string;
+  nickname: string;
   projectId: number;
   createdDatetime: string;
 };

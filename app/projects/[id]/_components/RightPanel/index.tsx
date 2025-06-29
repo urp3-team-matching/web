@@ -71,13 +71,13 @@ const ProjectDetailRightPanel = ({
       */}
 
       {/* 프로젝트 대화방 및 모집관리  */}
-      <div className="hidden">
-        <Chat
-          className="w-full text-sm font-medium flex flex-col shadow-md rounded-lg h-[500px]"
-          project={project}
-          mode={mode}
-        />
-      </div>
+      <Chat
+        className="w-full text-sm font-medium flex flex-col shadow-md rounded-lg h-[500px]"
+        project={project}
+        mode={mode}
+        applicants={applicants}
+        onApplicantStatusChange={onApplicantStatusChange}
+      />
 
       <ApplicationStatusCard
         projectId={project.id}
@@ -85,6 +85,7 @@ const ProjectDetailRightPanel = ({
         applicants={applicants}
         onApplicantStatusChange={onApplicantStatusChange}
       />
+
       {/* 프로젝트 삭제, 모집마감, 저장 버튼 */}
       {mode === ProjectPageModeEnum.ADMIN && (
         <CancelAndSubmitButton

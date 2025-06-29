@@ -1,6 +1,17 @@
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
+import apiClient, { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
 import { supabase } from "@/lib/supabaseClient";
 import type {
   ChatItemGroup,
@@ -11,39 +22,56 @@ import { Send } from "lucide-react";
 import { KeyboardEvent, useEffect, useRef, useState } from "react";
 import ChatBubble from "./ChatBubble";
 
-// getOrCreateUserId, getRandomUsername, transformMessagesForDisplay 함수는 이전과 동일
+const COOKIE_KEY = "chat_user_data";
+
 const getOrCreateUserId = (): string => {
-  const cookieKey = "chat_user_id";
-  let userId = document.cookie
+  const cookieValue = document.cookie
     .split("; ")
-    .find((row) => row.startsWith(`${cookieKey}=`))
+    .find((row) => row.startsWith(`${COOKIE_KEY}=`))
     ?.split("=")[1];
-  if (!userId) {
-    userId = `usr_${Date.now().toString(36)}${Math.random()
+
+  if (cookieValue) {
+    // 기존 쿠키가 있으면 userId만 반환 (nickname, major는 별도로 파싱)
+    const [userId] = cookieValue.split(",");
+    return userId;
+  } else {
+    // 새로운 userId 생성
+    const userId = `usr_${Date.now().toString(36)}${Math.random()
       .toString(36)
       .substring(2, 7)}`;
-    const expires = new Date(
-      Date.now() + 365 * 24 * 60 * 60 * 1000
-    ).toUTCString();
-    document.cookie = `${cookieKey}=${userId}; path=/; expires=${expires}; SameSite=Lax`;
+    return userId;
   }
-  return userId;
 };
 
-const SKKU_MASCOTS_PREFIX = [
-  "명륜에서 온",
-  "율전에서 온",
-  "고뇌하는",
-  "열정적인",
-  "코딩하는",
-];
-const SKKU_MASCOTS_SUFFIX = ["킹고", "금잔디", "명륜이", "율전이", "학우"];
-const getRandomUsername = (userId: string): string => {
-  const prefixIndex = userId.length % SKKU_MASCOTS_PREFIX.length;
-  const suffixIndex =
-    (userId.charCodeAt(0) + userId.length) % SKKU_MASCOTS_SUFFIX.length;
-  const uniquePart = userId.substring(userId.length - 4, userId.length - 1);
-  return `${SKKU_MASCOTS_PREFIX[prefixIndex]} ${SKKU_MASCOTS_SUFFIX[suffixIndex]} (${uniquePart})`;
+const saveChatUserData = (
+  userId: string,
+  nickname: string,
+  major: string
+): void => {
+  const cookieValue = `${userId},${nickname},${major}`;
+  const expires = new Date(
+    Date.now() + 365 * 24 * 60 * 60 * 1000
+  ).toUTCString();
+  document.cookie = `${COOKIE_KEY}=${cookieValue}; path=/; expires=${expires}; SameSite=Lax`;
+};
+
+const getChatUserData = (): {
+  userId: string;
+  nickname: string;
+  major: string;
+} | null => {
+  const cookieValue = document.cookie
+    .split("; ")
+    .find((row) => row.startsWith(`${COOKIE_KEY}=`))
+    ?.split("=")[1];
+
+  if (cookieValue) {
+    const [userId, nickname, major] = cookieValue.split(",");
+    if (userId && nickname && major) {
+      return { userId, nickname, major };
+    }
+  }
+  return null;
 };
 
 const transformMessagesForDisplay = (
@@ -67,7 +95,7 @@ const transformMessagesForDisplay = (
       lastGroup.content.push(messageContentItem);
     } else {
       const newGroup: ChatItemGroup = {
-        name: msg.username,
+        name: `${msg.nickname}(${msg.major})`,
         userId: msg.userId,
         isCurrentUser: msg.userId === currentUserId,
         content: [messageContentItem],
@@ -80,10 +108,13 @@ const transformMessagesForDisplay = (
 };
 
 interface ChatFieldProps {
-  projectId: number;
+  project: PublicProjectWithForeignKeys;
 }
 
-export default function ChatField({ projectId }: ChatFieldProps) {
+export default function ChatField({ project }: ChatFieldProps) {
+  const projectId = project.id;
+  const [open, setOpen] = useState(false);
+
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const lastBubbleRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -91,22 +122,52 @@ export default function ChatField({ projectId }: ChatFieldProps) {
   const [rawMessages, setRawMessages] = useState<MessageFromDB[]>([]);
   const [displayedChats, setDisplayedChats] = useState<ChatItemGroup[]>([]);
   const [currentUserId, setCurrentUserId] = useState<string>("");
-  const [currentUsername, setCurrentUsername] = useState<string>("");
+  const [currentMajor, setCurrentMajor] = useState<string>("");
+  const [currentNickname, setCurrentNickname] = useState<string>("");
 
-  useEffect(() => {
-    const userId = getOrCreateUserId();
+  function enterChatRoom(isAdmin: boolean, major: string, nickname: string) {
+    let userId = "";
+    if (!isAdmin) {
+      userId = getOrCreateUserId();
+    } else {
+      userId = "admin";
+    }
     setCurrentUserId(userId);
-    setCurrentUsername(getRandomUsername(userId));
-  }, []);
+    setCurrentMajor(major);
+    setCurrentNickname(nickname);
+    saveChatUserData(userId, nickname, major);
+  }
 
-  // 페칭 로직: 사용자가 제공한 "Message" 테이블 이름 유지
+  // 페이지 로드시 자동으로 채팅 참여
   useEffect(() => {
-    if (!projectId || !currentUserId) return;
+    (async () => {
+      const currentPassword = localStorage.getItem(
+        `currentPassword/${projectId}`
+      );
+      if (currentPassword) {
+        const isVerified = await apiClient.verifyProjectPassword(
+          projectId,
+          currentPassword
+        );
+        if (isVerified) {
+          enterChatRoom(true, project.proposerName, "관리자");
+          return;
+        }
+      }
+      const chatUserData = getChatUserData();
+      if (chatUserData) {
+        enterChatRoom(false, chatUserData.major, chatUserData.nickname);
+      }
+    })();
+  }, [projectId, project.proposerName]);
 
+  useEffect(() => {
     const fetchInitialMessages = async () => {
       const { data, error } = await supabase
         .from("Message") // 사용자가 제공한 테이블 이름 "Message" 사용
-        .select("id, content, userId, username, projectId, createdDatetime")
+        .select(
+          "id, content, userId, major, nickname, projectId, createdDatetime"
+        )
         .eq("projectId", projectId)
         .order("createdDatetime", { ascending: true });
 
@@ -120,7 +181,6 @@ export default function ChatField({ projectId }: ChatFieldProps) {
 
     fetchInitialMessages();
 
-    // 실시간 구독 로직: 사용자가 제공한 "Message" 테이블 이름 유지
     const channel = supabase
       .channel(`project-chat-room-${projectId}`)
       .on<MessageFromDB>(
@@ -149,14 +209,10 @@ export default function ChatField({ projectId }: ChatFieldProps) {
     return () => {
       supabase.removeChannel(channel).catch(console.error);
     };
-  }, [projectId, currentUserId]);
+  }, [projectId]);
 
   useEffect(() => {
-    if (currentUserId) {
-      setDisplayedChats(
-        transformMessagesForDisplay(rawMessages, currentUserId)
-      );
-    }
+    setDisplayedChats(transformMessagesForDisplay(rawMessages, currentUserId));
   }, [rawMessages, currentUserId]);
 
   const scrollToBottom = () => {
@@ -173,22 +229,18 @@ export default function ChatField({ projectId }: ChatFieldProps) {
     }
   };
 
-  // --- 타이머 제거: displayedChats 변경 시 즉시 scrollToBottom 호출 ---
   useEffect(() => {
     scrollToBottom();
   }, [displayedChats]);
-  // --- 타이머 제거 완료 ---
 
-  // Optimistic Update 적용된 handleSendMessage
   const handleSendMessage = async () => {
     const textarea = textareaRef.current;
     if (!textarea || textarea.value.trim() === "") {
       textarea?.focus();
       return;
     }
-    if (!projectId || !currentUserId || !currentUsername) {
-      console.error("Chat prerequisites missing.");
-      alert("메시지 전송 정보 부족. 새로고침 해주세요.");
+    if (!projectId || !currentUserId || !currentMajor || !currentNickname) {
+      setOpen(true);
       return;
     }
 
@@ -199,7 +251,8 @@ export default function ChatField({ projectId }: ChatFieldProps) {
       id: tempId,
       content: messageContent,
       userId: currentUserId,
-      username: currentUsername,
+      major: currentMajor,
+      nickname: currentNickname,
       projectId: projectId,
       createdDatetime: new Date().toISOString(),
     };
@@ -218,7 +271,8 @@ export default function ChatField({ projectId }: ChatFieldProps) {
           {
             content: messageContent,
             userId: currentUserId,
-            username: currentUsername,
+            major: currentMajor,
+            nickname: currentNickname,
             projectId: projectId,
           },
         ])
@@ -292,15 +346,70 @@ export default function ChatField({ projectId }: ChatFieldProps) {
       </ScrollArea>
 
       <div className="w-full p-2 flex items-end border-t border-gray-200 bg-gray-50">
-        <Textarea
-          ref={textareaRef}
-          name="text"
-          className="flex-grow resize-none text-sm text-gray-800 font-medium mr-2 py-2 px-3 border-gray-300 rounded-lg focus:ring-sky-500 focus:border-sky-500"
-          placeholder="메시지를 입력하세요..."
-          rows={1}
-          onInput={handleTextareaInput}
-          onKeyDown={handleKeyDown}
-        />
+        <Dialog
+          open={open}
+          onOpenChange={(open) => {
+            // 인증 정보가 입력됐다면 열지 않음
+            if (open && currentMajor !== "" && currentNickname !== "") {
+              return;
+            }
+            setOpen(open);
+          }}
+        >
+          <DialogTrigger asChild>
+            <Textarea
+              ref={textareaRef}
+              name="text"
+              className="flex-grow resize-none text-sm text-gray-800 font-medium mr-2 py-2 px-3 border-gray-300 rounded-lg focus:ring-sky-500 focus:border-sky-500"
+              placeholder="프로젝트에 관심있는 학생들과 자유롭게 대화해보세요!"
+              rows={1}
+              onInput={handleTextareaInput}
+              onKeyDown={handleKeyDown}
+            />
+          </DialogTrigger>
+          <DialogContent className="w-96">
+            <DialogTitle>채팅 참여</DialogTitle>
+            <DialogDescription asChild>
+              <div className="flex flex-col gap-2">
+                <Label className="text-sm font-medium text-gray-700">
+                  별명
+                </Label>
+                <Input
+                  type="text"
+                  value={currentNickname}
+                  onChange={(e) => setCurrentNickname(e.target.value)}
+                  placeholder="별명을 입력하세요"
+                />
+                <Label className="text-sm font-medium text-gray-700">
+                  학과
+                </Label>
+                <Input
+                  type="text"
+                  value={currentMajor}
+                  onChange={(e) => setCurrentMajor(e.target.value)}
+                  placeholder="학과를 입력하세요"
+                />
+              </div>
+            </DialogDescription>
+            <div className="flex justify-end mt-4">
+              <DialogClose asChild>
+                <Button variant="ghost" onClick={() => setOpen(false)}>
+                  취소
+                </Button>
+              </DialogClose>
+              <Button
+                className="ml-2"
+                onClick={() => {
+                  enterChatRoom(false, currentMajor, currentNickname);
+                  setOpen(false);
+                }}
+              >
+                참여하기
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+
         <Button
           type="button"
           onClick={handleSendMessage}
