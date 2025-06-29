@@ -68,6 +68,7 @@ export const projectPublicSelection: Prisma.ProjectSelect = {
       introduction: true,
       createdDatetime: true,
       updatedDatetime: true,
+      status: true,
     },
   },
 };
