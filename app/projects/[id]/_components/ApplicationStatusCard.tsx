@@ -2,6 +2,8 @@ import apiClient, { PublicApplicant } from "@/lib/apiClientHelper";
 import { User } from "lucide-react";
 import { ProjectPageMode } from "../page";
 
+import { MAX_APPLICANT_MAJOR_COUNT, MAX_APPLICANTS } from "@/constants";
+import { MaxApplicantsError } from "@/lib/authUtils";
 import { ApplicantStatus } from "@prisma/client";
 import ApplicationStatusCardAdmin from "./ApplicationStatusCardAdmin";
 import { ProjectPageModeEnum } from "./constants";
@@ -39,6 +41,12 @@ export default function ApplicationStatusCard({
       onApplicantStatusChange(applicantId, "APPROVED");
       alert("신청자 승인이 완료되었습니다");
     } catch (error) {
+      if (error instanceof MaxApplicantsError) {
+        alert(
+          `승인 실패.\n최대 지원자 수(${MAX_APPLICANTS})를 초과했거나 해당 전공의 최대 지원자 수(${MAX_APPLICANT_MAJOR_COUNT})를 초과했습니다.`
+        );
+        return;
+      }
       alert("신청자 승인 요청에 실패했습니다" + error);
       return;
     }
