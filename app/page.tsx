@@ -7,7 +7,7 @@ import { Suspense } from "react";
 
 export default function Home() {
   return (
-    <Suspense fallback={<Spinner />}>
+    <Suspense fallback={<Spinner className="w-full py-5" />}>
       <div className="mt-5 flex-col flex w-full h-auto gap-3 sm:gap-5 justify-between">
         {/* 안내문구 */}
         <p className="text-sm sm:text-base text-slate-500">
