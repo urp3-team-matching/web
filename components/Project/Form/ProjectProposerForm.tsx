@@ -1,4 +1,4 @@
-import { Input } from "@/components/ui/input";
+import ProjectProposerFormField from "@/components/Project/Form/ProjectProposerFormField";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { cn } from "@/lib/utils";
@@ -21,7 +21,7 @@ const proposerTypes: { label: string; value: ProposerType }[] = [
   },
 ];
 
-interface ProposerFieldProps {
+interface ProjectProposerFormProps {
   className?: string;
   control: Control<ProjectInput>;
   variant?: "default" | "sm";
@@ -31,133 +31,108 @@ const ProjectProposerForm = ({
   className,
   control,
   variant = "default",
-}: ProposerFieldProps) => {
+}: ProjectProposerFormProps) => {
   return (
     <div className={cn({ className }, "border rounded-lg shadow-sm p-5")}>
-      <span className="text-2xl font-semibold">작성자정보</span>
+      <h3 className="text-2xl font-semibold mb-6">작성자정보</h3>
+
       <div
         className={cn(
-          variant === "default" ? "grid-cols-2" : "grid-cols-1",
-          "grid grid-rows-2 pt-6 justify-center gap-3"
+          "grid",
+          variant === "default" ? "grid-cols-2 gap-5" : "grid-cols-1 gap-2"
         )}
       >
-        <div className="flex items-center">
-          <span
-            className={cn(
-              variant === "sm" ? "mr-3" : "",
-              "text-sm whitespace-nowrap w-14 text-center font-semibold"
-            )}
-          >
-            이름
-          </span>
-          <div className="w-2/3">
-            <Controller
-              name="proposerName"
-              control={control}
-              render={({ field, fieldState }) => (
-                <Input
-                  {...field}
-                  value={field.value || ""}
-                  fieldState={fieldState}
-                  className="w-full"
-                />
-              )}
-            />
-          </div>
-        </div>
-        <div className="flex items-center">
-          <span className="text-sm font-semibold w-14 text-center mr-3 whitespace-nowrap">
-            비밀번호
-          </span>
-          <div className="w-2/3">
-            <Controller
-              name="password"
-              control={control}
-              render={({ field, fieldState }) => (
-                <Input
-                  type="password"
-                  {...field}
-                  value={field.value || ""}
-                  fieldState={fieldState}
-                />
-              )}
-            />
-          </div>
-        </div>
+        <ProjectProposerFormField
+          name="proposerName"
+          control={control}
+          label="이름"
+          inputProps={{ placeholder: "김학생" }}
+        />
+        <ProjectProposerFormField
+          name="password"
+          control={control}
+          label="비밀번호"
+          inputProps={{ type: "password", placeholder: "비밀번호(6자 이상)" }}
+        />
+        <ProjectProposerFormField
+          name="proposerPhone"
+          control={control}
+          label="연락처"
+          inputProps={{ type: "tel", placeholder: "010-1234-5678" }}
+        />
+        <ProjectProposerFormField
+          name="email"
+          control={control}
+          label="이메일"
+          inputProps={{ type: "email", placeholder: "example@domain.com" }}
+        />
+        <ProjectProposerFormField
+          name="chatLink"
+          control={control}
+          label="채팅링크"
+          inputProps={{
+            type: "url",
+            placeholder: "https://open.kakao.com/o/example",
+          }}
+        />
 
         <Controller
           name="proposerType"
           control={control}
           render={({ field: proposerTypeField }) => (
-            <>
+            <div
+              className={cn(
+                variant === "default"
+                  ? "col-span-2 grid grid-cols-2 gap-5"
+                  : "col-span-1 flex flex-col gap-2",
+                "h-auto"
+              )}
+            >
               <div
-                className={cn(
-                  variant === "sm" ? "my-2" : "",
-                  "flex items-center"
-                )}
+                className={cn(variant === "sm" && "my-2", "flex items-center")}
               >
-                <span
-                  className={cn(
-                    variant === "sm" ? "mr-3" : "",
-                    "text-sm px-3 font-semibold w-14 text-center"
-                  )}
+                <label
+                  htmlFor={proposerTypeField.name}
+                  className={cn("text-sm font-semibold w-20")}
                 >
                   구분
-                </span>
-                <div>
-                  <RadioGroup
-                    value={proposerTypeField.value || null}
-                    onValueChange={proposerTypeField.onChange}
-                    onBlur={proposerTypeField.onBlur}
-                    name={proposerTypeField.name}
-                    className="w-full flex gap-4"
-                    ref={proposerTypeField.ref}
-                  >
-                    {proposerTypes.map((proposerType) => (
-                      <div
-                        key={proposerType.value}
-                        className="flex gap-1 items-center"
-                      >
-                        <RadioGroupItem
-                          value={proposerType.value}
-                          className="rounded-full"
-                        />
-                        <Label className="font-medium text-[14px]">
-                          {proposerType.label}
-                        </Label>
-                      </div>
-                    ))}
-                  </RadioGroup>
-                </div>
+                </label>
+                <RadioGroup
+                  value={proposerTypeField.value || null}
+                  onValueChange={proposerTypeField.onChange}
+                  onBlur={proposerTypeField.onBlur}
+                  name={proposerTypeField.name}
+                  className="w-full flex gap-4"
+                  ref={proposerTypeField.ref}
+                >
+                  {proposerTypes.map((proposerType) => (
+                    <div
+                      key={proposerType.value}
+                      className="flex gap-1 items-center"
+                    >
+                      <RadioGroupItem
+                        value={proposerType.value}
+                        className="rounded-full"
+                      />
+                      <Label className="font-medium text-[14px]">
+                        {proposerType.label}
+                      </Label>
+                    </div>
+                  ))}
+                </RadioGroup>
               </div>
 
               {proposerTypeField.value === ProposerType.STUDENT && (
-                <div className="flex items-center">
-                  <span
-                    className={cn(
-                      variant === "sm" ? "flex justify-center" : "",
-                      "text-sm font-semibold w-14 text-start mr-3"
-                    )}
-                  >
-                    전공
-                  </span>
-                  <div className="w-2/3">
-                    <Controller
-                      name="proposerMajor"
-                      control={control}
-                      render={({ field: proposerMajorField, fieldState }) => (
-                        <Input
-                          {...proposerMajorField}
-                          className="w-full h-10"
-                          value={proposerMajorField.value || ""}
-                          fieldState={fieldState}
-                        />
-                      )}
-                    />
-                  </div>
-                </div>
+                <ProjectProposerFormField
+                  name="proposerMajor"
+                  control={control}
+                  label="전공"
+                  inputProps={{
+                    placeholder: "예: 컴퓨터공학과",
+                  }}
+                />
               )}
-            </>
+            </div>
           )}
         />
       </div>
