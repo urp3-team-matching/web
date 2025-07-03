@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function TopHeaderBox() {
   return (
-    <div className="justify-center px-6 flex py-1.5 w-full h-10 bg-third">
+    <div className="justify-center hidden px-6 lg:flex py-1.5 w-full h-10 bg-third">
       <div className="flex justify-between h-full container">
         <span className="text-white mt-0.5 text-[15px] lett font-light tracking-[-0.5px]">
           Inspiring Future, Grand Challenge

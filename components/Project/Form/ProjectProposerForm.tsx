@@ -1,6 +1,7 @@
 import ProjectProposerFormField from "@/components/Project/Form/ProjectProposerFormField";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { ProjectInput } from "@/types/project";
 import { ProposerType } from "@prisma/client";
@@ -33,9 +34,11 @@ const ProjectProposerForm = ({
   variant = "default",
 }: ProjectProposerFormProps) => {
   return (
-    <div className={cn({ className }, "border rounded-lg shadow-sm p-5")}>
-      <h3 className="text-2xl font-semibold mb-6">작성자정보</h3>
-
+    <div
+      className={cn({ className }, "lg:border rounded-lg lg:shadow-sm lg:p-5")}
+    >
+      <h3 className="text-2xl font-semibold mb-3 lg:mb-6">작성자정보</h3>
+      <Separator className="lg:hidden mb-6" />
       <div
         className={cn(
           "grid",
