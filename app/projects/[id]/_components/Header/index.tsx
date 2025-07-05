@@ -7,8 +7,16 @@ import ProjectNameForm from "@/components/Project/Form/ProjectNameForm";
 import { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
 import { parseDate } from "@/lib/utils";
 import { ProjectInput } from "@/types/project";
-import { Calendar, Eye } from "lucide-react";
+import { Calendar, ChevronDown, Eye } from "lucide-react";
 import { Control } from "react-hook-form";
+import {
+  Menubar,
+  MenubarContent,
+  MenubarItem,
+  MenubarMenu,
+  MenubarTrigger,
+} from "@/components/ui/menubar";
+import { Badge } from "@/components/ui/badge";
 
 interface ProjectDetailHeaderProps {
   project: PublicProjectWithForeignKeys;
@@ -30,17 +38,40 @@ const ProjectDetailHeader = ({
     <div className={className}>
       {/* 최상단: 프로젝트 뱃지, 키워드, 관리자 스위치 */}
       <div className="flex justify-between items-center">
-        <div className="flex w-full gap-[10px] items-center h-7 ">
+        <div className="flex w-full gap-[8px] items-center h-7 ">
           <ApplyStatueBadge status={projectStatus} />
           {mode === null && (
             <ProposalBadge proposerType={project.proposerType} />
           )}
           {mode === null && (
-            <div className="w-auto h-full flex gap-1 items-center">
+            <div className="w-auto hidden h-full lg:flex gap-1 items-center">
               {project.keywords.map((keyword) => (
                 <KeywordBadge key={keyword} keyword={keyword} />
               ))}
             </div>
+          )}
+          {mode === null && (
+            <Menubar className="lg:hidden h-full p-0 border-none bg-none shadow-none">
+              <MenubarMenu>
+                <MenubarTrigger className="w-full p-0 h-6 sm:h-7 border-none">
+                  <Badge className="sm:w-[72px] bg-gray-200 text-black w-14 h-6 text-[11px] p-0 sm:h-7 font-medium sm:text-sm rounded-sm">
+                    키워드
+                    <ChevronDown size={16} />
+                  </Badge>
+                </MenubarTrigger>
+                <MenubarContent>
+                  <MenubarItem>
+                    {mode === null && (
+                      <div className="w-auto h-full flex gap-1 items-center">
+                        {project.keywords.map((keyword) => (
+                          <KeywordBadge key={keyword} keyword={keyword} />
+                        ))}
+                      </div>
+                    )}
+                  </MenubarItem>
+                </MenubarContent>
+              </MenubarMenu>
+            </Menubar>
           )}
         </div>
 

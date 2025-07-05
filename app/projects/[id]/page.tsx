@@ -2,7 +2,6 @@
 "use client";
 
 import { ProjectPageModeEnum } from "@/app/projects/[id]/_components/constants";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProjectDetailHeader from "@/app/projects/[id]/_components/Header";
 import ProjectDetailRightPanel from "@/app/projects/[id]/_components/RightPanel";
 import ProjectForm from "@/components/Project/Form/ProjectForm";
@@ -19,6 +18,7 @@ import { parseAsStringEnum, useQueryState } from "nuqs";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import ProjectApplyButton from "./_components/ApplyButton";
+import MobileTab from "./_components/MobileTab";
 
 export type ProjectPageMode = ProjectPageModeEnum | null;
 
@@ -279,39 +279,37 @@ export default function Project({ params }: { params: { id: string } }) {
 
       {/* Mobile 본문 */}
       <div className="pt-2 lg:hidden flex justify-between">
-        <Tabs defaultValue="프로젝트 정보" className="w-full">
-          <TabsList className="w-full my-3" defaultValue="프로젝트 정보">
-            <TabsTrigger className="w-1/2" value="프로젝트 정보">
-              프로젝트 정보
-            </TabsTrigger>
-            <TabsTrigger className="w-1/2" value="신청현황">
-              신청현황
-            </TabsTrigger>
-          </TabsList>
-          <TabsContent value="프로젝트 정보" className="pb-14">
-            <div className="flex flex-col gap-5">
-              {mode === ProjectPageModeEnum.ADMIN && (
-                <ProjectProposerForm variant="sm" control={control as any} />
-              )}
-              <ProjectForm
-                className="w-full h-full flex flex-col gap-5"
-                mode={mode}
-                control={control as any}
-                withoutProjectName={true}
-              />
-            </div>
-          </TabsContent>
-          <TabsContent value="신청현황">Change your password here.</TabsContent>
-        </Tabs>
+        <MobileTab
+          onApplicantStatusChange={(applicantId, status) => {
+            setApplicants((prev) => {
+              if (!prev) return prev;
+              return prev.map((applicant) => {
+                if (applicant.id === applicantId) {
+                  return {
+                    ...applicant,
+                    status,
+                  };
+                }
+                return applicant;
+              });
+            });
+          }}
+          project={project}
+          onSubmit={handleSubmit(onSuccess, onInvalidSubmit)}
+          onToggleClose={handleToggleClose}
+          onDelete={handleDelete}
+          mode={mode}
+          control={control as any}
+          applicants={applicants as PublicApplicant[]}
+        />
         {mode === null && (
           <ProjectApplyButton
-            className="fixed bottom-2 w-[95%] left-1/2 -translate-x-1/2 z-50"
+            className="fixed bottom-2 w-[95%] max-w-96 left-1/2 -translate-x-1/2 z-50"
             projectId={project.id}
             active={project.status === "RECRUITING"}
             onSuccess={(newApplicant) => {
               setProject((prev) => {
                 if (!prev) return prev;
-
                 // 기존 applicants 배열에 새로운 applicant 추가
                 const updatedApplicants = [...prev.applicants, newApplicant];
 
