@@ -1,5 +1,6 @@
 "use client";
 
+import { ProjectPageModeEnum } from "@/app/projects/[id]/_components/constants";
 import ProjectTextArea from "@/app/projects/[id]/_components/ProjectTextArea";
 import { ProjectPageMode } from "@/app/projects/[id]/page";
 import { KeywordInput } from "@/components/Project/KeywordInput";
@@ -20,9 +21,15 @@ interface ProjectBodyProps {
   className?: string;
   mode?: ProjectPageMode;
   control: Control<ProjectInput>;
+  withoutProjectName?: boolean; // 모바일에선 폼에서의 프로젝트 제목 필요없음
 }
 
-const ProjectForm = ({ className, mode, control }: ProjectBodyProps) => {
+const ProjectForm = ({
+  className,
+  mode,
+  control,
+  withoutProjectName = false,
+}: ProjectBodyProps) => {
   return (
     <div
       className={cn(
@@ -30,9 +37,18 @@ const ProjectForm = ({ className, mode, control }: ProjectBodyProps) => {
         "lg:border flex flex-col w-full gap-3 lg:gap-5 rounded-lg lg:shadow-sm lg:p-5"
       )}
     >
-      <span className="text-2xl font-semibold">프로젝트 정보</span>
-
-      <Separator className="w-full lg:hidden" />
+      <span
+        className={cn("text-xl lg:text-2xl font-semibold", {
+          hidden: withoutProjectName && mode !== ProjectPageModeEnum.ADMIN,
+        })}
+      >
+        프로젝트 정보
+      </span>
+      <Separator
+        className={cn("w-full lg:hidden", {
+          hidden: withoutProjectName && mode !== ProjectPageModeEnum.ADMIN,
+        })}
+      />
       {/* 필드: 키워드 */}
       {mode === undefined ||
         (mode !== undefined && mode && (

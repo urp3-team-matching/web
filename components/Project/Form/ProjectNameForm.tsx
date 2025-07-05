@@ -26,7 +26,7 @@ const ProjectNameForm = ({
           readOnly={mode === null}
           placeholder="프로젝트 제목"
           className={cn(
-            "text-4xl font-medium text-black w-full h-14 p-1 py-1",
+            "text-2xl md:text-3xl lg:text-4xl font-medium text-black w-full h-14 p-1 py-1",
             mode === ProjectPageModeEnum.ADMIN && "bg-gray-100",
             className,
             fieldState.error && "border-b-destructive"

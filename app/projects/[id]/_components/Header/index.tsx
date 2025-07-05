@@ -56,7 +56,7 @@ const ProjectDetailHeader = ({
 
       {/* 메인: 프로젝트 제목 */}
       <ProjectNameForm
-        className="h-16 flex flex-col justify-end border-b-[1px] border-black"
+        className="h-10 md:h-12 lg:h-16 flex flex-col justify-end border-b-[1px] border-black"
         control={control}
         mode={mode}
       />

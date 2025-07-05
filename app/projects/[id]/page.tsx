@@ -2,6 +2,7 @@
 "use client";
 
 import { ProjectPageModeEnum } from "@/app/projects/[id]/_components/constants";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProjectDetailHeader from "@/app/projects/[id]/_components/Header";
 import ProjectDetailRightPanel from "@/app/projects/[id]/_components/RightPanel";
 import ProjectForm from "@/components/Project/Form/ProjectForm";
@@ -17,6 +18,7 @@ import { useRouter } from "next/navigation";
 import { parseAsStringEnum, useQueryState } from "nuqs";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import ProjectApplyButton from "./_components/ApplyButton";
 
 export type ProjectPageMode = ProjectPageModeEnum | null;
 
@@ -205,7 +207,7 @@ export default function Project({ params }: { params: { id: string } }) {
   return (
     <form
       onSubmit={handleSubmit(onSuccess, onInvalidSubmit)}
-      className="my-12 px-5 w-full"
+      className="mx-auto max-w-96 my-6 lg:my-12 px-0 lg:px-5 lg:max-w-full w-full"
     >
       {/* 헤더 */}
       <ProjectDetailHeader
@@ -215,8 +217,8 @@ export default function Project({ params }: { params: { id: string } }) {
         toggleMode={toggleMode}
       />
 
-      {/* 본문 */}
-      <div className="w-full pt-5 flex justify-between">
+      {/* Desktop 본문 */}
+      <div className="w-full pt-5 lg:flex hidden justify-between">
         {/* 좌측 */}
         <div className="w-[70%] pr-5 pt-5 flex flex-col gap-5">
           {mode === ProjectPageModeEnum.ADMIN && (
@@ -273,6 +275,60 @@ export default function Project({ params }: { params: { id: string } }) {
           }}
           applicants={applicants}
         />
+      </div>
+
+      {/* Mobile 본문 */}
+      <div className="pt-2 lg:hidden flex justify-between">
+        <Tabs defaultValue="프로젝트 정보" className="w-full">
+          <TabsList className="w-full my-3" defaultValue="프로젝트 정보">
+            <TabsTrigger className="w-1/2" value="프로젝트 정보">
+              프로젝트 정보
+            </TabsTrigger>
+            <TabsTrigger className="w-1/2" value="신청현황">
+              신청현황
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="프로젝트 정보" className="pb-14">
+            <div className="flex flex-col gap-5">
+              {mode === ProjectPageModeEnum.ADMIN && (
+                <ProjectProposerForm variant="sm" control={control as any} />
+              )}
+              <ProjectForm
+                className="w-full h-full flex flex-col gap-5"
+                mode={mode}
+                control={control as any}
+                withoutProjectName={true}
+              />
+            </div>
+          </TabsContent>
+          <TabsContent value="신청현황">Change your password here.</TabsContent>
+        </Tabs>
+        {mode === null && (
+          <ProjectApplyButton
+            className="fixed bottom-2 w-[95%] left-1/2 -translate-x-1/2 z-50"
+            projectId={project.id}
+            active={project.status === "RECRUITING"}
+            onSuccess={(newApplicant) => {
+              setProject((prev) => {
+                if (!prev) return prev;
+
+                // 기존 applicants 배열에 새로운 applicant 추가
+                const updatedApplicants = [...prev.applicants, newApplicant];
+
+                return {
+                  ...prev,
+                  applicants: updatedApplicants,
+                };
+              });
+
+              // applicants 상태도 별도로 업데이트
+              setApplicants((prev) => {
+                if (!prev) return [newApplicant];
+                return [...prev, newApplicant];
+              });
+            }}
+          />
+        )}
       </div>
     </form>
   );

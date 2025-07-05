@@ -33,7 +33,6 @@ const ProjectProposerFormField = ({
               value={field.value || ""}
               fieldState={fieldState}
               {...inputProps}
-              className=""
             />
           )}
         />
