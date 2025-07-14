@@ -40,11 +40,11 @@ export default function Create() {
   }
 
   return (
-    <form className="px-5 pb-16 flex flex-col mt-12 gap-5 justify-center w-full">
+    <form className="px-1 lg:px-5 pb-16 flex mx-auto flex-col mt-8 lg:mt-12 gap-5 justify-center max-w-96 lg:max-w-none">
       <ProjectNameForm
         control={control}
         mode={ProjectPageModeEnum.ADMIN}
-        className="h-16 border-b-[1px] border-black"
+        className="h-10 text-lg lg:text-3xl lg:h-16 border-b-[1px] border-black"
       />
 
       {/* <Controller
@@ -52,8 +52,8 @@ export default function Create() {
         control={control}
         render={({ field }) => <FileInput className="px-5 w-full" {...field} />}
       /> */}
-      <div className="w-full mt-5 flex justify-center">
-        <div className="w-[70%] pr-5">
+      <div className="w-full lg:mt-5 flex-col lg:flex-row gap-6 lg:gap-0 flex justify-center">
+        <div className="w-full lg:w-[70%] lg:pr-5">
           <ProjectForm
             mode={ProjectPageModeEnum.ADMIN}
             className="h-full flex flex-col gap-5"
@@ -61,7 +61,7 @@ export default function Create() {
           />
         </div>
         <ProjectCreateRightPanel
-          className="w-[30%]"
+          className="w-full lg:w-[30%]"
           control={control}
           onSubmit={handleSubmit(onSuccess, onInvalidSubmit)}
           loading={loading}

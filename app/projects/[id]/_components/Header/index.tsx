@@ -9,6 +9,7 @@ import { parseDate } from "@/lib/utils";
 import { ProjectInput } from "@/types/project";
 import { Calendar, Eye } from "lucide-react";
 import { Control } from "react-hook-form";
+import KeywordMenubar from "./KeywordMenubar";
 
 interface ProjectDetailHeaderProps {
   project: PublicProjectWithForeignKeys;
@@ -30,18 +31,19 @@ const ProjectDetailHeader = ({
     <div className={className}>
       {/* 최상단: 프로젝트 뱃지, 키워드, 관리자 스위치 */}
       <div className="flex justify-between items-center">
-        <div className="flex w-full gap-[10px] items-center h-7 ">
+        <div className="flex w-full gap-[8px] items-center h-7 ">
           <ApplyStatueBadge status={projectStatus} />
           {mode === null && (
             <ProposalBadge proposerType={project.proposerType} />
           )}
           {mode === null && (
-            <div className="w-auto h-full flex gap-1 items-center">
+            <div className="w-auto hidden h-full lg:flex gap-1 items-center">
               {project.keywords.map((keyword) => (
                 <KeywordBadge key={keyword} keyword={keyword} />
               ))}
             </div>
           )}
+          {mode === null && <KeywordMenubar mode={mode} project={project} />}
         </div>
 
         <div className="flex gap-x-2 items-center">
@@ -56,7 +58,7 @@ const ProjectDetailHeader = ({
 
       {/* 메인: 프로젝트 제목 */}
       <ProjectNameForm
-        className="h-16 flex flex-col justify-end border-b-[1px] border-black"
+        className="h-10 md:h-12 lg:h-16 flex flex-col justify-end border-b-[1px] border-black"
         control={control}
         mode={mode}
       />

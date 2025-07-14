@@ -17,7 +17,7 @@ export default function ContactCard({
 
   return (
     <div className="w-full h-auto p-5 flex flex-col gap-3 border shadow-md rounded-lg">
-      <span className="text-xl pb-3 font-semibold">연락처</span>
+      <span className="text-lg lg:text-xl pb-3 font-semibold">연락처</span>
 
       {email && (
         <div className="flex items-center gap-2">

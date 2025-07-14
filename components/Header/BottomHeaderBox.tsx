@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export default function BottomHeaderBox() {
   return (
-    <div className="w-full h-24 flex flex-col">
+    <div className="w-full h-20 lg:h-24 flex flex-col">
       <div className="flex justify-center w-full h-full border-b-[1px] border-b-gray-300">
         <div className="headerWidth relative h-full lg:mx-5 mx-2 flex max-lg:justify-between items-center">
           <SidebarTrigger className="lg:hidden cursor-pointer" />

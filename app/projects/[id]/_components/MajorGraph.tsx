@@ -63,7 +63,7 @@ export default function MajorGraph({
         className
       )}
     >
-      <span className="text-xl font-semibold">팀 현황</span>
+      <span className="text-lg lg:text-xl font-semibold">팀 현황</span>
       {/* 유저 아이콘 */}
       <div className="w-full justify-between flex">
         {majors.map((major, i) => (
