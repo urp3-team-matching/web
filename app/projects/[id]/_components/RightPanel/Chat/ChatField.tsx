@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
+import useProjectPassword from "@/hooks/useProjectPassword";
 import apiClient, { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
 import { supabase } from "@/lib/supabaseClient";
 import type {
@@ -114,6 +115,7 @@ interface ChatFieldProps {
 export default function ChatField({ project }: ChatFieldProps) {
   const projectId = project.id;
   const [open, setOpen] = useState(false);
+  const { password: currentPassword } = useProjectPassword(projectId);
 
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const lastBubbleRef = useRef<HTMLDivElement>(null);
@@ -141,9 +143,6 @@ export default function ChatField({ project }: ChatFieldProps) {
   // 페이지 로드시 자동으로 채팅 참여
   useEffect(() => {
     (async () => {
-      const currentPassword = localStorage.getItem(
-        `currentPassword/${projectId}`
-      );
       if (currentPassword) {
         const isVerified = await apiClient.verifyProjectPassword(
           projectId,
@@ -159,7 +158,7 @@ export default function ChatField({ project }: ChatFieldProps) {
         enterChatRoom(false, chatUserData.major, chatUserData.nickname);
       }
     })();
-  }, [projectId, project.proposerName]);
+  }, [projectId, project.proposerName, currentPassword]);
 
   useEffect(() => {
     const fetchInitialMessages = async () => {

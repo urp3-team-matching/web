@@ -4,6 +4,7 @@ import { ProjectPageModeEnum } from "@/app/projects/[id]/_components/constants";
 import ProjectCreateRightPanel from "@/app/projects/create/_components/RightPanel";
 import ProjectForm from "@/components/Project/Form/ProjectForm";
 import ProjectNameForm from "@/components/Project/Form/ProjectNameForm";
+import { useSetProjectPassword } from "@/hooks/useProjectPassword";
 import apiClient from "@/lib/apiClientHelper";
 import { ProjectInput, ProjectSchema } from "@/types/project";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,12 +21,13 @@ export default function Create() {
       status: "RECRUITING",
     },
   });
+  const { setPassword } = useSetProjectPassword();
 
   async function onSuccess(data: ProjectInput) {
     setLoading(true);
     try {
       const response = await apiClient.createProject(data);
-      localStorage.setItem(`currentPassword/${response.id}`, data.password);
+      setPassword(response.id, data.password);
       router.push(`/projects/${response.id}`);
     } catch {
       alert("프로젝트 생성 실패!");
