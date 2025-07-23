@@ -272,6 +272,7 @@ async function main() {
   for (const project of allProjects) {
     // 각 프로젝트당 3~8명의 지원자 생성
     const applicantCount = getRandomInt(3, 8);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const applicantsForProject: any[] = [];
 
     // 프로젝트별 승인된 인원 초기화
@@ -289,20 +290,12 @@ async function main() {
       const emailDomain = getRandomItem(emailDomains);
       const email = `${emailPrefix}${project.id}_${i}@${emailDomain}`;
 
-      // 전화번호를 숫자만으로 저장
-      const phoneNumber = `010${getRandomInt(1000, 9999)}${getRandomInt(
-        1000,
-        9999
-      )}`;
-
       applicantsForProject.push({
         projectId: project.id,
         name: name,
         email: email,
         major: major,
-        phone: phoneNumber,
         introduction: getRandomItem(introductions),
-        passwordHash: passwordHash,
         status: "PENDING", // 초기값은 모두 PENDING
       });
     }
