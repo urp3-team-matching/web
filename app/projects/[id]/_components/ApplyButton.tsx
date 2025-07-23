@@ -53,6 +53,10 @@ const ProjectApplyButton = ({
   } = useForm<ApplicantInput>({
     resolver: zodResolver(ApplicantSchema),
     defaultValues: {
+      name: "",
+      major: "",
+      email: "",
+      introduction: "",
       status: "PENDING",
     },
   });
