@@ -3,6 +3,8 @@ import {
   BadRequestError,
   MaxApplicantsError,
   NotFoundError,
+  UnauthorizedError,
+  verifyResourcePassword,
 } from "@/lib/authUtils";
 import { prisma } from "@/lib/prisma";
 import {
@@ -123,19 +125,25 @@ export async function deleteApplicant(
   return deletedApplicant;
 }
 
-// TODO: 프로젝트 생성자 비밀번호 검증 로직 추가
 export async function acceptApplicant(
   projectId: number,
-  applicantId: number
+  applicantId: number,
+  projectProposerPassword: string
 ): Promise<ApplicantForProject> {
-  // 프로젝트와 지원자 존재 여부 확인
   const project = await prisma.project.findUnique({
     where: { id: projectId },
-    select: { id: true, applicants: true },
+    select: { passwordHash: true },
   });
-
   if (!project) {
-    throw new NotFoundError("Project not found.");
+    throw new NotFoundError(`Project with id ${projectId} not found.`);
+  }
+
+  const isAuthorized = await verifyResourcePassword(
+    projectProposerPassword,
+    project.passwordHash
+  );
+  if (!isAuthorized) {
+    throw new UnauthorizedError("Incorrect project proposer password.");
   }
 
   const applicant = await prisma.applicant.findUnique({
@@ -185,16 +193,23 @@ export async function acceptApplicant(
 
 export async function rejectApplicant(
   projectId: number,
-  applicantId: number
+  applicantId: number,
+  projectProposerPassword: string
 ): Promise<ApplicantForProject> {
-  // 프로젝트와 지원자 존재 여부 확인
   const project = await prisma.project.findUnique({
     where: { id: projectId },
-    select: { id: true, applicants: true },
+    select: { passwordHash: true },
   });
-
   if (!project) {
-    throw new NotFoundError("Project not found.");
+    throw new NotFoundError(`Project with id ${projectId} not found.`);
+  }
+
+  const isAuthorized = await verifyResourcePassword(
+    projectProposerPassword,
+    project.passwordHash
+  );
+  if (!isAuthorized) {
+    throw new UnauthorizedError("Incorrect project proposer password.");
   }
 
   const applicant = await prisma.applicant.findUnique({
@@ -223,16 +238,23 @@ export async function rejectApplicant(
 
 export async function pendingApplicant(
   projectId: number,
-  applicantId: number
+  applicantId: number,
+  projectProposerPassword: string
 ): Promise<ApplicantForProject> {
-  // 프로젝트와 지원자 존재 여부 확인
   const project = await prisma.project.findUnique({
     where: { id: projectId },
-    select: { id: true, applicants: true },
+    select: { passwordHash: true },
   });
-
   if (!project) {
-    throw new NotFoundError("Project not found.");
+    throw new NotFoundError(`Project with id ${projectId} not found.`);
+  }
+
+  const isAuthorized = await verifyResourcePassword(
+    projectProposerPassword,
+    project.passwordHash
+  );
+  if (!isAuthorized) {
+    throw new UnauthorizedError("Incorrect project proposer password.");
   }
 
   const applicant = await prisma.applicant.findUnique({

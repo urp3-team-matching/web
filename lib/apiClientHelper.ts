@@ -227,35 +227,6 @@ class ApiClient {
     return true;
   }
 
-  // --- Post API Methods ---
-  // TODO: Post API 메소드 구현
-  // public getPosts(params?: GetPostsQueryInput): Promise<PaginatedPosts> {
-  //   const query = params
-  //     ? new URLSearchParams(
-  //         Object.entries(params).filter(([, v]) => v !== undefined) as any
-  //       ).toString()
-  //     : "";
-  //   return this._request<PaginatedPosts>(`/api/posts?${query}`, "GET");
-  // }
-
-  // public getPostById(id: number): Promise<PublicPost> {
-  //   return this._request<PublicPost>(`/api/posts/${id}`, "GET");
-  // }
-
-  // public createPost(data: CreatePostInput): Promise<PublicPost> {
-  //   return this._request<PublicPost>("/api/posts", "POST", data);
-  // }
-
-  // public updatePost(id: number, data: UpdatePostInput): Promise<PublicPost> {
-  //   return this._request<PublicPost>(`/api/posts/${id}`, "PUT", data);
-  // }
-
-  // public deletePost(id: number, currentPassword: string): Promise<void> {
-  //   return this._request<void>(`/api/posts/${id}`, "DELETE", {
-  //     currentPassword,
-  //   });
-  // }
-
   // --- Applicant API Methods ---
   public async getApplicants(projectId: number): Promise<PublicApplicant[]> {
     const response = await this._request(
@@ -388,11 +359,13 @@ class ApiClient {
 
   public async acceptApplicant(
     projectId: number,
-    applicantId: number
+    applicantId: number,
+    projectProposerPassword: string
   ): Promise<PublicApplicant> {
     const response = await this._request(
       `/api/projects/${projectId}/applicants/${applicantId}/accept`,
-      "POST"
+      "POST",
+      { projectProposerPassword }
     );
 
     if (!response.ok) {
@@ -415,11 +388,13 @@ class ApiClient {
 
   public async rejectApplicant(
     projectId: number,
-    applicantId: number
+    applicantId: number,
+    projectProposerPassword: string
   ): Promise<PublicApplicant> {
     const response = await this._request(
       `/api/projects/${projectId}/applicants/${applicantId}/reject`,
-      "POST"
+      "POST",
+      { projectProposerPassword }
     );
 
     if (!response.ok) {
@@ -440,11 +415,13 @@ class ApiClient {
 
   public async pendingApplicant(
     projectId: number,
-    applicantId: number
+    applicantId: number,
+    projectProposerPassword: string
   ): Promise<PublicApplicant> {
     const response = await this._request(
       `/api/projects/${projectId}/applicants/${applicantId}/pending`,
-      "POST"
+      "POST",
+      { projectProposerPassword }
     );
 
     if (!response.ok) {
