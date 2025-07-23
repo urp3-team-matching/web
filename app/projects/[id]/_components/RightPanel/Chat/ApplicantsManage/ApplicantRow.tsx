@@ -40,7 +40,6 @@ const ApplicantRow = ({
   const applicantFields: ApplicantRowType[] = [
     { label: "이름", value: applicant.name },
     { label: "학과", value: applicant.major },
-    { label: "전화번호", value: applicant.phone },
     { label: "이메일", value: applicant.email },
     { label: "자기소개", value: applicant.introduction },
   ];
