@@ -15,6 +15,7 @@ import {
 } from "@/lib/apiClientHelper";
 import { ApplicantStatus } from "@prisma/client";
 import { cn } from "@/lib/utils";
+import ApplicantsManage from "./RightPanel/Chat/ApplicantsManage";
 
 interface MobileTabProps {
   className?: string;
@@ -40,9 +41,9 @@ export default function MobileTab({
   onApplicantStatusChange,
   loading,
   onSubmit,
-  applicants,
   mode,
   control,
+  applicants = [],
 }: MobileTabProps) {
   return (
     <Tabs defaultValue="프로젝트 정보" className={cn("w-full", className)}>
@@ -60,9 +61,6 @@ export default function MobileTab({
       <TabsContent value="프로젝트 정보" className="pb-14">
         <div className="flex flex-col gap-5">
           <div className="flex flex-col gap-5">
-            {mode === ProjectPageModeEnum.ADMIN && (
-              <ProjectProposerForm variant="sm" control={control} />
-            )}
             <ProjectForm
               className="w-full h-full flex flex-col gap-5"
               mode={mode}
@@ -88,20 +86,45 @@ export default function MobileTab({
         <div className="flex flex-col gap-3">
           {mode === null && (
             <ContactCard
+              proposerMajor={project.proposerMajor || undefined}
+              proposerName={project.proposerName || undefined}
               email={project.email || undefined}
               openChatLink={project.chatLink || undefined}
               proposerPhone={project.proposerPhone || undefined}
             />
           )}
-
-          <MajorGraph applicants={applicants as PublicApplicant[]} />
-          <Chat
+          {mode === ProjectPageModeEnum.ADMIN && (
+            <ProjectProposerForm variant="sm" control={control} />
+          )}
+          <div className="w-full h-auto p-5 border shadow-md rounded-lg">
+            <span className="text-lg lg:text-xl pb-3 font-semibold">
+              신청 현황
+            </span>
+            <ApplicantsManage
+              mode={mode}
+              applicants={applicants}
+              projectId={project.id}
+              onApplicantStatusChange={onApplicantStatusChange}
+            />
+          </div>
+          {/* 팀 현황 그래프와 채팅 (잠정적으로 제거) */}
+          {/* <MajorGraph applicants={applicants as PublicApplicant[]} /> */}
+          {/* <Chat
             className="w-full text-sm font-medium flex flex-col shadow-md rounded-lg h-[500px]"
             project={project}
             mode={mode}
             applicants={applicants as PublicApplicant[]}
             onApplicantStatusChange={onApplicantStatusChange}
-          />
+          /> */}
+          {mode === ProjectPageModeEnum.ADMIN && (
+            <CancelAndSubmitButton
+              onDelete={onDelete}
+              onToggleClose={onToggleClose}
+              onSubmit={onSubmit}
+              loading={loading}
+              isProjectClosed={project.status !== "RECRUITING"}
+            />
+          )}
         </div>
       </TabsContent>
     </Tabs>

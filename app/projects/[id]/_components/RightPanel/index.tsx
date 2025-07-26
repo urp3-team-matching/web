@@ -1,7 +1,7 @@
 import ProjectApplyButton from "@/app/projects/[id]/_components/ApplyButton";
 import { ProjectPageModeEnum } from "@/app/projects/[id]/_components/constants";
-import MajorGraph from "@/app/projects/[id]/_components/MajorGraph";
-import Chat from "@/app/projects/[id]/_components/RightPanel/Chat";
+// import MajorGraph from "@/app/projects/[id]/_components/MajorGraph";
+// import Chat from "@/app/projects/[id]/_components/RightPanel/Chat";
 import { ProjectPageMode } from "@/app/projects/[id]/page";
 import CancelAndSubmitButton from "@/components/Project/Form/CancelAndSubmitButton";
 import {
@@ -11,6 +11,7 @@ import {
 import { cn } from "@/lib/utils";
 import { ApplicantStatus } from "@prisma/client";
 import ContactCard from "../ContactCard";
+import ApplicantsManage from "./Chat/ApplicantsManage";
 
 interface ProjectDetailRightPanelProps {
   className?: string;
@@ -61,16 +62,28 @@ const ProjectDetailRightPanel = ({
         />
       )}
 
-      <MajorGraph applicants={applicants} />
+      {/* 신청 현황 */}
+      <div className="w-full h-auto p-5 border shadow-md rounded-lg">
+        <span className="text-lg lg:text-xl pb-3 font-semibold">신청 현황</span>
+        <ApplicantsManage
+          mode={mode}
+          applicants={applicants}
+          projectId={project.id}
+          onApplicantStatusChange={onApplicantStatusChange}
+        />
+      </div>
 
-      {/* 프로젝트 대화방 및 모집관리  */}
-      <Chat
+      {/* 팀 현황 그래프(잠정적으로 제거) */}
+      {/* <MajorGraph applicants={applicants} /> */}
+
+      {/* 프로젝트 대화방 및 모집관리(잠정적으로 제거) */}
+      {/* <Chat
         className="w-full text-sm font-medium flex flex-col shadow-md rounded-lg h-[500px]"
         project={project}
         mode={mode}
         applicants={applicants}
         onApplicantStatusChange={onApplicantStatusChange}
-      />
+      /> */}
 
       {/* <ApplicationStatusCard
         projectId={project.id}

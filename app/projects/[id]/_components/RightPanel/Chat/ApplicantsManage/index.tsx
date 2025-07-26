@@ -1,4 +1,5 @@
 import ApplicantRow from "@/app/projects/[id]/_components/RightPanel/Chat/ApplicantsManage/ApplicantRow";
+import { ProjectPageMode } from "@/app/projects/[id]/page";
 import {
   Accordion,
   AccordionContent,
@@ -19,12 +20,15 @@ interface ApplicantGroupProps {
     applicantId: number,
     status: ApplicantStatus
   ) => void;
+  mode: ProjectPageMode;
 }
 
 const ApplicantGroup = ({
+  mode,
   projectId,
   status,
   applicants,
+
   onApplicantStatusChange,
 }: ApplicantGroupProps) => {
   const { password } = useProjectPassword(projectId);
@@ -65,9 +69,9 @@ const ApplicantGroup = ({
   }
 
   const groupAsKorean = {
-    APPROVED: "확정",
+    APPROVED: "승인",
     PENDING: "대기",
-    REJECTED: "거절",
+    REJECTED: "반려",
   };
 
   return (
@@ -83,6 +87,7 @@ const ApplicantGroup = ({
         {applicants.length > 0 ? (
           applicants.map((applicant) => (
             <ApplicantRow
+              mode={mode}
               key={applicant.id}
               applicant={applicant}
               projectId={projectId}
@@ -113,9 +118,11 @@ interface ManageApplicantsProps {
     status: ApplicantStatus
   ) => void;
   applicants: PublicApplicant[];
+  mode: ProjectPageMode;
 }
 
 const ApplicantsManage = ({
+  mode,
   className,
   applicants,
   projectId,
@@ -143,6 +150,7 @@ const ApplicantsManage = ({
         REJECTED: rejectedApplicants,
       }).map(([status, applicants]) => (
         <ApplicantGroup
+          mode={mode}
           key={status}
           projectId={projectId}
           status={status as ApplicantStatus}

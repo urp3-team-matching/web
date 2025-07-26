@@ -35,11 +35,12 @@ const ProjectProposerForm = ({
 }: ProjectProposerFormProps) => {
   return (
     <div
-      className={cn({ className }, "lg:border rounded-lg lg:shadow-sm lg:p-5")}
+      className={cn(
+        { className },
+        "border p-5 rounded-lg shadow-md lg:border lg:shadow-sm lg:p-5"
+      )}
     >
-      <h3 className="text-xl lg:text-2xl font-semibold mb-3 lg:mb-6">
-        작성자정보
-      </h3>
+      <h3 className="text-xl lg:text-2xl font-semibold mb-3 lg:mb-6">제안자</h3>
       <Separator className="lg:hidden mb-6" />
       <div
         className={cn(
