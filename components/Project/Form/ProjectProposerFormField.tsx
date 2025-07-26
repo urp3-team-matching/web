@@ -20,7 +20,10 @@ const ProjectProposerFormField = ({
 }: ProposerFieldProps) => {
   return (
     <div className={cn("flex items-center", className)}>
-      <label htmlFor={name} className={cn("text-sm font-semibold w-20")}>
+      <label
+        htmlFor={name}
+        className={cn("text-sm text-pretty font-semibold w-20")}
+      >
         {label}
       </label>
       <div>

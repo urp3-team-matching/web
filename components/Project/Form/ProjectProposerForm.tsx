@@ -54,6 +54,12 @@ const ProjectProposerForm = ({
           inputProps={{ placeholder: "김학생" }}
         />
         <ProjectProposerFormField
+          name="proposerMajor"
+          control={control}
+          label="전공"
+          inputProps={{ placeholder: "예: 전자전기공학부" }}
+        />
+        <ProjectProposerFormField
           name="password"
           control={control}
           label="비밀번호"
@@ -74,13 +80,12 @@ const ProjectProposerForm = ({
         <ProjectProposerFormField
           name="chatLink"
           control={control}
-          label="채팅링크"
+          label="오픈채팅(선택)"
           inputProps={{
             type: "url",
             placeholder: "https://open.kakao.com/o/example",
           }}
         />
-
         <Controller
           name="proposerType"
           control={control}
