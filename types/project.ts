@@ -70,13 +70,13 @@ export const projectPublicSelection: Prisma.ProjectSelect = {
   email: true,
   chatLink: true,
   status: true,
+  passwordHash: false, // 비밀번호 해시 제외
   applicants: {
     select: {
       id: true,
       name: true,
       email: true,
       major: true,
-      phone: true,
       introduction: true,
       createdDatetime: true,
       updatedDatetime: true,

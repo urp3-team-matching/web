@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import useProjectPassword from "@/hooks/useProjectPassword";
 import apiClient from "@/lib/apiClientHelper";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
@@ -42,6 +43,8 @@ const AdminSwitch = ({
     },
   });
   const { control, handleSubmit } = passwordForm;
+  const { password: currentPassword, setPassword } =
+    useProjectPassword(projectId);
 
   async function onValid(data: z.infer<typeof currentPasswordSchema>) {
     const isVerified = await apiClient.verifyProjectPassword(
@@ -55,7 +58,7 @@ const AdminSwitch = ({
       });
       return;
     }
-    localStorage.setItem(`currentPassword/${projectId}`, data.currentPassword);
+    setPassword(data.currentPassword);
     setOpen(false);
     toggleMode();
   }
@@ -69,9 +72,6 @@ const AdminSwitch = ({
           if (mode === ProjectPageModeEnum.ADMIN) {
             toggleMode();
           } else {
-            const currentPassword = localStorage.getItem(
-              `currentPassword/${projectId}`
-            );
             if (currentPassword) {
               apiClient
                 .verifyProjectPassword(projectId, currentPassword)

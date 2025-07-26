@@ -1,8 +1,5 @@
-import { NotFoundError, UnauthorizedError } from "@/lib/authUtils";
-import {
-  extractPasswordForDelete,
-  parseAndValidateRequestBody,
-} from "@/lib/routeUtils";
+import { NotFoundError } from "@/lib/authUtils";
+import { parseAndValidateRequestBody } from "@/lib/routeUtils";
 import {
   deleteApplicant,
   getApplicantByIdForProject,
@@ -54,12 +51,9 @@ export async function PUT(request: NextRequest, { params }: ApplicantContext) {
     if (!validatedData)
       throw new Error("Validated data is unexpectedly undefined.");
 
-    if (
-      Object.keys(validatedData).length <= 1 &&
-      validatedData.currentPassword
-    ) {
+    if (Object.keys(validatedData).length <= 1) {
       return NextResponse.json(
-        { error: "No update data provided beyond current password" },
+        { error: "No update data provided" },
         { status: 400 }
       );
     }
@@ -71,8 +65,6 @@ export async function PUT(request: NextRequest, { params }: ApplicantContext) {
     ); // 서비스에서 NotFound, Unauthorized 에러 throw
     return NextResponse.json(applicant);
   } catch (error) {
-    if (error instanceof UnauthorizedError)
-      return NextResponse.json({ error: error.message }, { status: 403 });
     if (error instanceof NotFoundError)
       return NextResponse.json({ error: error.message }, { status: 404 });
     console.error(
@@ -102,18 +94,9 @@ export async function DELETE(
     if (isNaN(projectId) || isNaN(applicantId))
       return NextResponse.json({ error: "Invalid ID format" }, { status: 400 });
 
-    const { currentPassword, errorResponse } = await extractPasswordForDelete(
-      request
-    );
-    if (errorResponse) return errorResponse;
-    if (!currentPassword)
-      throw new UnauthorizedError("Current password is required for deletion.");
-
-    await deleteApplicant(applicantId, projectId, currentPassword); // 서비스에서 NotFound, Unauthorized 에러 throw
+    await deleteApplicant(applicantId, projectId); // 서비스에서 NotFound, Unauthorized 에러 throw
     return NextResponse.json(null, { status: 204 });
   } catch (error) {
-    if (error instanceof UnauthorizedError)
-      return NextResponse.json({ error: error.message }, { status: 403 });
     if (error instanceof NotFoundError)
       return NextResponse.json({ error: error.message }, { status: 404 });
     console.error(

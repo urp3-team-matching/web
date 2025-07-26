@@ -27,7 +27,6 @@ const applyFields: {
 }[] = [
   { name: "name", label: "이름", type: "text" },
   { name: "major", label: "학과", type: "text" },
-  { name: "phone", label: "전화번호", type: "tel" },
   { name: "email", label: "이메일", type: "email" },
 ] as const;
 
@@ -54,6 +53,10 @@ const ProjectApplyButton = ({
   } = useForm<ApplicantInput>({
     resolver: zodResolver(ApplicantSchema),
     defaultValues: {
+      name: "",
+      major: "",
+      email: "",
+      introduction: "",
       status: "PENDING",
     },
   });
@@ -135,33 +138,6 @@ const ProjectApplyButton = ({
               </div>
             </div>
           ))}
-
-          {/* 비밀번호 필드 */}
-          <div className="flex items-center my-3">
-            <span className="text-sm text-end font-semibold w-16 mr-3 whitespace-nowrap">
-              비밀번호
-            </span>
-            <div className="w-full">
-              <Controller
-                name="password"
-                control={applyFormControl}
-                render={({ field, fieldState }) => (
-                  <>
-                    <Input
-                      type="password"
-                      {...field}
-                      className={cn(fieldState.error && "border-destructive")}
-                    />
-                    {fieldState.error && (
-                      <p className="text-xs text-destructive mt-1">
-                        {fieldState.error.message}
-                      </p>
-                    )}
-                  </>
-                )}
-              />
-            </div>
-          </div>
 
           {/* 자기소개 필드 */}
           <div className="flex items-center my-3">

@@ -7,6 +7,7 @@ import ProjectDetailRightPanel from "@/app/projects/[id]/_components/RightPanel"
 import ProjectForm from "@/components/Project/Form/ProjectForm";
 import ProjectProposerForm from "@/components/Project/Form/ProjectProposerForm";
 import Spinner from "@/components/ui/spinner";
+import useProjectPassword from "@/hooks/useProjectPassword";
 import apiClient, {
   PublicApplicant,
   PublicProjectWithForeignKeys,
@@ -28,6 +29,7 @@ export default function Project({ params }: { params: { id: string } }) {
   const projectId = parseInt(params.id);
   const [project, setProject] = useState<PublicProjectWithForeignKeys>();
   const [applicants, setApplicants] = useState<PublicApplicant[]>();
+  const { password: currentPassword } = useProjectPassword(projectId);
 
   // 프로젝트 ID를 기반으로 프로젝트 데이터를 가져옵니다.
   useEffect(() => {
@@ -53,9 +55,6 @@ export default function Project({ params }: { params: { id: string } }) {
   // 페이지가 로드될 때, 현재 프로젝트의 비밀번호를 로컬 스토리지에서 가져옵니다.
   useEffect(() => {
     (async () => {
-      const currentPassword = localStorage.getItem(
-        `currentPassword/${projectId}`
-      );
       if (currentPassword) {
         const isVerified = await apiClient.verifyProjectPassword(
           projectId,
@@ -68,7 +67,7 @@ export default function Project({ params }: { params: { id: string } }) {
       }
       setmode(null);
     })();
-  }, [projectId, setmode]);
+  }, [currentPassword, projectId, setmode]);
 
   // 프로젝트 정보 폼
   const { handleSubmit, control, reset } = useForm<ProjectUpdateInput>({
@@ -105,8 +104,7 @@ export default function Project({ params }: { params: { id: string } }) {
         attachments: project.attachments || [],
         keywords: project.keywords || [],
         password: "",
-        currentPassword:
-          localStorage.getItem(`currentPassword/${projectId}`) || "",
+        currentPassword: currentPassword,
         proposerName: project.proposerName || "",
         proposerType: project.proposerType || "STUDENT",
         proposerMajor: project.proposerMajor || "",
@@ -116,7 +114,7 @@ export default function Project({ params }: { params: { id: string } }) {
         status: project.status || "RECRUITING",
       });
     }
-  }, [project, reset, projectId]);
+  }, [project, reset, projectId, currentPassword]);
 
   async function onSuccess(data: ProjectUpdateInput) {
     setLoading(true);
@@ -145,9 +143,6 @@ export default function Project({ params }: { params: { id: string } }) {
   // TODO: 비밀번호 입력 받을건지 OR 바로 삭제가능하게 할 건지
   async function handleDelete() {
     setLoading(true);
-    const currentPassword =
-      localStorage.getItem(`currentPassword/${projectId}`) || "";
-
     try {
       await apiClient.deleteProject(projectId, currentPassword);
     } catch {
@@ -159,8 +154,6 @@ export default function Project({ params }: { params: { id: string } }) {
 
   async function handleToggleClose() {
     setLoading(true);
-    const currentPassword =
-      localStorage.getItem(`currentPassword/${projectId}`) || "";
 
     try {
       let updatedProject;

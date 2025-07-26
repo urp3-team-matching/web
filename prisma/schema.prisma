@@ -40,10 +40,8 @@ model Applicant {
   name            String
   email           String
   major           String
-  phone           String
   introduction    String
   status          ApplicantStatus @default(PENDING)
-  passwordHash    String          @map("password")
   createdDatetime DateTime        @default(now()) @db.Timestamptz(6)
   updatedDatetime DateTime        @updatedAt @db.Timestamptz(6)
   projectId       Int

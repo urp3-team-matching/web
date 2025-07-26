@@ -46,10 +46,8 @@ export async function createProject(data: ProjectInput): Promise<Project> {
             name: data.proposerName,
             email: data.email || "", // 본인 이메일은 저장할 필요 없음
             major: data.proposerMajor,
-            phone: "", // 본인 전화번호는 저장할 필요 없음
             introduction: "",
             status: "APPROVED",
-            passwordHash: projectPasswordHash, // 비밀번호 해시 저장
           },
         },
       },
