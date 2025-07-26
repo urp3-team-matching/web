@@ -45,6 +45,8 @@ const ProjectDetailRightPanel = ({
     <div className={cn("flex flex-col gap-5 h-auto pt-5", className)}>
       {mode === null && (
         <ContactCard
+          proposerMajor={project.proposerMajor || undefined}
+          proposerName={project.proposerName || undefined}
           email={project.email || undefined}
           openChatLink={project.chatLink || undefined}
           proposerPhone={project.proposerPhone || undefined}
