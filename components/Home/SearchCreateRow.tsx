@@ -28,7 +28,7 @@ export default function SearchCreateRow({ className }: SearchBarProps) {
   };
 
   return (
-    <div className="w-full h-22 sm:h-11 flex-col sm:flex-row flex gap-3">
+    <div className="w-full h-24 sm:h-11 flex-col sm:flex-row flex gap-3">
       <form
         className={cn(
           "relative w-full sm:flex-row flex-col h-full flex items-center gap-3",
@@ -41,31 +41,31 @@ export default function SearchCreateRow({ className }: SearchBarProps) {
           handleSearch(searchValue);
         }}
       >
-        <Input
-          name="search"
-          className="w-full text-sm h-full rounded-md px-11 border-[1px] border-black"
-          placeholder="프로젝트 또는 연구키워드로 검색해보세요"
-          defaultValue={searchQuery || ""}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              handleSearch(e.currentTarget.value);
-            }
-          }}
-        />
-        <Search className="absolute top-1/4 sm:top-1/2 -translate-y-1/2 left-3" />
-        <div className="flex gap-3 sm:w-auto w-full h-full">
+        <Button
+          asChild
+          className="w-full h-10 sm:w-50 sm:h-full bg-green-400 hover:bg-green-500 hover:cursor-pointer"
+        >
+          <Link href="/projects/create">프로젝트 제안</Link>
+        </Button>
+        <div className="relative flex gap-3 w-full sm:flex-1 h-full">
+          <Input
+            name="search"
+            className="w-full text-sm h-full rounded-md px-11 border-[1px] border-black"
+            placeholder="프로젝트 또는 연구키워드로 검색해보세요"
+            defaultValue={searchQuery || ""}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                handleSearch(e.currentTarget.value);
+              }
+            }}
+          />
+          <Search className="absolute top-1/2 -translate-y-1/2 left-3" />
           <Button
-            className="flex-1 w-24 h-full bg-third hover:bg-third/90 hover:cursor-pointer"
+            className="w-16 sm:w-24 h-full bg-third hover:bg-third/90 hover:cursor-pointer"
             type="submit"
           >
             검색
-          </Button>
-          <Button
-            asChild
-            className="flex-1 w-24 h-full bg-secondary hover:bg-secondary/90 hover:cursor-pointer"
-          >
-            <Link href="/projects/create">생성</Link>
           </Button>
         </div>
       </form>
