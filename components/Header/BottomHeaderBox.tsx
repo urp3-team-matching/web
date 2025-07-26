@@ -22,10 +22,9 @@ export default function BottomHeaderBox() {
             </span>
           </Link>
           <div></div>
-          <ul className="text-xl gap-20 hidden lg:flex lg:absolute right-0">
+          {/* <ul className="text-xl gap-20 hidden lg:flex lg:absolute right-0">
             <Link href="/">프로젝트</Link>
-            <Link href="/notice">공지사항</Link>
-          </ul>
+          </ul> */}
         </div>
       </div>
     </div>
