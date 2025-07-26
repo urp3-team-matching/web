@@ -36,8 +36,7 @@ const ProjectProposerForm = ({
   return (
     <div
       className={cn(
-        { className },
-        "border p-5 rounded-lg shadow-md lg:border lg:shadow-sm lg:p-5"
+        "border p-5 rounded-lg shadow-md lg:shadow-sm", className
       )}
     >
       <h3 className="text-xl lg:text-2xl font-semibold mb-3 lg:mb-6">제안자</h3>
