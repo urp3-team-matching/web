@@ -1,11 +1,9 @@
-import { formatPhoneNumber } from "@/lib/phoneUtils";
-import { BookA, Mail, MessageSquare, Phone, User } from "lucide-react";
+import { BookA, Mail, MessageSquare, User } from "lucide-react";
 import Link from "next/link";
 
 interface ContactCardProps {
   email?: string;
   openChatLink?: string;
-  proposerPhone?: string;
   proposerName?: string;
   proposerMajor?: string;
 }
@@ -14,7 +12,6 @@ export default function ContactCard({
   proposerName,
   email,
   openChatLink,
-  proposerPhone,
   proposerMajor,
 }: ContactCardProps) {
   const isValidLink = openChatLink?.startsWith("http");
@@ -62,15 +59,6 @@ export default function ContactCard({
               오픈채팅: {openChatLink}
             </span>
           )}
-        </div>
-      )}
-
-      {proposerPhone && (
-        <div className="flex items-center gap-2">
-          <Phone size={24} />
-          <span className="text-sm font-normal">
-            연락처: {formatPhoneNumber(proposerPhone)}
-          </span>
         </div>
       )}
     </div>

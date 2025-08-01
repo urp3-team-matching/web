@@ -1,20 +1,18 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ProjectPageModeEnum } from "./constants";
-import ProjectProposerForm from "@/components/Project/Form/ProjectProposerForm";
-import ProjectForm from "@/components/Project/Form/ProjectForm";
 import CancelAndSubmitButton from "@/components/Project/Form/CancelAndSubmitButton";
-import ContactCard from "./ContactCard";
-import MajorGraph from "./MajorGraph";
-import Chat from "./RightPanel/Chat";
-import { ProjectPageMode } from "../page";
-import { ProjectInput } from "@/types/project";
-import { Control } from "react-hook-form";
+import ProjectForm from "@/components/Project/Form/ProjectForm";
+import ProjectProposerForm from "@/components/Project/Form/ProjectProposerForm";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   PublicApplicant,
   PublicProjectWithForeignKeys,
 } from "@/lib/apiClientHelper";
-import { ApplicantStatus } from "@prisma/client";
 import { cn } from "@/lib/utils";
+import { ProjectInput } from "@/types/project";
+import { ApplicantStatus } from "@prisma/client";
+import { Control } from "react-hook-form";
+import { ProjectPageMode } from "../page";
+import { ProjectPageModeEnum } from "./constants";
+import ContactCard from "./ContactCard";
 import ApplicantsManage from "./RightPanel/Chat/ApplicantsManage";
 
 interface MobileTabProps {
@@ -90,7 +88,6 @@ export default function MobileTab({
               proposerName={project.proposerName || undefined}
               email={project.email || undefined}
               openChatLink={project.chatLink || undefined}
-              proposerPhone={project.proposerPhone || undefined}
             />
           )}
           {mode === ProjectPageModeEnum.ADMIN && (

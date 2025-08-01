@@ -35,9 +35,7 @@ const ProjectProposerForm = ({
 }: ProjectProposerFormProps) => {
   return (
     <div
-      className={cn(
-        "border p-5 rounded-lg shadow-md lg:shadow-sm", className
-      )}
+      className={cn("border p-5 rounded-lg shadow-md lg:shadow-sm", className)}
     >
       <h3 className="text-xl lg:text-2xl font-semibold mb-3 lg:mb-6">제안자</h3>
       <Separator className="lg:hidden mb-6" />
@@ -64,12 +62,6 @@ const ProjectProposerForm = ({
           control={control}
           label="비밀번호"
           inputProps={{ type: "password", placeholder: "비밀번호(6자 이상)" }}
-        />
-        <ProjectProposerFormField
-          name="proposerPhone"
-          control={control}
-          label="연락처"
-          inputProps={{ type: "tel", placeholder: "010-1234-5678" }}
         />
         <ProjectProposerFormField
           name="email"

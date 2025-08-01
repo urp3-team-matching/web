@@ -50,7 +50,6 @@ const ProjectDetailRightPanel = ({
           proposerName={project.proposerName || undefined}
           email={project.email || undefined}
           openChatLink={project.chatLink || undefined}
-          proposerPhone={project.proposerPhone || undefined}
         />
       )}
 

@@ -1,4 +1,3 @@
-import { cleanPhoneNumber, validateKoreanPhone } from "@/lib/phoneUtils";
 import { passwordField } from "@/types/utils";
 import { Applicant, Prisma, ProjectStatus, ProposerType } from "@prisma/client";
 import { z } from "zod";
@@ -16,14 +15,6 @@ export const ProjectSchema = z.object({
   proposerName: z.string().min(1, "Proposer name is required."),
   proposerType: z.nativeEnum(ProposerType),
   proposerMajor: z.string().optional(),
-  proposerPhone: z
-    .string()
-    .min(1, "연락처를 입력해주세요")
-    .refine(
-      validateKoreanPhone,
-      "올바른 휴대폰 번호를 입력해주세요 (010-XXXX-XXXX)"
-    )
-    .transform(cleanPhoneNumber), // 저장시 숫자만
   email: z.string().email("Invalid email format").optional(),
   chatLink: z.string().url("Invalid URL format").optional(),
   status: z.nativeEnum(ProjectStatus),
@@ -66,7 +57,6 @@ export const projectPublicSelection: Prisma.ProjectSelect = {
   proposerName: true,
   proposerType: true,
   proposerMajor: true,
-  proposerPhone: true,
   email: true,
   chatLink: true,
   status: true,
