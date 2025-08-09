@@ -8,7 +8,7 @@ type EmailTemplate = {
 /**
  * 새로운 프로젝트가 생성되었을 때 알림
  */
-export const newProjectCreated = (newProject: Project): EmailTemplate => {
+const newProjectCreated = (newProject: Project): EmailTemplate => {
   const {
     id,
     name,
@@ -46,7 +46,7 @@ export const newProjectCreated = (newProject: Project): EmailTemplate => {
 /**
  * 신청자가 프로젝트에 지원했을 때 알림
  */
-export const applicantApplied = (
+const applicantApplied = (
   project: Project,
   applicantName: string
 ): EmailTemplate => {
@@ -65,7 +65,7 @@ export const applicantApplied = (
 /**
  * 신청자의 신청 상태가 변경됐을 때 알림
  */
-export const applicantStatusChanged = (
+const applicantStatusChanged = (
   project: Project,
   applicantName: string,
   prev: ApplicantStatus,
@@ -88,10 +88,10 @@ export const applicantStatusChanged = (
 /**
  * 프로젝트 상태 변경 알림
  */
-export const projectStatusChanged = (
+const projectStatusChanged = (
   project: Project,
   prev: ProjectStatus,
-  curr: ProjectStatus
+  curr: ProjectStatus | "DELETED"
 ) => {
   const projectLink = `${process.env.VERCEL_URL}/projects/${project.id}`;
   const now = new Date().toLocaleString("ko-KR");
@@ -106,3 +106,12 @@ export const projectStatusChanged = (
     `,
   };
 };
+
+const emailTemplates = {
+  newProjectCreated,
+  applicantApplied,
+  applicantStatusChanged,
+  projectStatusChanged,
+};
+
+export default emailTemplates;

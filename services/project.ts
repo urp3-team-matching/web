@@ -4,6 +4,8 @@ import {
   UnauthorizedError,
   verifyResourcePassword,
 } from "@/lib/authUtils";
+import sendEmail from "@/lib/email";
+import emailTemplates from "@/lib/email/templates";
 import { prisma } from "@/lib/prisma";
 import {
   ApplicantForProject,
@@ -38,7 +40,7 @@ export async function createProject(data: ProjectInput): Promise<Project> {
         "Proposer major is required when proposer type is STUDENT."
       );
     }
-    return await prisma.project.create({
+    const project = await prisma.project.create({
       data: {
         ...projectDataRest,
         passwordHash: projectPasswordHash,
@@ -54,14 +56,33 @@ export async function createProject(data: ProjectInput): Promise<Project> {
       },
       select: projectPublicSelection, // passwordHash 제외 확인
     });
+
+    const newProjectCreatedEmail = emailTemplates.newProjectCreated(project);
+    sendEmail({
+      to: process.env.EMAIL_SERVER_USER,
+      subject: newProjectCreatedEmail.subject,
+      html: newProjectCreatedEmail.html,
+    });
+    return project;
   } else {
-    return await prisma.project.create({
+    const project = await prisma.project.create({
       data: {
         ...projectDataRest,
         passwordHash: projectPasswordHash,
       },
       select: projectPublicSelection, // passwordHash 제외 확인
     });
+    if (data.proposerType === "HOST") {
+      return project;
+    }
+
+    const newProjectCreatedEmail = emailTemplates.newProjectCreated(project);
+    sendEmail({
+      to: process.env.EMAIL_SERVER_USER,
+      subject: newProjectCreatedEmail.subject,
+      html: newProjectCreatedEmail.html,
+    });
+    return project;
   }
 }
 
@@ -291,7 +312,10 @@ export async function deleteProject(
       "Current password is required to delete this project."
     );
   }
-  const projectToDelete = await prisma.project.findUnique({ where: { id } });
+  const projectToDelete = await prisma.project.findUnique({
+    where: { id },
+    select: projectPublicSelection,
+  });
   if (!projectToDelete) {
     throw new NotFoundError("Project not found for deletion.");
   }
@@ -311,10 +335,23 @@ export async function deleteProject(
 
   // 관련 레코드(Applicant) 삭제 후 프로젝트 삭제 (onDelete: Cascade 미설정 시)
   try {
-    await prisma.$transaction([
+    const deletedProject = await prisma.$transaction([
       prisma.applicant.deleteMany({ where: { projectId: id } }),
       prisma.project.delete({ where: { id } }),
     ]);
+
+    const projectStatusChangedEmail = emailTemplates.projectStatusChanged(
+      deletedProject[1],
+      projectToDelete.status,
+      "DELETED"
+    );
+    projectToDelete.applicants.map((applicant) => {
+      sendEmail({
+        to: applicant.email,
+        subject: projectStatusChangedEmail.subject,
+        html: projectStatusChangedEmail.html,
+      });
+    });
   } catch (error) {
     // 트랜잭션 롤백 시 에러 처리
     console.error("Error during project deletion transaction:", error);
@@ -370,11 +407,25 @@ export async function reopenProject(
     throw new UnauthorizedError("Incorrect current password for reopening.");
   }
 
-  return await prisma.project.update({
+  const reopenedProject = await prisma.project.update({
     where: { id },
     data: { status: "RECRUITING" },
     select: projectPublicSelection, // passwordHash 제외 확인
   });
+
+  const projectStatusChangedEmail = emailTemplates.projectStatusChanged(
+    reopenedProject,
+    projectToReopen.status,
+    reopenedProject.status
+  );
+  reopenedProject.applicants.map((applicant) => {
+    sendEmail({
+      to: applicant.email,
+      subject: projectStatusChangedEmail.subject,
+      html: projectStatusChangedEmail.html,
+    });
+  });
+  return reopenedProject;
 }
 
 export async function closeProject(
@@ -401,9 +452,23 @@ export async function closeProject(
     throw new UnauthorizedError("Incorrect current password for closing.");
   }
 
-  return await prisma.project.update({
+  const closedProject = await prisma.project.update({
     where: { id },
     data: { status: "CLOSED" },
     select: projectPublicSelection, // passwordHash 제외 확인
   });
+
+  const projectStatusChangedEmail = emailTemplates.projectStatusChanged(
+    closedProject,
+    projectToClose.status,
+    closedProject.status
+  );
+  closedProject.applicants.map((applicant) => {
+    sendEmail({
+      to: applicant.email,
+      subject: projectStatusChangedEmail.subject,
+      html: projectStatusChangedEmail.html,
+    });
+  });
+  return closedProject;
 }

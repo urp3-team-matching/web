@@ -4,11 +4,11 @@ import { MailOptions } from "nodemailer/lib/sendmail-transport";
 export default async function sendEmail({
   to,
   subject,
-  text,
+  html,
 }: {
   to: string;
   subject: string;
-  text: string;
+  html: string;
 }) {
   const transporter = nodemailer.createTransport({
     service: "gmail",
@@ -22,7 +22,7 @@ export default async function sendEmail({
     from: process.env.EMAIL_SERVER_USER,
     to,
     subject,
-    text,
+    html,
   };
 
   try {
