@@ -11,6 +11,7 @@ import {
   ProjectInput,
   projectPublicSelection,
   ProjectUpdateInput,
+  Semester,
 } from "@/types/project";
 import { PaginatedType, PasswordOmittedType } from "@/types/utils";
 import { Prisma, Project } from "@prisma/client";
@@ -71,13 +72,15 @@ export async function getAllProjects(
   const {
     page = 1, // 기본값 설정
     limit = 10, // 기본값 설정
-    sortBy,
-    sortOrder,
+    sortBy = "createdDatetime",
+    sortOrder = "desc",
     name,
     keyword,
     proposerType,
     searchTerm,
     status,
+    year,
+    semester,
   } = query;
   const skip = (page - 1) * limit;
   const take = limit;
@@ -117,6 +120,35 @@ export async function getAllProjects(
     }
   } else {
     orderByConditions.createdDatetime = "desc";
+  }
+
+  const inputYearOrCurrentYear = year ?? new Date().getFullYear();
+  console.log(inputYearOrCurrentYear, semester);
+
+  if (inputYearOrCurrentYear) {
+    let startDate: Date;
+    let endDate: Date;
+
+    if (semester) {
+      // 1학기: 3월 1일 ~ 8월 31일
+      // 2학기: 9월 1일 ~ 다음 해 2월 28/29일
+      if (semester === Semester.FIRST) {
+        startDate = new Date(inputYearOrCurrentYear, 2, 1); // 3월 1일
+        endDate = new Date(inputYearOrCurrentYear, 7, 31, 23, 59, 59, 999); // 8월 31일
+      } else {
+        startDate = new Date(inputYearOrCurrentYear, 8, 1); // 9월 1일
+        endDate = new Date(inputYearOrCurrentYear + 1, 2, 28, 23, 59, 59, 999); // 2월 28일
+      }
+    } else {
+      // semester가 없으면 해당 연도 전체
+      startDate = new Date(inputYearOrCurrentYear, 0, 1); // 1월 1일
+      endDate = new Date(inputYearOrCurrentYear + 1, 2, 28, 23, 59, 59, 999); // 2월 28일
+    }
+
+    whereConditions.createdDatetime = {
+      gte: startDate,
+      lte: endDate,
+    };
   }
 
   // 먼저 총 항목 수를 계산하기 위해 카운트 쿼리 실행

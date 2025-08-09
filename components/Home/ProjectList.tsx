@@ -8,9 +8,9 @@ import { z } from "zod";
 import CustomPagination from "@/components/Pagination";
 import Spinner from "@/components/ui/spinner";
 import ApiClient, { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
+import { cn } from "@/lib/utils";
 import { GetProjectsQuerySchema } from "@/types/project";
 import ProjectCard from "./ProjectCard";
-import { cn } from "@/lib/utils";
 
 function safeParseSearchParams<T extends z.ZodTypeAny>(
   searchParams: URLSearchParams,

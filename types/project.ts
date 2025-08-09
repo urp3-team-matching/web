@@ -2,6 +2,11 @@ import { passwordField } from "@/types/utils";
 import { Applicant, Prisma, ProjectStatus, ProposerType } from "@prisma/client";
 import { z } from "zod";
 
+export enum Semester {
+  FIRST = "1학기",
+  SECOND = "2학기",
+}
+
 export const ProjectSchema = z.object({
   name: z.string().min(1, "Project name is required."),
   background: z.string(),
@@ -36,6 +41,8 @@ export const GetProjectsQuerySchema = z.object({
   proposerType: z.nativeEnum(ProposerType).optional(),
   searchTerm: z.string().optional(),
   status: z.nativeEnum(ProjectStatus).optional(),
+  year: z.coerce.number().int().optional(),
+  semester: z.nativeEnum(Semester).optional(),
 });
 export type GetProjectsQueryInput = z.infer<typeof GetProjectsQuerySchema>;
 
