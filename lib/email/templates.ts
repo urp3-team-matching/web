@@ -1,0 +1,108 @@
+import { ApplicantStatus, Project, ProjectStatus } from "@prisma/client";
+
+type EmailTemplate = {
+  subject: string;
+  html: string;
+};
+
+/**
+ * 새로운 프로젝트가 생성되었을 때 알림
+ */
+export const newProjectCreated = (newProject: Project): EmailTemplate => {
+  const {
+    id,
+    name,
+    background,
+    method,
+    objective,
+    result,
+    etc,
+    keywords,
+    proposerName,
+    proposerType,
+    proposerMajor,
+  } = newProject;
+  const now = new Date().toLocaleString("ko-KR");
+  const link = `${process.env.VERCEL_URL}/projects/${id}`;
+
+  return {
+    subject: `신규 프로젝트 생성: ${name}`,
+    html: `새로운 프로젝트가 생성되었습니다.<br><br>
+    - 키워드: ${keywords.join(", ")}<br>
+    - 제안자: ${proposerName} (${proposerType})${
+      proposerMajor ? `, ${proposerMajor}` : ""
+    }<br>
+    - 생성일: ${now}<br>
+    - 프로젝트 링크: <a href="${link}">${link}</a><br>
+    - 추진배경: ${background}<br>
+    - 실행방: ${method}<br>
+    - 목표: ${objective}<br>
+    - 기대효과: ${result}<br>
+    - 기타 전달사항: ${etc}
+    `,
+  };
+};
+
+/**
+ * 신청자가 프로젝트에 지원했을 때 알림
+ */
+export const applicantApplied = (
+  project: Project,
+  applicantName: string
+): EmailTemplate => {
+  const projectLink = `${process.env.VERCEL_URL}/projects/${project.id}`;
+  const now = new Date().toLocaleString("ko-KR");
+
+  return {
+    subject: `프로젝트 지원 알림: ${project.name}`,
+    html: `지원자 ${applicantName}님이 프로젝트에 지원했습니다.<br><br>
+    - 프로젝트 링크: <a href="${projectLink}">${projectLink}</a><br>
+    - 지원일: ${now}
+    `,
+  };
+};
+
+/**
+ * 신청자의 신청 상태가 변경됐을 때 알림
+ */
+export const applicantStatusChanged = (
+  project: Project,
+  applicantName: string,
+  prev: ApplicantStatus,
+  curr: ApplicantStatus
+): EmailTemplate => {
+  const projectLink = `${process.env.VERCEL_URL}/projects/${project.id}`;
+  const now = new Date().toLocaleString("ko-KR");
+
+  return {
+    subject: `프로젝트 지원 상태 변경: ${project.name}`,
+    html: `지원자 ${applicantName}님의 지원 상태가 변경되었습니다.<br><br>
+    - 이전 상태: ${prev}<br>
+    - 현재 상태: ${curr}<br>
+    - 프로젝트 링크: <a href="${projectLink}">${projectLink}</a><br>
+    - 변경일: ${now}
+    `,
+  };
+};
+
+/**
+ * 프로젝트 상태 변경 알림
+ */
+export const projectStatusChanged = (
+  project: Project,
+  prev: ProjectStatus,
+  curr: ProjectStatus
+) => {
+  const projectLink = `${process.env.VERCEL_URL}/projects/${project.id}`;
+  const now = new Date().toLocaleString("ko-KR");
+
+  return {
+    subject: `프로젝트 상태 변경: ${project.name}`,
+    html: `프로젝트 ${project.name}의 상태가 변경되었습니다.<br><br>
+    - 이전 상태: ${prev}<br>
+    - 현재 상태: ${curr}<br>
+    - 프로젝트 링크: <a href="${projectLink}">${projectLink}</a><br>
+    - 변경일: ${now}
+    `,
+  };
+};
