@@ -26,7 +26,7 @@ const ProjectCreateRightPanel = ({
   return (
     <div className={cn("text-lg font-semibold flex flex-col gap-5", className)}>
       <ProjectProposerForm
-        className="p-5 border rounded-lg"
+        className="max-lg:border-0 max-lg:p-0 max-lg:shadow-none rounded-lg"
         control={control}
         variant="sm"
       />

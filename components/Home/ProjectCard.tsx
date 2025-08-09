@@ -21,7 +21,7 @@ export default function ProjectCard({ project, className }: ProjectCardProps) {
   return (
     <div
       className={cn(
-        "w-full border-t-[1px] py-2.5 px-1 sm:px-2 md:px-3 lg:px-4 bg-white hover:bg-slate-50 transition-colors duration-200 ease-in-out",
+        "w-full border-t-[1px] relative py-2.5 px-1 sm:px-2 md:px-3 lg:px-4 bg-white hover:bg-slate-50 transition-colors duration-200 ease-in-out",
         className
       )}
     >
@@ -33,11 +33,6 @@ export default function ProjectCard({ project, className }: ProjectCardProps) {
             <ApplyStatueBadge status={projectStatus} />
             <ProposalBadge proposerType={project.proposerType} />
           </div>
-
-          {/* 신청 현황 */}
-          <Badge>
-            {approvedApplicantCount} / {MAX_APPLICANTS}
-          </Badge>
         </div>
 
         {/* 제목 */}
@@ -74,6 +69,10 @@ export default function ProjectCard({ project, className }: ProjectCardProps) {
           </div>
         </div>
       </div>
+      {/* 신청 현황 */}
+      <Badge className="bg-green-400 text-white font-black text-xs lg:text-base absolute w-14 h-6 lg:w-16 lg:h-10 top-1/2 -translate-y-1/2 right-0">
+        {approvedApplicantCount} / {MAX_APPLICANTS}
+      </Badge>
     </div>
   );
 }

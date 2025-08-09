@@ -30,9 +30,8 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
-    const queryParams = Object.fromEntries(searchParams.entries());
-
-    const validatedQuery = GetProjectsQuerySchema.parse(queryParams);
+    const queryAsObject = Object.fromEntries(searchParams.entries());
+    const validatedQuery = GetProjectsQuerySchema.parse(queryAsObject);
 
     const result = await getAllProjects(validatedQuery);
     return NextResponse.json(result, { status: 200 });

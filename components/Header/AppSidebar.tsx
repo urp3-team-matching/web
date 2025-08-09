@@ -15,7 +15,6 @@ import { Separator } from "../ui/separator";
 
 const sidebarMenus = [
   { title: "프로젝트", url: "/" },
-  { title: "공지사항", url: "/notice" },
 ];
 
 export function AppSidebar() {

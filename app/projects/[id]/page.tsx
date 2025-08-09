@@ -86,7 +86,6 @@ export default function Project({ params }: { params: { id: string } }) {
       proposerName: "",
       proposerType: "STUDENT",
       proposerMajor: "",
-      proposerPhone: "",
       status: "RECRUITING",
     },
   });
@@ -108,7 +107,6 @@ export default function Project({ params }: { params: { id: string } }) {
         proposerName: project.proposerName || "",
         proposerType: project.proposerType || "STUDENT",
         proposerMajor: project.proposerMajor || "",
-        proposerPhone: project.proposerPhone || "",
         email: project.email || undefined,
         chatLink: project.chatLink || undefined,
         status: project.status || "RECRUITING",

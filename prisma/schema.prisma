@@ -24,7 +24,6 @@ model Project {
   proposerName    String
   proposerType    ProposerType
   proposerMajor   String?
-  proposerPhone   String
   email           String?
   chatLink        String?
   status          ProjectStatus @default(RECRUITING)

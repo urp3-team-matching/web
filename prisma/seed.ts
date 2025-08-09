@@ -235,7 +235,6 @@ async function main() {
       ProposerType.HOST,
     ]),
     proposerMajor: getRandomItem(majors),
-    proposerPhone: `010${getRandomInt(1000, 9999)}${getRandomInt(1000, 9999)}`,
     email: `${getRandomItem(emails)}@${getRandomItem(emailDomains)}`,
     chatLink: `https://chat.${getRandomItem(emailDomains)}`,
     status: ProjectStatus.RECRUITING, // 일단 모든 프로젝트를 OPEN으로 시작

@@ -35,11 +35,9 @@ const ProjectProposerForm = ({
 }: ProjectProposerFormProps) => {
   return (
     <div
-      className={cn({ className }, "lg:border rounded-lg lg:shadow-sm lg:p-5")}
+      className={cn("border p-5 rounded-lg shadow-md lg:shadow-sm", className)}
     >
-      <h3 className="text-xl lg:text-2xl font-semibold mb-3 lg:mb-6">
-        작성자정보
-      </h3>
+      <h3 className="text-xl lg:text-2xl font-semibold mb-3 lg:mb-6">제안자</h3>
       <Separator className="lg:hidden mb-6" />
       <div
         className={cn(
@@ -47,40 +45,6 @@ const ProjectProposerForm = ({
           variant === "default" ? "grid-cols-2 gap-5" : "grid-cols-1 gap-2"
         )}
       >
-        <ProjectProposerFormField
-          name="proposerName"
-          control={control}
-          label="이름"
-          inputProps={{ placeholder: "김학생" }}
-        />
-        <ProjectProposerFormField
-          name="password"
-          control={control}
-          label="비밀번호"
-          inputProps={{ type: "password", placeholder: "비밀번호(6자 이상)" }}
-        />
-        <ProjectProposerFormField
-          name="proposerPhone"
-          control={control}
-          label="연락처"
-          inputProps={{ type: "tel", placeholder: "010-1234-5678" }}
-        />
-        <ProjectProposerFormField
-          name="email"
-          control={control}
-          label="이메일"
-          inputProps={{ type: "email", placeholder: "example@domain.com" }}
-        />
-        <ProjectProposerFormField
-          name="chatLink"
-          control={control}
-          label="채팅링크"
-          inputProps={{
-            type: "url",
-            placeholder: "https://open.kakao.com/o/example",
-          }}
-        />
-
         <Controller
           name="proposerType"
           control={control}
@@ -139,6 +103,39 @@ const ProjectProposerForm = ({
               )}
             </div>
           )}
+        />
+        <ProjectProposerFormField
+          name="proposerName"
+          control={control}
+          label="이름"
+          inputProps={{ placeholder: "김학생" }}
+        />
+        <ProjectProposerFormField
+          name="proposerMajor"
+          control={control}
+          label="전공"
+          inputProps={{ placeholder: "전자전기공학부" }}
+        />
+        <ProjectProposerFormField
+          name="password"
+          control={control}
+          label="비밀번호"
+          inputProps={{ type: "password", placeholder: "비밀번호(6자 이상)" }}
+        />
+        <ProjectProposerFormField
+          name="email"
+          control={control}
+          label="이메일"
+          inputProps={{ type: "email", placeholder: "example@domain.com" }}
+        />
+        <ProjectProposerFormField
+          name="chatLink"
+          control={control}
+          label="오픈채팅"
+          inputProps={{
+            type: "url",
+            placeholder: "(선택)",
+          }}
         />
       </div>
     </div>

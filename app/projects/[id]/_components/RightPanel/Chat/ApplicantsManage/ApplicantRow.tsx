@@ -1,3 +1,4 @@
+import { ProjectPageMode } from "@/app/projects/[id]/page";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -26,6 +27,7 @@ interface ApplicantRowProps {
   handleReject?: (applicantId: number) => void;
   handlePending?: (applicantId: number) => void;
   applicant: PublicApplicantForProject;
+  mode: ProjectPageMode;
 }
 
 const ApplicantRow = ({
@@ -34,6 +36,7 @@ const ApplicantRow = ({
   handleAccept,
   handleReject,
   handlePending,
+  mode,
 }: ApplicantRowProps) => {
   const [open, setOpen] = useState(false);
 
@@ -48,9 +51,16 @@ const ApplicantRow = ({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <div
+          onClick={(e) => {
+            if (mode === null) {
+              e.preventDefault(); // Dialog 열림 차단
+              e.stopPropagation(); // 추가 이벤트 전파 차단
+            }
+          }}
           className={cn(
-            "rounded-lg shadow-sm flex items-center justify-between px-3 w-full h-[45px] border cursor-pointer",
+            "rounded-lg shadow-sm flex items-center justify-between px-3 w-full h-[45px] border",
             "active:bg-gray-200 hover:bg-gray-100 transition-colors duration-200",
+            mode === null ? "cursor-default" : "cursor-pointer",
             className
           )}
         >
@@ -58,7 +68,7 @@ const ApplicantRow = ({
           <div className="flex-1">
             {applicant.name}({applicant.major})
           </div>
-          <div className="flex gap-x-1">
+          <div className={cn("flex gap-x-1", mode === null ? "hidden" : "")}>
             {handleAccept && (
               <Button
                 onClick={(e) => {
@@ -71,7 +81,7 @@ const ApplicantRow = ({
                 size="sm"
                 variant="secondary"
               >
-                수락
+                승인
               </Button>
             )}
             {handleReject && (
@@ -86,7 +96,7 @@ const ApplicantRow = ({
                 size="sm"
                 variant="destructive"
               >
-                거절
+                반려
               </Button>
             )}
             {handlePending && (
@@ -134,7 +144,7 @@ const ApplicantRow = ({
               }}
               onFocus={(e) => e.target.blur()} // focus 방지
             >
-              수락
+              승인
             </Button>
           )}
           {handleReject && (
@@ -146,7 +156,7 @@ const ApplicantRow = ({
               }}
               onFocus={(e) => e.target.blur()} // focus 방지
             >
-              거절
+              반려
             </Button>
           )}
           {handlePending && (
