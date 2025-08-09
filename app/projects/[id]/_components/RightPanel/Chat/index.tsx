@@ -54,6 +54,7 @@ const Chat = ({
       {/* 탭: 모집 관리 */}
       {mode === ProjectPageModeEnum.ADMIN && tab === Tab.모집관리 && (
         <ManageApplicants
+          mode={mode}
           className="px-2"
           applicants={applicants}
           projectId={project.id}
