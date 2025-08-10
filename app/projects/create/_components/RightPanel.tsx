@@ -19,7 +19,8 @@ const ProjectCreateRightPanel = ({
 }: ProjectCreateRightPanelProps) => {
   const router = useRouter();
 
-  function onCancel() {
+  function onCancel(e: React.MouseEvent<HTMLButtonElement>) {
+    e.preventDefault();
     router.push("/");
   }
 
