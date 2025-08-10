@@ -20,7 +20,7 @@ const ProjectCreateRightPanel = ({
   const router = useRouter();
 
   function onCancel() {
-    router.push("/projects");
+    router.push("/");
   }
 
   return (
