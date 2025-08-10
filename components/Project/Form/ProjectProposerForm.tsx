@@ -111,12 +111,6 @@ const ProjectProposerForm = ({
           inputProps={{ placeholder: "김학생" }}
         />
         <ProjectProposerFormField
-          name="proposerMajor"
-          control={control}
-          label="전공"
-          inputProps={{ placeholder: "전자전기공학부" }}
-        />
-        <ProjectProposerFormField
           name="password"
           control={control}
           label="비밀번호"
