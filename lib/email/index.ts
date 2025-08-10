@@ -27,8 +27,11 @@ export default async function sendEmail({
 
   try {
     await transporter.sendMail(mailOptions);
-    console.log("Email sent successfully");
+    console.log(`Email sent to ${to} with subject ${subject}`);
   } catch (error) {
-    console.error("Error sending email:", error);
+    console.error(
+      `Error sending email to ${to} with subject ${subject}`,
+      error
+    );
   }
 }

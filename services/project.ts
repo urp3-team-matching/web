@@ -314,7 +314,10 @@ export async function deleteProject(
   }
   const projectToDelete = await prisma.project.findUnique({
     where: { id },
-    select: projectPublicSelection,
+    select: {
+      ...projectPublicSelection,
+      passwordHash: true, // 비밀번호 해시 포함
+    },
   });
   if (!projectToDelete) {
     throw new NotFoundError("Project not found for deletion.");

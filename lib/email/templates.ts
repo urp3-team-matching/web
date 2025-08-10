@@ -5,6 +5,30 @@ type EmailTemplate = {
   html: string;
 };
 
+const projectStatusAsVerboseKorean = (status: ProjectStatus | "DELETED") => {
+  switch (status) {
+    case ProjectStatus.RECRUITING:
+      return "모집 중";
+    case ProjectStatus.CLOSED:
+      return "마감";
+    case "DELETED":
+      return "삭제됨";
+    default:
+      return "알 수 없음";
+  }
+};
+
+const applicantStatusAsVerboseKorean = (status: ApplicantStatus) => {
+  switch (status) {
+    case ApplicantStatus.APPROVED:
+      return "승인";
+    case ApplicantStatus.REJECTED:
+      return "반려";
+    case ApplicantStatus.PENDING:
+      return "대기 중";
+  }
+};
+
 /**
  * 새로운 프로젝트가 생성되었을 때 알림
  */
@@ -77,8 +101,8 @@ const applicantStatusChanged = (
   return {
     subject: `프로젝트 지원 상태 변경: ${project.name}`,
     html: `지원자 ${applicantName}님의 지원 상태가 변경되었습니다.<br><br>
-    - 이전 상태: ${prev}<br>
-    - 현재 상태: ${curr}<br>
+    - 이전 상태: ${applicantStatusAsVerboseKorean(prev)}<br>
+    - 현재 상태: ${applicantStatusAsVerboseKorean(curr)}<br>
     - 프로젝트 링크: <a href="${projectLink}">${projectLink}</a><br>
     - 변경일: ${now}
     `,
@@ -99,8 +123,8 @@ const projectStatusChanged = (
   return {
     subject: `프로젝트 상태 변경: ${project.name}`,
     html: `프로젝트 ${project.name}의 상태가 변경되었습니다.<br><br>
-    - 이전 상태: ${prev}<br>
-    - 현재 상태: ${curr}<br>
+    - 이전 상태: ${projectStatusAsVerboseKorean(prev)}<br>
+    - 현재 상태: ${projectStatusAsVerboseKorean(curr)}<br>
     - 프로젝트 링크: <a href="${projectLink}">${projectLink}</a><br>
     - 변경일: ${now}
     `,

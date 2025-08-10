@@ -24,7 +24,7 @@ model Project {
   proposerName    String
   proposerType    ProposerType
   proposerMajor   String?
-  email           String?
+  email           String
   chatLink        String?
   status          ProjectStatus @default(RECRUITING)
   passwordHash    String        @map("password")
