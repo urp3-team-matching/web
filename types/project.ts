@@ -20,7 +20,7 @@ export const ProjectSchema = z.object({
   proposerName: z.string().min(1, "Proposer name is required."),
   proposerType: z.nativeEnum(ProposerType),
   proposerMajor: z.string().optional(),
-  email: z.string().email("Invalid email format").optional(),
+  email: z.string().email("Invalid email format"),
   chatLink: z.string().url("Invalid URL format").optional(),
   status: z.nativeEnum(ProjectStatus),
 });

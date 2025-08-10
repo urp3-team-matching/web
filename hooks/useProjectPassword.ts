@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
 
+const PASSWORD_PREFIX = `currentPassword/`;
+
 const useProjectPassword = (projectId: number) => {
   const [password, setPassword] = useState<string>("");
 
   useEffect(() => {
-    const storedPassword = localStorage.getItem(`currentPassword/${projectId}`);
+    const storedPassword = localStorage.getItem(
+      `${PASSWORD_PREFIX}${projectId}`
+    );
     if (storedPassword) {
       setPassword(storedPassword);
     }
@@ -12,7 +16,7 @@ const useProjectPassword = (projectId: number) => {
 
   const savePassword = (newPassword: string) => {
     setPassword(newPassword);
-    localStorage.setItem(`currentPassword/${projectId}`, newPassword);
+    localStorage.setItem(`${PASSWORD_PREFIX}${projectId}`, newPassword);
   };
 
   return { password, setPassword: savePassword };
@@ -28,7 +32,7 @@ export default useProjectPassword;
 export const useSetProjectPassword = () => {
   return {
     setPassword: (projectId: number, password: string) => {
-      localStorage.setItem(`password/${projectId}`, password);
+      localStorage.setItem(`${PASSWORD_PREFIX}${projectId}`, password);
     },
   };
 };

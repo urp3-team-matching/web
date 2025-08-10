@@ -6,6 +6,8 @@ import {
   UnauthorizedError,
   verifyResourcePassword,
 } from "@/lib/authUtils";
+import sendEmail from "@/lib/email";
+import emailTemplates from "@/lib/email/templates";
 import { prisma } from "@/lib/prisma";
 import {
   ApplicantInput,
@@ -45,6 +47,16 @@ export async function applyToProject(
       projectId,
     },
     select: applicantPublicSelection,
+  });
+
+  const applicantAppliedEmail = emailTemplates.applicantApplied(
+    project,
+    createdApplicant.name
+  );
+  sendEmail({
+    to: project.email,
+    subject: applicantAppliedEmail.subject,
+    html: applicantAppliedEmail.html,
   });
   return createdApplicant;
 }
@@ -132,7 +144,6 @@ export async function acceptApplicant(
 ): Promise<ApplicantForProject> {
   const project = await prisma.project.findUnique({
     where: { id: projectId },
-    select: { passwordHash: true },
   });
   if (!project) {
     throw new NotFoundError(`Project with id ${projectId} not found.`);
@@ -188,6 +199,17 @@ export async function acceptApplicant(
     select: applicantPublicSelection,
   });
 
+  const applicantStatusChangedEmail = emailTemplates.applicantStatusChanged(
+    project,
+    updatedApplicant.name,
+    applicant.status,
+    updatedApplicant.status
+  );
+  sendEmail({
+    to: project.email,
+    subject: applicantStatusChangedEmail.subject,
+    html: applicantStatusChangedEmail.html,
+  });
   return updatedApplicant;
 }
 
@@ -198,7 +220,6 @@ export async function rejectApplicant(
 ): Promise<ApplicantForProject> {
   const project = await prisma.project.findUnique({
     where: { id: projectId },
-    select: { passwordHash: true },
   });
   if (!project) {
     throw new NotFoundError(`Project with id ${projectId} not found.`);
@@ -233,6 +254,17 @@ export async function rejectApplicant(
     select: applicantPublicSelection,
   });
 
+  const applicantStatusChangedEmail = emailTemplates.applicantStatusChanged(
+    project,
+    updatedApplicant.name,
+    applicant.status,
+    updatedApplicant.status
+  );
+  sendEmail({
+    to: project.email,
+    subject: applicantStatusChangedEmail.subject,
+    html: applicantStatusChangedEmail.html,
+  });
   return updatedApplicant;
 }
 
@@ -243,7 +275,6 @@ export async function pendingApplicant(
 ): Promise<ApplicantForProject> {
   const project = await prisma.project.findUnique({
     where: { id: projectId },
-    select: { passwordHash: true },
   });
   if (!project) {
     throw new NotFoundError(`Project with id ${projectId} not found.`);
@@ -278,5 +309,16 @@ export async function pendingApplicant(
     select: applicantPublicSelection,
   });
 
+  const applicantStatusChangedEmail = emailTemplates.applicantStatusChanged(
+    project,
+    updatedApplicant.name,
+    applicant.status,
+    updatedApplicant.status
+  );
+  sendEmail({
+    to: project.email,
+    subject: applicantStatusChangedEmail.subject,
+    html: applicantStatusChangedEmail.html,
+  });
   return updatedApplicant;
 }
