@@ -15,13 +15,21 @@ import {
   ApplicantUpdateInput,
 } from "@/types/applicant";
 import { ApplicantForProject, projectPublicSelection } from "@/types/project";
+import { PasswordOmittedType } from "@/types/utils";
 import { Applicant } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
-// 지원자 생성
+const SALT_ROUNDS = 10;
+type PasswordOmittedApplicant = PasswordOmittedType<Applicant>;
+
+// 지원자 생성 (비밀번호 해싱)
 export async function applyToProject(
   projectId: number,
   data: ApplicantInput
-): Promise<Applicant> {
+): Promise<PasswordOmittedApplicant> {
+  const { password: plainTextPassword, ...applicantData } = data;
+  const passwordHash = await bcrypt.hash(plainTextPassword, SALT_ROUNDS);
+
   const project = await prisma.project.findUnique({
     where: { id: projectId },
     select: projectPublicSelection,
@@ -43,10 +51,11 @@ export async function applyToProject(
 
   const createdApplicant = await prisma.applicant.create({
     data: {
-      ...data,
+      ...applicantData,
+      passwordHash,
       projectId,
     },
-    select: applicantPublicSelection,
+    select: applicantPublicSelection, // passwordHash 제외 확인
   });
 
   const applicantAppliedEmail = emailTemplates.applicantApplied(
@@ -64,10 +73,10 @@ export async function applyToProject(
 // 특정 프로젝트의 모든 지원자 조회
 export async function getApplicantsByProjectId(
   projectId: number
-): Promise<Applicant[]> {
+): Promise<PasswordOmittedApplicant[]> {
   const applicants = await prisma.applicant.findMany({
     where: { projectId },
-    select: applicantPublicSelection,
+    select: applicantPublicSelection, // passwordHash 제외 확인
     orderBy: { createdDatetime: "asc" },
   });
   return applicants;
@@ -77,23 +86,29 @@ export async function getApplicantsByProjectId(
 export async function getApplicantByIdForProject(
   applicantId: number,
   projectId: number
-): Promise<Applicant | null> {
+): Promise<PasswordOmittedApplicant | null> {
   const applicant = await prisma.applicant.findUnique({
     where: {
       id: applicantId,
       projectId: projectId,
     },
-    select: applicantPublicSelection,
+    select: applicantPublicSelection, // passwordHash 제외 확인
   });
   return applicant;
 }
 
-// 지원자 정보 수정
+// 지원자 정보 수정 (비밀번호 검증)
 export async function updateApplicant(
   applicantId: number,
   projectId: number,
   data: ApplicantUpdateInput
-): Promise<Applicant> {
+): Promise<PasswordOmittedApplicant> {
+  const {
+    currentPassword,
+    password: newPlainTextPassword,
+    ...applicantData
+  } = data;
+
   const applicantToUpdate = await prisma.applicant.findUnique({
     where: { id: applicantId, projectId },
   });
@@ -101,23 +116,48 @@ export async function updateApplicant(
   if (!applicantToUpdate) {
     throw new NotFoundError("Applicant not found for this project.");
   }
+  if (!applicantToUpdate.passwordHash) {
+    throw new Error("Applicant password integrity error.");
+  }
+
+  const isAuthorized = await verifyResourcePassword(
+    currentPassword,
+    applicantToUpdate.passwordHash
+  );
+  if (!isAuthorized) {
+    throw new UnauthorizedError("Incorrect current password for applicant.");
+  }
+
+  let passwordHashToUpdate;
+  if (newPlainTextPassword) {
+    passwordHashToUpdate = await bcrypt.hash(newPlainTextPassword, SALT_ROUNDS);
+  }
 
   const updatedApplicant = await prisma.applicant.update({
     where: {
       id: applicantId,
       // projectId는 where 조건으로 이미 확인됨
     },
-    data,
-    select: applicantPublicSelection,
+    data: {
+      ...applicantData,
+      ...(passwordHashToUpdate && { passwordHash: passwordHashToUpdate }),
+    },
+    select: applicantPublicSelection, // passwordHash 제외 확인
   });
   return updatedApplicant;
 }
 
-// 지원자 삭제
+// 지원자 삭제 (비밀번호 검증)
 export async function deleteApplicant(
   applicantId: number,
-  projectId: number
-): Promise<Applicant> {
+  projectId: number,
+  currentPassword?: string
+): Promise<PasswordOmittedApplicant> {
+  if (!currentPassword) {
+    throw new UnauthorizedError(
+      "Current password is required to delete this applicant."
+    );
+  }
   const applicantToDelete = await prisma.applicant.findUnique({
     where: { id: applicantId, projectId },
   });
@@ -127,12 +167,25 @@ export async function deleteApplicant(
       "Applicant not found for deletion in this project."
     );
   }
+  if (!applicantToDelete.passwordHash) {
+    throw new Error("Applicant password integrity error.");
+  }
+
+  const isAuthorized = await verifyResourcePassword(
+    currentPassword,
+    applicantToDelete.passwordHash
+  );
+  if (!isAuthorized) {
+    throw new UnauthorizedError(
+      "Incorrect current password for applicant deletion."
+    );
+  }
 
   const deletedApplicant = await prisma.applicant.delete({
     where: {
       id: applicantId,
     },
-    select: applicantPublicSelection,
+    select: applicantPublicSelection, // passwordHash 제외 확인
   });
   return deletedApplicant;
 }
