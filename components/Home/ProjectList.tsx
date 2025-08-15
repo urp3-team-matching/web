@@ -82,16 +82,16 @@ const ProjectList = () => {
       {/* 프로젝트 목록 */}
       <div className="w-full flex flex-col">
         {projects.map((project, i) => {
-          const isFirst = i === 0;
           const isLast = i === projects.length - 1;
+          const isFirst = i === 0;
 
           return (
             <Link key={project.id} href={`/projects/${project.id}`}>
               <ProjectCard
-                className={cn(
+                className={cn([
                   isFirst && "border-t-black border-t-[2px]",
-                  isLast && "border-b-[1px]"
-                )}
+                  isLast && "border-b-[1px]",
+                ])}
                 project={project}
               />
             </Link>

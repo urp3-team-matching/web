@@ -122,7 +122,7 @@ const ProjectProposerForm = ({
           label="이메일"
           inputProps={{ type: "email", placeholder: "example@domain.com" }}
         />
-        <ProjectProposerFormField
+        {/* <ProjectProposerFormField
           name="chatLink"
           control={control}
           label="오픈채팅"
@@ -130,7 +130,7 @@ const ProjectProposerForm = ({
             type: "url",
             placeholder: "(선택)",
           }}
-        />
+        /> */}
       </div>
     </div>
   );

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { GetProjectsQuerySchema } from "@/types/project";
-import { Search } from "lucide-react";
+import { PencilIcon, Search } from "lucide-react";
 import Link from "next/link";
 import { useQueryState } from "nuqs";
 import z from "zod";
@@ -43,9 +43,12 @@ export default function SearchCreateRow({ className }: SearchBarProps) {
       >
         <Button
           asChild
-          className="w-full h-10 sm:w-50 sm:h-full bg-green-400 hover:bg-green-500 hover:cursor-pointer"
+          className="w-full h-10 sm:hidden sm:w-50 sm:h-full bg-green-400 hover:bg-green-500 hover:cursor-pointer"
         >
-          <Link href="/projects/create">프로젝트 제안</Link>
+          <Link href="/projects/create">
+            <PencilIcon size={24} />
+            글쓰기
+          </Link>
         </Button>
         <div className="relative flex gap-3 w-full sm:flex-1 h-full">
           <Input
