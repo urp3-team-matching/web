@@ -62,6 +62,7 @@ export default function ApplicationStatusCardAdmin({
           <span>이름: {applicant.name}</span>
           <span>전공: {applicant.major}</span>
           <span>이메일: {applicant.email}</span>
+          <span>전화번호: {applicant.phone}</span>
           <span>자기소개: {applicant.introduction}</span>
         </DialogDescription>
       </DialogContent>
