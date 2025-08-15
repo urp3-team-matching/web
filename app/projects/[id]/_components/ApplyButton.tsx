@@ -27,7 +27,6 @@ const applyFields: {
 }[] = [
   { name: "name", label: "이름", type: "text" },
   { name: "major", label: "학과", type: "text" },
-  { name: "phone", label: "전화번호", type: "tel" },
   { name: "email", label: "이메일", type: "email" },
 ] as const;
 
@@ -54,6 +53,10 @@ const ProjectApplyButton = ({
   } = useForm<ApplicantInput>({
     resolver: zodResolver(ApplicantSchema),
     defaultValues: {
+      name: "",
+      major: "",
+      email: "",
+      introduction: "",
       status: "PENDING",
     },
   });

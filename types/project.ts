@@ -74,7 +74,6 @@ export const projectPublicSelection: Prisma.ProjectSelect = {
       name: true,
       email: true,
       major: true,
-      phone: true,
       introduction: true,
       createdDatetime: true,
       updatedDatetime: true,

@@ -39,7 +39,6 @@ model Applicant {
   name            String
   email           String
   major           String
-  phone           String
   introduction    String
   status          ApplicantStatus @default(PENDING)
   passwordHash    String          @map("password")
