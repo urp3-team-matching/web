@@ -52,9 +52,9 @@ const Filter = () => {
           학기
         </Label>
         <Select
-          value={semester ?? "구분 없음"} // null이면 "구분 없음"으로 보여줌
+          value={semester ?? "전체"}
           onValueChange={(value) => {
-            if (value === "구분 없음") setSemester(null);
+            if (value === "전체") setSemester(null);
             else setSemester(value as Semester);
           }}
         >
@@ -67,8 +67,8 @@ const Filter = () => {
                 {sem}
               </SelectItem>
             ))}
-            <SelectItem key={null} value="구분 없음">
-              구분 없음
+            <SelectItem key={null} value="전체">
+              전체
             </SelectItem>
           </SelectContent>
         </Select>
