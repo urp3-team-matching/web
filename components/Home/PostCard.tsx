@@ -11,7 +11,7 @@ export default function PostCard({ post, className }: PostCardProps) {
   return (
     <div
       className={cn(
-        "w-full border-t-[1px] py-2.5 px-1 sm:px-2 md:px-3 lg:px-4 bg-white hover:bg-slate-50 transition-colors duration-200 ease-in-out",
+        "w-full border-t-[1px] py-1.5 sm:py-2.5 px-1 sm:px-2 md:px-3 lg:px-4 bg-white hover:bg-slate-50 transition-colors duration-200 ease-in-out",
         className
       )}
     >
