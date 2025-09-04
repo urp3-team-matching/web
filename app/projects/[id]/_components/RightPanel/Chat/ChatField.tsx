@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
+import { SCHEMA_NAME } from "@/constants";
 import useProjectPassword from "@/hooks/useProjectPassword";
 import apiClient, { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
 import { supabase } from "@/lib/supabaseClient";
@@ -187,7 +188,7 @@ export default function ChatField({ project }: ChatFieldProps) {
         "postgres_changes",
         {
           event: "INSERT",
-          schema: "public",
+          schema: SCHEMA_NAME,
           table: "Message", // 사용자가 제공한 테이블 이름 "Message" 사용
           filter: `projectId=eq.${projectId}`,
         },
