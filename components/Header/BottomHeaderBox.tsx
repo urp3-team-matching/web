@@ -17,7 +17,7 @@ export default function BottomHeaderBox() {
               height={45}
             />
             <div className="w-[1px] h-5 bg-black" />
-            <span className="text-[13px] sm:text-[26px] sm:pb-1 font-semibold text-gray-600 tracking-[-3px]">
+            <span className="text-[13px] sm:text-[26px] sm:pb-1 font-semibold text-gray-600 tracking-[-2px]">
               융합연구학점제 팀모집
             </span>
           </Link>
