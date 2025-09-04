@@ -1,4 +1,7 @@
+import { getCurrentKoreanDate } from "@/lib/utils";
 import { ApplicantStatus, Project, ProjectStatus } from "@prisma/client";
+
+const VERCEL_URL = process.env.VERCEL_URL || "http://localhost:3000";
 
 type EmailTemplate = {
   subject: string;
@@ -46,8 +49,8 @@ const newProjectCreated = (newProject: Project): EmailTemplate => {
     proposerType,
     proposerMajor,
   } = newProject;
-  const now = new Date().toLocaleString("ko-KR");
-  const link = `${process.env.VERCEL_URL}/projects/${id}`;
+  const now = getCurrentKoreanDate();
+  const link = `${VERCEL_URL}/projects/${id}`;
 
   return {
     subject: `신규 프로젝트 생성: ${name}`,
@@ -74,8 +77,8 @@ const applicantApplied = (
   project: Project,
   applicantName: string
 ): EmailTemplate => {
-  const projectLink = `${process.env.VERCEL_URL}/projects/${project.id}`;
-  const now = new Date().toLocaleString("ko-KR");
+  const projectLink = `${VERCEL_URL}/projects/${project.id}`;
+  const now = getCurrentKoreanDate();
 
   return {
     subject: `프로젝트 지원 알림: ${project.name}`,
@@ -95,8 +98,8 @@ const applicantStatusChanged = (
   prev: ApplicantStatus,
   curr: ApplicantStatus
 ): EmailTemplate => {
-  const projectLink = `${process.env.VERCEL_URL}/projects/${project.id}`;
-  const now = new Date().toLocaleString("ko-KR");
+  const projectLink = `${VERCEL_URL}/projects/${project.id}`;
+  const now = getCurrentKoreanDate();
 
   return {
     subject: `프로젝트 지원 상태 변경: ${project.name}`,
@@ -117,8 +120,8 @@ const projectStatusChanged = (
   prev: ProjectStatus,
   curr: ProjectStatus | "DELETED"
 ) => {
-  const projectLink = `${process.env.VERCEL_URL}/projects/${project.id}`;
-  const now = new Date().toLocaleString("ko-KR");
+  const projectLink = `${VERCEL_URL}/projects/${project.id}`;
+  const now = getCurrentKoreanDate();
 
   return {
     subject: `프로젝트 상태 변경: ${project.name}`,
