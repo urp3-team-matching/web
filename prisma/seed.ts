@@ -182,16 +182,7 @@ const emails = [
   "help",
 ];
 
-const emailDomains = [
-  "gmail.com",
-  "naver.com",
-  "kakao.com",
-  "skku.edu",
-  "snu.ac.kr",
-  "kaist.ac.kr",
-  "yonsei.ac.kr",
-  "korea.ac.kr",
-];
+const emailDomains = ["exampleDomain.com"];
 
 const introductions = [
   "이 프로젝트에 참여하고 싶습니다.",

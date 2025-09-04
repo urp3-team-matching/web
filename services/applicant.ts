@@ -206,7 +206,7 @@ export async function acceptApplicant(
     updatedApplicant.status
   );
   sendEmail({
-    to: project.email,
+    to: applicant.email,
     subject: applicantStatusChangedEmail.subject,
     html: applicantStatusChangedEmail.html,
   });
@@ -261,7 +261,7 @@ export async function rejectApplicant(
     updatedApplicant.status
   );
   sendEmail({
-    to: project.email,
+    to: applicant.email,
     subject: applicantStatusChangedEmail.subject,
     html: applicantStatusChangedEmail.html,
   });
@@ -316,7 +316,7 @@ export async function pendingApplicant(
     updatedApplicant.status
   );
   sendEmail({
-    to: project.email,
+    to: applicant.email,
     subject: applicantStatusChangedEmail.subject,
     html: applicantStatusChangedEmail.html,
   });
