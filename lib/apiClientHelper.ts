@@ -86,6 +86,24 @@ class ApiClient {
     return await fetch(endpoint, options);
   }
 
+  // --- Post API Methods ---
+  public async getPosts(): Promise<PaginatedPosts> {
+    const response = await this._request(`/api/posts`, "GET");
+
+    if (!response.ok) {
+      switch (response.status) {
+        case 500:
+          throw new InternalServerError("Internal Server Error");
+        default:
+          throw new Error("Failed to fetch posts");
+      }
+    }
+
+    return await response.json();
+  }
+
+  // TODO: add other Post API methods if needed
+
   // --- Project API Methods ---
   public async getProjects(
     params?: GetProjectsQueryInput

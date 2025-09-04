@@ -432,18 +432,25 @@ async function main() {
   console.log("Creating sample posts...");
   const postsData = [
     {
-      title: "프로젝트 팀원 모집 안내",
-      content:
-        "다양한 프로젝트의 참여자를 모집합니다. 관심 있는 프로젝트에 지원해 주세요.",
-      author: "관리자",
+      title: "팀 모집을 위한 연구제안서 양식 안내",
+      content: `안녕하십니까.\n
+        \n
+        성균융합원 융합연구학점제 담당자입니다\n
+        \n\n
+        팀 모집을 위한 연구제안서(프로젝트 추진 배경, 실행 방법 등) 양식 안내드립니다.\n
+        연구제안서와 함께 본인의 연락처(메일 주소, 전화번호 등)를 기재하여 팀원 모집 게시글을 올려주시면 됩니다.\n
+        융합연구학점제에 관심있는 교수님 혹은 학부생들의 많은 관심과 참여 바랍니다.\n
+        \n\n
+        감사합니다.`,
+      author: "성균융합원",
       attachments: [],
       passwordHash,
       viewCount: getRandomInt(100, 100000),
     },
     {
-      title: "프로젝트 제안 가이드라인",
+      title: "프로젝트 제안서 작성 가이드라인",
       content: "프로젝트 제안서 작성 방법과 주의사항에 대한 안내입니다.",
-      author: "시스템 관리자",
+      author: "성균융합원",
       attachments: ["/attachments/guideline.pdf"],
       passwordHash,
       viewCount: getRandomInt(100, 100000),
@@ -451,7 +458,7 @@ async function main() {
     {
       title: "플랫폼 이용 안내",
       content: "프로젝트 참여 및 제안에 관한 플랫폼 이용 방법을 안내합니다.",
-      author: "헬프센터",
+      author: "성균융합원",
       attachments: [],
       passwordHash,
       viewCount: getRandomInt(100, 100000),

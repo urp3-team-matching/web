@@ -13,7 +13,7 @@ interface SearchBarProps {
   className?: string;
 }
 
-export default function SearchCreateRow({ className }: SearchBarProps) {
+export default function SearchRow({ className }: SearchBarProps) {
   const searchQueryKey = "searchTerm" as keyof z.infer<
     typeof GetProjectsQuerySchema
   >;

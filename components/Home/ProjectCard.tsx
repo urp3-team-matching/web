@@ -70,8 +70,8 @@ export default function ProjectCard({ project, className }: ProjectCardProps) {
         </div>
       </div>
       {/* 신청 현황 */}
-      <Badge className="bg-green-400 text-white font-black flex flex-col *:text-xs gap-0 lg:text-base absolute w-14 h-8 lg:w-16 lg:h-10 top-1/2 -translate-y-1/2 right-0">
-        <div>지원현황</div>
+      <Badge className="bg-green-400 text-white font-black flex flex-col *:text-xs gap-0 lg:text-base absolute w-14 h-8 lg:w-16 lg:h-12 top-1/2 -translate-y-1/2 right-0">
+        <span>지원현황</span>
         {approvedApplicantCount} / {MAX_APPLICANTS}
       </Badge>
     </div>
