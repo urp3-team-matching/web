@@ -9,6 +9,7 @@ import {
 import { cn } from "@/lib/utils";
 import { ProjectInput } from "@/types/project";
 import { ApplicantStatus } from "@prisma/client";
+import { parseAsStringEnum, useQueryState } from "nuqs";
 import { Control } from "react-hook-form";
 import { ProjectPageMode } from "../page";
 import { ProjectPageModeEnum } from "./constants";
@@ -31,6 +32,12 @@ interface MobileTabProps {
   ) => void;
 }
 
+export const MOBILE_TAB_QUERY_KEY = "mobile-tab";
+export enum MobileTabEnum {
+  프로젝트정보 = "projectInfo",
+  신청현황 = "applicantStatus",
+}
+
 export default function MobileTab({
   onDelete,
   onToggleClose,
@@ -43,20 +50,30 @@ export default function MobileTab({
   control,
   applicants = [],
 }: MobileTabProps) {
+  const [selectedTab, setSelectedTab] = useQueryState(
+    MOBILE_TAB_QUERY_KEY,
+    parseAsStringEnum(Object.values(MobileTabEnum)).withDefault(
+      MobileTabEnum.프로젝트정보
+    )
+  );
+
   return (
-    <Tabs defaultValue="프로젝트 정보" className={cn("w-full", className)}>
-      <TabsList className="w-full my-3" defaultValue="프로젝트 정보">
-        <TabsTrigger className="w-1/2" value="프로젝트 정보">
+    <Tabs
+      value={selectedTab}
+      onValueChange={(value) => setSelectedTab(value as MobileTabEnum)}
+      className={cn("w-full", className)}
+    >
+      <TabsList className="w-full my-3">
+        <TabsTrigger className="w-1/2" value={MobileTabEnum.프로젝트정보}>
           프로젝트 정보
         </TabsTrigger>
-        <TabsTrigger className="w-1/2" value="신청현황">
+        <TabsTrigger className="w-1/2" value={MobileTabEnum.신청현황}>
           신청현황
         </TabsTrigger>
       </TabsList>
 
       {/* 프로젝트 정보(왼쪽 탭) */}
-
-      <TabsContent value="프로젝트 정보" className="pb-14">
+      <TabsContent value={MobileTabEnum.프로젝트정보} className="pb-14">
         <div className="flex flex-col gap-5">
           <div className="flex flex-col gap-5">
             <ProjectForm
@@ -79,8 +96,7 @@ export default function MobileTab({
       </TabsContent>
 
       {/* 신청현황(오른쪽 탭) */}
-
-      <TabsContent value="신청현황" className="pb-14">
+      <TabsContent value={MobileTabEnum.신청현황} className="pb-14">
         <div className="flex flex-col gap-3">
           {mode === null && (
             <ContactCard

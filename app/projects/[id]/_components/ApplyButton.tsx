@@ -1,5 +1,9 @@
 "use client";
 
+import {
+  MOBILE_TAB_QUERY_KEY,
+  MobileTabEnum,
+} from "@/app/projects/[id]/_components/MobileTab";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -17,6 +21,7 @@ import { MaxApplicantsError } from "@/lib/authUtils";
 import { cn } from "@/lib/utils";
 import { ApplicantInput, ApplicantSchema } from "@/types/applicant";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryState } from "nuqs";
 import { HTMLInputTypeAttribute, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
@@ -46,6 +51,8 @@ const ProjectApplyButton = ({
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const [, setMobileTab] = useQueryState(MOBILE_TAB_QUERY_KEY);
+
   const {
     handleSubmit,
     control: applyFormControl,
@@ -67,6 +74,7 @@ const ProjectApplyButton = ({
       const response = await apiClient.applyToProject(projectId, data);
       onSuccess(response);
       alert("신청서가 성공적으로 제출되었습니다.");
+      setMobileTab(MobileTabEnum.신청현황); // 신청 후 신청 현황 탭으로 이동
       reset(); // 폼 초기화
       setOpen(false);
     } catch (error) {
