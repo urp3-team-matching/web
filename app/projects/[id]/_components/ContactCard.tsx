@@ -1,5 +1,4 @@
-import { BookA, Mail, MessageSquare, User } from "lucide-react";
-import Link from "next/link";
+import { BookA, Mail, User } from "lucide-react";
 
 interface ContactCardProps {
   email?: string;
@@ -11,10 +10,10 @@ interface ContactCardProps {
 export default function ContactCard({
   proposerName,
   email,
-  openChatLink,
+  // openChatLink,
   proposerMajor,
 }: ContactCardProps) {
-  const isValidLink = openChatLink?.startsWith("http");
+  // const isValidLink = openChatLink?.startsWith("http");
 
   return (
     <div className="w-full h-auto p-5 flex flex-col gap-3 border shadow-md rounded-lg">
@@ -41,7 +40,7 @@ export default function ContactCard({
         </div>
       )}
 
-      {openChatLink && (
+      {/* {openChatLink && (
         <div className="flex items-center gap-2">
           <MessageSquare size={24} />
           {isValidLink ? (
@@ -60,7 +59,7 @@ export default function ContactCard({
             </span>
           )}
         </div>
-      )}
+      )} */}
     </div>
   );
 }
