@@ -1,25 +1,15 @@
-import { useEffect, useState } from "react";
-
 const PASSWORD_PREFIX = `currentPassword/`;
 
 const useProjectPassword = (projectId: number) => {
-  const [password, setPassword] = useState<string>("");
+  const getPassword = () => {
+    return localStorage.getItem(`${PASSWORD_PREFIX}${projectId}`) || "";
+  };
 
-  useEffect(() => {
-    const storedPassword = localStorage.getItem(
-      `${PASSWORD_PREFIX}${projectId}`
-    );
-    if (storedPassword) {
-      setPassword(storedPassword);
-    }
-  }, [projectId]);
-
-  const savePassword = (newPassword: string) => {
-    setPassword(newPassword);
+  const setPassword = (newPassword: string) => {
     localStorage.setItem(`${PASSWORD_PREFIX}${projectId}`, newPassword);
   };
 
-  return { password, setPassword: savePassword };
+  return { getPassword, setPassword };
 };
 
 export default useProjectPassword;

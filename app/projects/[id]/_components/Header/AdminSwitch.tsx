@@ -43,8 +43,7 @@ const AdminSwitch = ({
     },
   });
   const { control, handleSubmit } = passwordForm;
-  const { password: currentPassword, setPassword } =
-    useProjectPassword(projectId);
+  const { getPassword, setPassword } = useProjectPassword(projectId);
 
   async function onValid(data: z.infer<typeof currentPasswordSchema>) {
     const isVerified = await apiClient.verifyProjectPassword(
@@ -72,9 +71,10 @@ const AdminSwitch = ({
           if (mode === ProjectPageModeEnum.ADMIN) {
             toggleMode();
           } else {
-            if (currentPassword) {
+            const password = getPassword();
+            if (password) {
               apiClient
-                .verifyProjectPassword(projectId, currentPassword)
+                .verifyProjectPassword(projectId, password)
                 .then((isVerified) => {
                   if (isVerified) {
                     toggleMode();

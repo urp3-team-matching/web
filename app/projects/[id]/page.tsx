@@ -29,7 +29,8 @@ export default function Project({ params }: { params: { id: string } }) {
   const projectId = parseInt(params.id);
   const [project, setProject] = useState<PublicProjectWithForeignKeys>();
   const [applicants, setApplicants] = useState<PublicApplicant[]>();
-  const { password: currentPassword } = useProjectPassword(projectId);
+  const { getPassword } = useProjectPassword(projectId);
+  const currentPassword = getPassword();
 
   // 프로젝트 ID를 기반으로 프로젝트 데이터를 가져옵니다.
   useEffect(() => {

@@ -31,10 +31,10 @@ const ApplicantGroup = ({
 
   onApplicantStatusChange,
 }: ApplicantGroupProps) => {
-  const { password } = useProjectPassword(projectId);
+  const { getPassword } = useProjectPassword(projectId);
   async function handleAccept(applicantId: number) {
     try {
-      await apiClient.acceptApplicant(projectId, applicantId, password);
+      await apiClient.acceptApplicant(projectId, applicantId, getPassword());
       onApplicantStatusChange(applicantId, "APPROVED");
     } catch (error) {
       if (error instanceof MaxApplicantsError) {
@@ -50,7 +50,7 @@ const ApplicantGroup = ({
 
   async function handleReject(applicantId: number) {
     try {
-      await apiClient.rejectApplicant(projectId, applicantId, password);
+      await apiClient.rejectApplicant(projectId, applicantId, getPassword());
       onApplicantStatusChange(applicantId, "REJECTED");
     } catch (error) {
       alert("신청자 거절 요청에 실패했습니다" + error);
@@ -60,7 +60,7 @@ const ApplicantGroup = ({
 
   async function handlePending(applicantId: number) {
     try {
-      await apiClient.pendingApplicant(projectId, applicantId, password);
+      await apiClient.pendingApplicant(projectId, applicantId, getPassword());
       onApplicantStatusChange(applicantId, "PENDING");
     } catch (error) {
       alert("신청자 상태 변경 요청에 실패했습니다" + error);
