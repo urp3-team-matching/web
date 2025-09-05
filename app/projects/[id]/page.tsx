@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { ProjectPageModeEnum } from "@/app/projects/[id]/_components/constants";
@@ -204,6 +203,7 @@ export default function Project({ params }: { params: { id: string } }) {
       {/* 헤더 */}
       <ProjectDetailHeader
         project={project}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         control={control as any}
         mode={mode}
         toggleMode={toggleMode}
@@ -214,11 +214,13 @@ export default function Project({ params }: { params: { id: string } }) {
         {/* 좌측 */}
         <div className="w-[70%] pr-5 pt-5 flex flex-col gap-5">
           {mode === ProjectPageModeEnum.ADMIN && (
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             <ProjectProposerForm control={control as any} />
           )}
           <ProjectForm
             className="w-full h-full flex flex-col gap-5"
             mode={mode}
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             control={control as any}
           />
         </div>
@@ -291,6 +293,7 @@ export default function Project({ params }: { params: { id: string } }) {
           onToggleClose={handleToggleClose}
           onDelete={handleDelete}
           mode={mode}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           control={control as any}
           applicants={applicants as PublicApplicant[]}
         />

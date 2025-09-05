@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import {
   BadRequestError,
   InternalServerError,
@@ -66,10 +64,21 @@ class ApiClient {
    * 내부 API 요청 헬퍼 메소드
    */
   private async _request(
-    endpoint: string, // 예: "/api/posts", "/api/projects/1" (항상 '/'로 시작 가정)
+    endpoint: string,
     method: "GET" | "POST" | "PUT" | "DELETE",
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     body?: any
   ) {
+    let url = endpoint;
+    // 서버 환경에서는 절대경로 필요
+    if (typeof window === "undefined" && endpoint.startsWith("/")) {
+      const base =
+        process.env.NEXT_PUBLIC_BASE_URL ||
+        (process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`) ||
+        "http://localhost:3000";
+      url = base + endpoint;
+    }
+
     const options: RequestInit = {
       method,
       headers: {},
@@ -83,10 +92,27 @@ class ApiClient {
       options.body = JSON.stringify(body);
     }
 
-    return await fetch(endpoint, options);
+    return await fetch(url, options);
   }
 
   // --- Post API Methods ---
+  public async getPostById(id: number): Promise<PublicPost> {
+    const response = await this._request(`/api/posts/${id}`, "GET");
+
+    if (!response.ok) {
+      switch (response.status) {
+        case 404:
+          throw new NotFoundError();
+        case 500:
+          throw new InternalServerError("Internal Server Error");
+        default:
+          throw new Error("Unknown Error");
+      }
+    }
+
+    return await response.json();
+  }
+
   public async getPosts(): Promise<PaginatedPosts> {
     const response = await this._request(`/api/posts`, "GET");
 
@@ -110,6 +136,7 @@ class ApiClient {
   ): Promise<PaginatedPublicProjects> {
     const query = params
       ? new URLSearchParams(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           Object.entries(params).filter(([, v]) => v !== undefined) as any
         ).toString()
       : "";
