@@ -1,16 +1,44 @@
+"use client";
+
+import FileButton from "@/app/posts/[id]/_components/FileButton";
 import { Separator } from "@/components/ui/separator";
-import apiClient from "@/lib/apiClientHelper";
+import Spinner from "@/components/ui/spinner";
+import apiClient, { PublicPost } from "@/lib/apiClientHelper";
+import { parseFileNameFromUrl } from "@/lib/supabaseStorage";
 import { cn, parseDate } from "@/lib/utils";
 import { Calendar, Eye } from "lucide-react";
+import { useEffect, useState } from "react";
 
-const PostDetail = async ({
+const PostDetail = ({
   params,
   className,
 }: {
   params: { id: string };
   className?: string;
 }) => {
-  const post = await apiClient.getPostById(parseInt(params.id));
+  const [post, setPost] = useState<PublicPost | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPost = async () => {
+      const post = await apiClient.getPostById(parseInt(params.id));
+      setPost(post);
+      setLoading(false);
+    };
+    fetchPost();
+  }, [params.id]);
+
+  if (loading) {
+    return (
+      <div className="w-full flex justify-center items-center py-10">
+        <Spinner />
+      </div>
+    );
+  }
+
+  if (!post) {
+    return <div>포스트를 찾을 수 없습니다!</div>;
+  }
 
   return (
     <div className={cn("my-6", className)}>
@@ -32,6 +60,24 @@ const PostDetail = async ({
           <span>{parseDate(post.createdDatetime)}</span>
         </div>
       </div>
+
+      <Separator className="my-4 border-gray" />
+
+      {/* 첨부파일 */}
+      {post.attachments.length > 0 && (
+        <>
+          <div className="flex gap-x-3">
+            {post.attachments.map((attachment) => (
+              <FileButton
+                key={attachment}
+                url={attachment}
+                fileName={parseFileNameFromUrl(attachment) || ""}
+              />
+            ))}
+          </div>
+          <Separator className="my-4 border-gray" />
+        </>
+      )}
 
       {/* 중앙: 내용 */}
       <div className="mt-6 whitespace-pre-wrap">{post.content}</div>

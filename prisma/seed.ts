@@ -1,5 +1,43 @@
 import { PrismaClient, ProjectStatus, ProposerType } from "@prisma/client";
 import { hash } from "bcryptjs";
+import { getStorage } from "../lib/supabaseStorage";
+
+// 더미 파일 목록 (실제 파일 경로 또는 Buffer로 생성)
+const dummyFiles = [
+  { name: "dummy1.txt", content: "더미 파일 1 내용입니다." },
+  { name: "dummy2.txt", content: "더미 파일 2 내용입니다." },
+  { name: "dummy3.txt", content: "더미 파일 3 내용입니다." },
+  { name: "dummy4.txt", content: "더미 파일 4 내용입니다." },
+  { name: "dummy5.txt", content: "더미 파일 5 내용입니다." },
+];
+
+// Supabase Storage에 파일 업로드 후 public URL 반환
+async function uploadDummyFilesToSupabase(postId: number, count: number) {
+  const uploadedUrls: string[] = [];
+  const storage = getStorage();
+  for (let i = 0; i < count; i++) {
+    const file = dummyFiles[getRandomInt(0, dummyFiles.length - 1)];
+    const filePath = `posts/${postId}/${file.name}`;
+    const { error } = await storage.upload(
+      filePath,
+      Buffer.from(file.content),
+      {
+        contentType: "text/plain",
+        upsert: true,
+      }
+    );
+    if (error) {
+      console.error("파일 업로드 실패:", error);
+      continue;
+    }
+    // public URL 생성
+    const { data: publicUrlData } = storage.getPublicUrl(filePath);
+    if (publicUrlData?.publicUrl) {
+      uploadedUrls.push(publicUrlData.publicUrl);
+    }
+  }
+  return uploadedUrls;
+}
 
 const prisma = new PrismaClient();
 
@@ -456,9 +494,25 @@ async function main() {
     },
   ];
 
-  await prisma.post.createMany({
-    data: postsData,
-  });
+  const createdPostIds: number[] = [];
+  for (const postData of postsData) {
+    const post = await prisma.post.create({ data: postData });
+    createdPostIds.push(post.id);
+  }
+
+  // 각 post에 대해 더미 파일 업로드 후 attachments 필드 업데이트
+  for (const postId of createdPostIds) {
+    const attachmentCount = getRandomInt(1, 3);
+    const uploadedUrls = await uploadDummyFilesToSupabase(
+      postId,
+      attachmentCount
+    );
+
+    await prisma.post.update({
+      where: { id: postId },
+      data: { attachments: uploadedUrls },
+    });
+  }
 
   console.log("Seeding completed successfully!");
 
