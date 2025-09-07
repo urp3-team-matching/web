@@ -38,7 +38,14 @@ export async function createPost(
 export async function getAllPosts(
   query: GetPostsQueryInput
 ): Promise<PaginatedType<PasswordOmittedPost>> {
-  const { page, limit, sortBy, sortOrder, title, author } = query;
+  const {
+    page,
+    limit,
+    sortBy = "createdAt",
+    sortOrder = "desc",
+    title,
+    author,
+  } = query;
   const skip = (page - 1) * limit;
   const take = limit;
 
