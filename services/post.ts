@@ -11,7 +11,10 @@ import { Post, Prisma } from "@prisma/client";
 // 포스트 생성
 export async function createPost(data: PostInput): Promise<Post> {
   const createdPost = await prisma.post.create({
-    data,
+    data: {
+      ...data,
+      attachments: data.attachments ?? [],
+    },
     select: postPublicSelection,
   });
   return createdPost;

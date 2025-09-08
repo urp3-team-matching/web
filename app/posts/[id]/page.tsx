@@ -6,17 +6,11 @@ import { Separator } from "@/components/ui/separator";
 import Spinner from "@/components/ui/spinner";
 import useUser from "@/hooks/use-user";
 import apiClient, { PublicPost } from "@/lib/apiClientHelper";
-import { cn, parseDate } from "@/lib/utils";
+import { parseDate } from "@/lib/utils";
 import { Calendar, Eye } from "lucide-react";
 import { useEffect, useState } from "react";
 
-const PostDetail = ({
-  params,
-  className,
-}: {
-  params: { id: string };
-  className?: string;
-}) => {
+const PostDetail = ({ params }: { params: { id: string } }) => {
   const user = useUser();
 
   const [post, setPost] = useState<PublicPost | null>(null);
@@ -44,7 +38,7 @@ const PostDetail = ({
   }
 
   return (
-    <div className={cn("my-6", className)}>
+    <div className="my-6">
       {user && (
         <div className="flex justify-end mb-2">
           <a href={`/posts/${post.id}/edit`}>
