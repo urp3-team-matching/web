@@ -1,10 +1,7 @@
-import { NotFoundError, UnauthorizedError } from "@/lib/authUtils";
-import {
-  extractPasswordForDelete,
-  parseAndValidateRequestBody,
-} from "@/lib/routeUtils";
+import { NotFoundError } from "@/lib/authUtils";
+import { parseAndValidateRequestBody } from "@/lib/routeUtils";
 import { deletePost, getPostById, updatePost } from "@/services/post";
-import { PostUpdateSchema } from "@/types/post";
+import { PostSchema } from "@/types/post";
 import { NextRequest, NextResponse } from "next/server";
 
 interface RouteContext {
@@ -49,26 +46,14 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
       );
 
     const { data: validatedData, errorResponse } =
-      await parseAndValidateRequestBody(request, PostUpdateSchema);
+      await parseAndValidateRequestBody(request, PostSchema);
     if (errorResponse) return errorResponse;
     if (!validatedData)
       throw new Error("Validated data is unexpectedly undefined.");
 
-    if (
-      Object.keys(validatedData).length <= 1 &&
-      validatedData.currentPassword
-    ) {
-      return NextResponse.json(
-        { error: "No update data provided beyond current password" },
-        { status: 400 }
-      );
-    }
-
     const post = await updatePost(postId, validatedData);
     return NextResponse.json(post);
   } catch (error) {
-    if (error instanceof UnauthorizedError)
-      return NextResponse.json({ error: error.message }, { status: 403 });
     if (error instanceof NotFoundError)
       return NextResponse.json({ error: error.message }, { status: 404 });
     // ZodError는 routeUtils에서 처리됨
@@ -95,28 +80,13 @@ export async function DELETE(request: NextRequest, { params }: RouteContext) {
         { status: 400 }
       );
 
-    const { currentPassword, errorResponse } = await extractPasswordForDelete(
-      request
-    );
-    if (errorResponse) return errorResponse;
-    if (!currentPassword)
-      throw new UnauthorizedError("Current password is required for deletion.");
-
-    await deletePost(postId, currentPassword); // 서비스에서 NotFound, Unauthorized 에러 throw
+    // 비밀번호 검증 관련 코드 제거
+    await deletePost(postId);
     return NextResponse.json(null, { status: 204 });
   } catch (error) {
-    if (error instanceof UnauthorizedError)
-      return NextResponse.json({ error: error.message }, { status: 403 });
     if (error instanceof NotFoundError)
       return NextResponse.json({ error: error.message }, { status: 404 });
-    // ZodError는 routeUtils에서 처리됨
     console.error(`Error deleting post ${params.id}:`, error);
-    if (error instanceof Error && error.message.includes("integrity error")) {
-      return NextResponse.json(
-        { error: "Server integrity error while deleting post." },
-        { status: 500 }
-      );
-    }
     return NextResponse.json(
       { error: "Failed to delete post" },
       { status: 500 }

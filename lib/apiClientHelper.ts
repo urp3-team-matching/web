@@ -6,6 +6,7 @@ import {
   UnauthorizedError,
 } from "@/lib/authUtils";
 import type { ApplicantInput } from "@/types/applicant";
+import { PostInput } from "@/types/post";
 import type {
   ApplicantForProject,
   GetProjectsQueryInput,
@@ -96,6 +97,25 @@ class ApiClient {
   }
 
   // --- Post API Methods ---
+  public async createPost(data: PostInput): Promise<PublicPost> {
+    const response = await this._request(`/api/posts`, "POST", data);
+
+    if (!response.ok) {
+      switch (response.status) {
+        case 400:
+          throw new BadRequestError();
+        case 401:
+          throw new UnauthorizedError();
+        case 500:
+          throw new InternalServerError("Internal Server Error");
+        default:
+          throw new Error("Failed to create post");
+      }
+    }
+
+    return await response.json();
+  }
+
   public async getPostById(id: number): Promise<PublicPost> {
     const response = await this._request(`/api/posts/${id}`, "GET");
 
@@ -128,7 +148,50 @@ class ApiClient {
     return await response.json();
   }
 
-  // TODO: add other Post API methods if needed
+  public async updatePost(id: number, data: PostInput): Promise<PublicPost> {
+    const response = await this._request(`/api/posts/${id}`, "PUT", data);
+
+    if (!response.ok) {
+      switch (response.status) {
+        case 400:
+          throw new BadRequestError(await response.text());
+        case 401:
+          throw new UnauthorizedError();
+        case 404:
+          throw new NotFoundError();
+        case 500:
+          throw new InternalServerError("Internal Server Error");
+        default:
+          throw new Error("Failed to update post");
+      }
+    }
+
+    return await response.json();
+  }
+
+  public async deletePost(id: number): Promise<void> {
+    const response = await this._request(`/api/posts/${id}`, "DELETE");
+
+    if (!response.ok) {
+      switch (response.status) {
+        case 400:
+          throw new BadRequestError();
+        case 401:
+          throw new UnauthorizedError();
+        case 404:
+          throw new NotFoundError();
+        case 500:
+          throw new InternalServerError("Internal Server Error");
+        default:
+          throw new Error("Failed to delete post");
+      }
+    }
+
+    if (response.status === 204) {
+      return; // No content, deletion successful
+    }
+    return await response.json();
+  }
 
   // --- Project API Methods ---
   public async getProjects(

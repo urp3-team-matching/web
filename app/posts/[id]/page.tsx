@@ -1,11 +1,14 @@
 "use client";
 
 import FileButton from "@/app/posts/[id]/_components/FileButton";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import Spinner from "@/components/ui/spinner";
 import apiClient, { PublicPost } from "@/lib/apiClientHelper";
 import { parseFileNameFromUrl } from "@/lib/supabaseStorage";
 import { cn, parseDate } from "@/lib/utils";
+import { createClient } from "@/utils/supabase/client";
+import { User } from "@supabase/supabase-js";
 import { Calendar, Eye } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -16,6 +19,18 @@ const PostDetail = ({
   params: { id: string };
   className?: string;
 }) => {
+  const supabase = createClient();
+  const [user, setUser] = useState<User | null>(null);
+  useEffect(() => {
+    const fetchUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setUser(user);
+    };
+    fetchUser();
+  }, [supabase.auth]);
+
   const [post, setPost] = useState<PublicPost | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -42,6 +57,14 @@ const PostDetail = ({
 
   return (
     <div className={cn("my-6", className)}>
+      {user && (
+        <div className="flex justify-end mb-2">
+          <a href={`/posts/${post.id}/edit`}>
+            <Button>편집</Button>
+          </a>
+        </div>
+      )}
+
       {/* 메인: 프로젝트 제목 */}
       <h3 className="text-2xl md:text-3xl lg:text-4xl font-medium text-black w-full h-12">
         {post.title}

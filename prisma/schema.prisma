@@ -51,10 +51,8 @@ model Post {
   id              Int      @id @default(autoincrement())
   title           String
   content         String
-  author          String
   attachments     String[]
   viewCount       Int      @default(0)
-  passwordHash    String   @map("password")
   createdDatetime DateTime @default(now()) @db.Timestamptz(6)
   updatedDatetime DateTime @updatedAt @db.Timestamptz(6)
 }
