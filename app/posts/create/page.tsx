@@ -2,14 +2,14 @@
 
 import PostForm from "@/app/posts/[id]/_components/PostForm";
 
-const PostEditPage = ({ params }: { params: { id: string } }) => {
+const PostEditPage = () => {
   return (
     <div>
       <div className="py-3 border-b-1">
-        <h1 className="text-3xl">공지사항 수정</h1>
+        <h1 className="text-3xl">공지사항 생성</h1>
       </div>
 
-      <PostForm postId={parseInt(params.id, 10)} />
+      <PostForm />
     </div>
   );
 };

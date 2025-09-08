@@ -1,5 +1,6 @@
 "use client";
 
+import useUser from "@/hooks/use-user";
 import { cn } from "@/lib/utils";
 import { GetProjectsQuerySchema } from "@/types/project";
 import { PencilIcon } from "lucide-react";
@@ -14,6 +15,8 @@ enum Sort {
 }
 
 const ProjectSort = () => {
+  const user = useUser();
+
   const [sort, setSort] = useQueryState(
     "sortBy" as keyof z.infer<typeof GetProjectsQuerySchema>,
     parseAsStringEnum<Sort>(Object.values(Sort))
@@ -42,15 +45,28 @@ const ProjectSort = () => {
         </button>
       </div>
 
-      <Button
-        asChild
-        className="hidden sm:flex w-full h-10 sm:w-50 sm:h-full bg-green-400 hover:bg-green-500 hover:cursor-pointer"
-      >
-        <Link href="/projects/create">
-          <PencilIcon size={24} />
-          글쓰기
-        </Link>
-      </Button>
+      <div className="flex gap-2 items-center">
+        <Button
+          asChild
+          className="hidden sm:flex w-full h-10 sm:w-50 sm:h-full bg-green-400 hover:bg-green-500 hover:cursor-pointer"
+        >
+          <Link href="/projects/create">
+            <PencilIcon size={24} />
+            글쓰기
+          </Link>
+        </Button>
+        {user && (
+          <Button
+            asChild
+            className="w-32 h-10 hidden sm:flex sm:w-50 sm:h-full bg-green-400 hover:bg-green-500 hover:cursor-pointer"
+          >
+            <Link href="/posts/create">
+              <PencilIcon size={24} />
+              공지사항 추가
+            </Link>
+          </Button>
+        )}
+      </div>
     </div>
   );
 };

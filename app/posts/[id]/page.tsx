@@ -4,11 +4,10 @@ import FileButton from "@/app/posts/[id]/_components/FileButton";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import Spinner from "@/components/ui/spinner";
+import useUser from "@/hooks/use-user";
 import apiClient, { PublicPost } from "@/lib/apiClientHelper";
 import { parseFileNameFromUrl } from "@/lib/supabaseStorage";
 import { cn, parseDate } from "@/lib/utils";
-import { createClient } from "@/utils/supabase/client";
-import { User } from "@supabase/supabase-js";
 import { Calendar, Eye } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -19,17 +18,7 @@ const PostDetail = ({
   params: { id: string };
   className?: string;
 }) => {
-  const supabase = createClient();
-  const [user, setUser] = useState<User | null>(null);
-  useEffect(() => {
-    const fetchUser = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      setUser(user);
-    };
-    fetchUser();
-  }, [supabase.auth]);
+  const user = useUser();
 
   const [post, setPost] = useState<PublicPost | null>(null);
   const [loading, setLoading] = useState(true);
@@ -72,8 +61,6 @@ const PostDetail = ({
 
       {/* 하단: 프로젝트 조회수, 생성 일시 */}
       <div className="gap-3 flex h-7 items-center font-medium text-xs">
-        <div>{post.author}</div>
-        <Separator orientation="vertical" className="border-gray" />
         <div className="flex items-center gap-1">
           <Eye className="size-5 mt-0.5" />
           <span>{post.viewCount}</span>

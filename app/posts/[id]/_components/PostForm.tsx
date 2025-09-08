@@ -22,7 +22,10 @@ const PostForm = ({ postId }: { postId?: number }) => {
 
   useEffect(() => {
     const fetchPost = async () => {
-      if (!postId) return;
+      if (!postId) {
+        setLoading(false);
+        return;
+      }
       const post = await apiClient.getPostById(postId);
       setValue("title", post.title);
       setValue("content", post.content);
