@@ -51,7 +51,7 @@ model Post {
   id              Int      @id @default(autoincrement())
   title           String
   content         String
-  attachments     String[]
+  attachments     Json
   viewCount       Int      @default(0)
   createdDatetime DateTime @default(now()) @db.Timestamptz(6)
   updatedDatetime DateTime @updatedAt @db.Timestamptz(6)

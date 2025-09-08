@@ -1,10 +1,15 @@
 import { Prisma } from "@prisma/client";
 import { z } from "zod";
 
+export const AttachmentSchema = z.object({
+  url: z.string(),
+  name: z.string(),
+});
+
 export const PostSchema = z.object({
   title: z.string().min(1, "Title is required."),
   content: z.string().min(1, "Content is required."),
-  attachments: z.array(z.string()).default([]).optional(),
+  attachments: z.array(AttachmentSchema).default([]).optional(),
 });
 export type PostInput = z.infer<typeof PostSchema>;
 
@@ -17,7 +22,6 @@ export const GetPostsQuerySchema = z.object({
     .default("createdDatetime"),
   sortOrder: z.enum(["asc", "desc"]).optional().default("desc"),
   title: z.string().optional(),
-  author: z.string().optional(),
 });
 export type GetPostsQueryInput = z.infer<typeof GetPostsQuerySchema>;
 

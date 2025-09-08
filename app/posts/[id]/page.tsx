@@ -6,7 +6,6 @@ import { Separator } from "@/components/ui/separator";
 import Spinner from "@/components/ui/spinner";
 import useUser from "@/hooks/use-user";
 import apiClient, { PublicPost } from "@/lib/apiClientHelper";
-import { parseFileNameFromUrl } from "@/lib/supabaseStorage";
 import { cn, parseDate } from "@/lib/utils";
 import { Calendar, Eye } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -74,14 +73,14 @@ const PostDetail = ({
       <Separator className="my-4 border-gray" />
 
       {/* 첨부파일 */}
-      {post.attachments.length > 0 && (
+      {post.attachments && (
         <>
           <div className="flex gap-x-3">
-            {post.attachments.map((attachment) => (
+            {Object.values(post.attachments).map((attachment) => (
               <FileButton
-                key={attachment}
-                url={attachment}
-                fileName={parseFileNameFromUrl(attachment) || ""}
+                key={attachment.url}
+                url={attachment.url}
+                fileName={attachment.name}
               />
             ))}
           </div>

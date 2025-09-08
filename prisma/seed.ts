@@ -471,25 +471,19 @@ async function main() {
 융합연구학점제에 관심있는 교수님 혹은 학부생들의 많은 관심과 참여 바랍니다.\n
 \n\n
 감사합니다.`,
-      author: "성균융합원",
       attachments: [],
-      passwordHash,
       viewCount: getRandomInt(100, 100000),
     },
     {
       title: "프로젝트 제안서 작성 가이드라인",
       content: "프로젝트 제안서 작성 방법과 주의사항에 대한 안내입니다.",
-      author: "성균융합원",
-      attachments: ["/attachments/guideline.pdf"],
-      passwordHash,
+      attachments: [],
       viewCount: getRandomInt(100, 100000),
     },
     {
       title: "플랫폼 이용 안내",
       content: "프로젝트 참여 및 제안에 관한 플랫폼 이용 방법을 안내합니다.",
-      author: "성균융합원",
       attachments: [],
-      passwordHash,
       viewCount: getRandomInt(100, 100000),
     },
   ];

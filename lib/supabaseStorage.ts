@@ -12,7 +12,7 @@ export function uploadFile(file: File, path: string) {
   const storage = getStorage();
   return storage.upload(path, file, {
     cacheControl: "3600",
-    upsert: false,
+    upsert: true,
   });
 }
 
