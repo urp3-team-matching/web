@@ -14,7 +14,7 @@ import { useForm } from "react-hook-form";
 
 export default function Create() {
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const { handleSubmit, control } = useForm<ProjectInput>({
     resolver: zodResolver(ProjectSchema),
     defaultValues: {

@@ -16,6 +16,7 @@ const ProjectCreateRightPanel = ({
   control,
   onSubmit,
   className,
+  loading = false,
 }: ProjectCreateRightPanelProps) => {
   const router = useRouter();
 
@@ -41,6 +42,7 @@ const ProjectCreateRightPanel = ({
         <Button
           className="bg-green-400 w-[65%] hover:bg-green-500"
           onClick={onSubmit}
+          disabled={loading}
         >
           등록
         </Button>
