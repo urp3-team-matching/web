@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import apiClient from "@/lib/apiClientHelper";
 import { getPublicUrl, uploadFile } from "@/lib/supabaseStorage";
-import { PostInput, PostSchema } from "@/types/post";
+import { Attachment, PostInput, PostSchema } from "@/types/post";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -16,14 +16,15 @@ const PostForm = ({ postId }: { postId?: number }) => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const router = useRouter();
 
-  const { handleSubmit, control, setValue, register } = useForm<PostInput>({
-    resolver: zodResolver(PostSchema),
-    defaultValues: {
-      title: "",
-      content: "",
-      attachments: [],
-    },
-  });
+  const { handleSubmit, control, setValue, register, formState } =
+    useForm<PostInput>({
+      resolver: zodResolver(PostSchema),
+      defaultValues: {
+        title: "",
+        content: "",
+        attachments: [],
+      },
+    });
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -32,20 +33,8 @@ const PostForm = ({ postId }: { postId?: number }) => {
         return;
       }
       const post = await apiClient.getPostById(postId);
-      let attachments = [];
-      if (Array.isArray(post.attachments)) {
-        if (
-          post.attachments.length > 0 &&
-          typeof post.attachments[0] === "string"
-        ) {
-          attachments = post.attachments.map((url: string) => ({
-            url,
-            name: url.split("/").pop() || "첨부파일",
-          }));
-        } else {
-          attachments = post.attachments;
-        }
-      }
+      const attachments: Attachment[] =
+        (post.attachments as Attachment[]) || [];
       setValue("title", post.title);
       setValue("content", post.content);
       setValue("attachments", attachments);
@@ -112,24 +101,19 @@ const PostForm = ({ postId }: { postId?: number }) => {
     }
   };
 
-  const onInvalidSubmit = () => {
-    console.error(control._formState.errors);
-    alert("포스트 저장에 실패했습니다. 입력값을 확인해주세요.");
-  };
-
   if (loading) {
     return <div>Loading...</div>;
   }
 
   return (
     <div className="w-full my-3">
-      <form
-        onSubmit={handleSubmit(onSuccess, onInvalidSubmit)}
-        className="flex flex-col gap-4"
-      >
+      <form onSubmit={handleSubmit(onSuccess)} className="flex flex-col gap-4">
         <div className="space-y-2">
           <Label htmlFor="title">제목</Label>
           <Input {...register("title")} placeholder="제목" />
+          {formState.errors.title && (
+            <p className="text-red-500">{formState.errors.title.message}</p>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -140,6 +124,11 @@ const PostForm = ({ postId }: { postId?: number }) => {
             onChange={handleFileChange}
             className="hover:cursor-pointer"
           />
+          {formState.errors.attachments && (
+            <p className="text-red-500">
+              {formState.errors.attachments.message}
+            </p>
+          )}
           <ul>
             {selectedFiles.map((file) => (
               <li key={file.name}>{file.name}</li>
@@ -150,6 +139,9 @@ const PostForm = ({ postId }: { postId?: number }) => {
         <div className="space-y-2">
           <Label htmlFor="content">본문</Label>
           <Textarea {...register("content")} placeholder="본문" />
+          {formState.errors.content && (
+            <p className="text-red-500">{formState.errors.content.message}</p>
+          )}
         </div>
 
         <Button type="submit">제출</Button>

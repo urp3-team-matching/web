@@ -5,10 +5,11 @@ export const AttachmentSchema = z.object({
   url: z.string(),
   name: z.string(),
 });
+export type Attachment = z.infer<typeof AttachmentSchema>;
 
 export const PostSchema = z.object({
-  title: z.string().min(1, "Title is required."),
-  content: z.string().min(1, "Content is required."),
+  title: z.string().min(1, "제목을 입력해주세요."),
+  content: z.string().min(1, "본문을 입력해주세요."),
   attachments: z.array(AttachmentSchema).default([]).optional(),
 });
 export type PostInput = z.infer<typeof PostSchema>;
