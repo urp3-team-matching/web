@@ -189,7 +189,7 @@ export default function ChatField({ project }: ChatFieldProps) {
         {
           event: "INSERT",
           schema: SCHEMA_NAME,
-          table: "Message", // 사용자가 제공한 테이블 이름 "Message" 사용
+          table: "Message",
           filter: `projectId=eq.${projectId}`,
         },
         (payload) => {
@@ -265,9 +265,8 @@ export default function ChatField({ project }: ChatFieldProps) {
     textarea.focus();
 
     try {
-      // 메시지 전송 로직: 사용자가 제공한 "Message" 테이블 이름 유지
       const { data: insertedData, error } = await supabase
-        .from("Message") // 사용자가 제공한 테이블 이름 "Message" 사용
+        .from("Message")
         .insert([
           {
             content: messageContent,

@@ -11,8 +11,8 @@ import {
 import { cn } from "@/lib/utils";
 import { ApplicantStatus } from "@prisma/client";
 import ContactCard from "../ContactCard";
-import ApplicantsManage from "./Chat/ApplicantsManage";
 import Chat from "./Chat";
+import ApplicantsManage from "./Chat/ApplicantsManage";
 
 interface ProjectDetailRightPanelProps {
   className?: string;
@@ -73,23 +73,12 @@ const ProjectDetailRightPanel = ({
         />
       </div>
 
-      {/* 팀 현황 그래프(잠정적으로 제거) */}
-      {/* <MajorGraph applicants={applicants} /> */}
-
       <Chat
-        className="w-full text-sm font-medium flex flex-col shadow-md rounded-lg h-[500px]"
+        className="w-full text-sm font-medium flex flex-col shadow-md rounded-lg"
         project={project}
-        mode={mode}
         applicants={applicants}
         onApplicantStatusChange={onApplicantStatusChange}
       />
-
-      {/* <ApplicationStatusCard
-        projectId={project.id}
-        mode={mode}
-        applicants={applicants}
-        onApplicantStatusChange={onApplicantStatusChange}
-      /> */}
 
       {/* 프로젝트 삭제, 모집마감, 저장 버튼 */}
       {mode === ProjectPageModeEnum.ADMIN && (
