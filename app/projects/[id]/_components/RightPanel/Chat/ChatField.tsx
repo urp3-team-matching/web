@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import { SCHEMA_NAME } from "@/constants";
-import useProjectPassword from "@/hooks/useProjectPassword";
+import useProjectPassword from "@/hooks/use-project-password";
 import apiClient, { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
 import { supabase } from "@/lib/supabaseClient";
 import type {

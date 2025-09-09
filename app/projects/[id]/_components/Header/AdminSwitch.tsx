@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import useProjectPassword from "@/hooks/useProjectPassword";
+import useProjectPassword from "@/hooks/use-project-password";
 import apiClient from "@/lib/apiClientHelper";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";

@@ -4,7 +4,7 @@ import { ProjectPageModeEnum } from "@/app/projects/[id]/_components/constants";
 import ProjectCreateRightPanel from "@/app/projects/create/_components/RightPanel";
 import ProjectForm from "@/components/Project/Form/ProjectForm";
 import ProjectNameForm from "@/components/Project/Form/ProjectNameForm";
-import { useSetProjectPassword } from "@/hooks/useProjectPassword";
+import { useSetProjectPassword } from "@/hooks/use-project-password";
 import apiClient from "@/lib/apiClientHelper";
 import { ProjectInput, ProjectSchema } from "@/types/project";
 import { zodResolver } from "@hookform/resolvers/zod";

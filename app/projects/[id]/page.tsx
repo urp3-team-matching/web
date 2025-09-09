@@ -6,7 +6,7 @@ import ProjectDetailRightPanel from "@/app/projects/[id]/_components/RightPanel"
 import ProjectForm from "@/components/Project/Form/ProjectForm";
 import ProjectProposerForm from "@/components/Project/Form/ProjectProposerForm";
 import Spinner from "@/components/ui/spinner";
-import useProjectPassword from "@/hooks/useProjectPassword";
+import useProjectPassword from "@/hooks/use-project-password";
 import apiClient, {
   PublicApplicant,
   PublicProjectWithForeignKeys,

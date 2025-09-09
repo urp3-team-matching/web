@@ -7,7 +7,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { MAX_APPLICANT_MAJOR_COUNT, MAX_APPLICANTS } from "@/constants";
-import useProjectPassword from "@/hooks/useProjectPassword";
+import useProjectPassword from "@/hooks/use-project-password";
 import apiClient, { PublicApplicant } from "@/lib/apiClientHelper";
 import { MaxApplicantsError } from "@/lib/authUtils";
 import { ApplicantStatus } from "@prisma/client";
