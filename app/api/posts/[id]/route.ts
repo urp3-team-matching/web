@@ -2,6 +2,7 @@ import { NotFoundError } from "@/lib/authUtils";
 import { parseAndValidateRequestBody } from "@/lib/routeUtils";
 import { deletePost, getPostById, updatePost } from "@/services/post";
 import { PostSchema } from "@/types/post";
+import { createClient } from "@/utils/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 
 interface RouteContext {
@@ -37,6 +38,13 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
 }
 
 export async function PUT(request: NextRequest, { params }: RouteContext) {
+  const supabase = await createClient();
+  const session = await supabase.auth.getSession();
+
+  if (!session.data.session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const postId = parseInt(params.id, 10);
     if (isNaN(postId))
@@ -72,6 +80,13 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
 }
 
 export async function DELETE(request: NextRequest, { params }: RouteContext) {
+  const supabase = await createClient();
+  const session = await supabase.auth.getSession();
+
+  if (!session.data.session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const postId = parseInt(params.id, 10);
     if (isNaN(postId))

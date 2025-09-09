@@ -1,12 +1,19 @@
 import { parseAndValidateRequestBody } from "@/lib/routeUtils"; // GET에는 필요 없음
 import { createPost, getAllPosts } from "@/services/post";
 import { GetPostsQuerySchema, PostSchema } from "@/types/post";
+import { createClient } from "@/utils/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { ZodError } from "zod";
 
 export async function POST(request: NextRequest) {
+  const supabase = await createClient();
+  const session = await supabase.auth.getSession();
+
+  if (!session.data.session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
-    // POST는 parseAndValidateRequestBody를 사용할 수 있음 (currentPassword 불필요)
     const { data: validatedData, errorResponse } =
       await parseAndValidateRequestBody(request, PostSchema);
     if (errorResponse) return errorResponse;
@@ -16,7 +23,6 @@ export async function POST(request: NextRequest) {
     const post = await createPost(validatedData);
     return NextResponse.json(post, { status: 201 });
   } catch (error) {
-    // ZodError는 routeUtils에서 처리될 수 있음 (구현에 따라)
     if (error instanceof ZodError) {
       return NextResponse.json(
         { error: "Invalid input", details: error.errors },
