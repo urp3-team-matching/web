@@ -1,3 +1,4 @@
+import { Attachment } from "@/types/post";
 import { PrismaClient, ProjectStatus, ProposerType } from "@prisma/client";
 import { hash } from "bcryptjs";
 import { getStorage } from "../lib/supabaseStorage";
@@ -13,7 +14,7 @@ const dummyFiles = [
 
 // Supabase Storage에 파일 업로드 후 public URL 반환
 async function uploadDummyFilesToSupabase(postId: number, count: number) {
-  const uploadedUrls: string[] = [];
+  const uploadedUrls: Attachment[] = [];
   const storage = getStorage();
   for (let i = 0; i < count; i++) {
     const file = dummyFiles[getRandomInt(0, dummyFiles.length - 1)];
@@ -33,7 +34,10 @@ async function uploadDummyFilesToSupabase(postId: number, count: number) {
     // public URL 생성
     const { data: publicUrlData } = storage.getPublicUrl(filePath);
     if (publicUrlData?.publicUrl) {
-      uploadedUrls.push(publicUrlData.publicUrl);
+      uploadedUrls.push({
+        url: publicUrlData.publicUrl,
+        name: file.name,
+      });
     }
   }
   return uploadedUrls;

@@ -1,3 +1,4 @@
+import FileDropzone from "@/app/posts/[id]/_components/FileDropzone";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,7 +17,7 @@ const PostForm = ({ postId }: { postId?: number }) => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const router = useRouter();
 
-  const { handleSubmit, control, setValue, register, formState } =
+  const { handleSubmit, control, getValues, setValue, register, formState } =
     useForm<PostInput>({
       resolver: zodResolver(PostSchema),
       defaultValues: {
@@ -42,12 +43,6 @@ const PostForm = ({ postId }: { postId?: number }) => {
     };
     fetchPost();
   }, [postId, setValue]);
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-    setSelectedFiles(Array.from(files));
-  };
 
   const onSuccess = async (data: PostInput) => {
     setLoading(true);
@@ -118,22 +113,15 @@ const PostForm = ({ postId }: { postId?: number }) => {
 
         <div className="space-y-2">
           <Label htmlFor="attachments">첨부파일</Label>
-          <Input
-            type="file"
-            multiple
-            onChange={handleFileChange}
-            className="hover:cursor-pointer"
+          <FileDropzone
+            onFilesAdded={(files) => setSelectedFiles(files)}
+            initialFiles={getValues("attachments")}
           />
           {formState.errors.attachments && (
             <p className="text-red-500">
               {formState.errors.attachments.message}
             </p>
           )}
-          <ul>
-            {selectedFiles.map((file) => (
-              <li key={file.name}>{file.name}</li>
-            ))}
-          </ul>
         </div>
 
         <div className="space-y-2">

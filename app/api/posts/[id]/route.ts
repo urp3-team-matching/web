@@ -80,9 +80,8 @@ export async function DELETE(request: NextRequest, { params }: RouteContext) {
         { status: 400 }
       );
 
-    // 비밀번호 검증 관련 코드 제거
     await deletePost(postId);
-    return NextResponse.json(null, { status: 204 });
+    return new NextResponse(null, { status: 204 });
   } catch (error) {
     if (error instanceof NotFoundError)
       return NextResponse.json({ error: error.message }, { status: 404 });
