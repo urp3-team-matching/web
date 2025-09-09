@@ -2,10 +2,12 @@ const PASSWORD_PREFIX = `currentPassword/`;
 
 const useProjectPassword = (projectId: number) => {
   const getPassword = () => {
+    if (typeof window === "undefined") return "";
     return localStorage.getItem(`${PASSWORD_PREFIX}${projectId}`) || "";
   };
 
   const setPassword = (newPassword: string) => {
+    if (typeof window === "undefined") return;
     localStorage.setItem(`${PASSWORD_PREFIX}${projectId}`, newPassword);
   };
 
