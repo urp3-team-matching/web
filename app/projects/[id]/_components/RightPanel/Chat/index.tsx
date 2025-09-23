@@ -22,6 +22,10 @@ interface ChatProps {
 const Chat = ({ className, project }: ChatProps) => {
   return (
     <div className={className}>
+      <div className="w-full *:w-16 *:text-center *:cursor-pointer border-b-2 flex justify-center gap-5 h-10 items-center text-secondary">
+        채팅방
+      </div>
+
       <ChatField project={project} />
     </div>
   );
