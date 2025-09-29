@@ -1,9 +1,4 @@
-import {
-  BadRequestError,
-  NotFoundError,
-  UnauthorizedError,
-  verifyResourcePassword,
-} from "@/lib/authUtils";
+import { BadRequestError, NotFoundError } from "@/lib/authUtils";
 import sendEmail from "@/lib/email";
 import emailTemplates from "@/lib/email/templates";
 import { prisma } from "@/lib/prisma";
@@ -248,35 +243,20 @@ export async function getProjectById(
   return null;
 }
 
-// 프로젝트 수정 (비밀번호 검증)
+// 프로젝트 수정 (비밀번호 검증 제거됨)
 export async function updateProject(
   id: number,
-  data: ProjectUpdateInput
+  data: Omit<ProjectUpdateInput, "currentPassword">
 ): Promise<Project> {
-  const {
-    currentPassword,
-    password: newPlainTextPassword,
-    ...projectDataRest
-  } = data;
+  const { password: newPlainTextPassword, ...projectDataRest } = data;
 
   const projectToUpdate = await prisma.project.findUnique({
     where: { id },
-    select: {
-      ...projectPublicSelection,
-      passwordHash: true, // 비밀번호 해시 포함
-    },
+    select: projectPublicSelection,
   });
 
   if (!projectToUpdate) {
     throw new NotFoundError("Project not found.");
-  }
-
-  const isAuthorized = await verifyResourcePassword(
-    currentPassword,
-    projectToUpdate.passwordHash
-  );
-  if (!isAuthorized) {
-    throw new UnauthorizedError("Incorrect current password for project.");
   }
 
   let projectPasswordHashToUpdate;
@@ -301,38 +281,15 @@ export async function updateProject(
   return updatedProject;
 }
 
-// 프로젝트 삭제 (비밀번호 검증, 관련 Applicant 동시 삭제)
-export async function deleteProject(
-  id: number,
-  currentPassword?: string
-): Promise<void> {
-  if (!currentPassword) {
-    throw new UnauthorizedError(
-      "Current password is required to delete this project."
-    );
-  }
+// 프로젝트 삭제 (비밀번호 검증 제거됨)
+export async function deleteProject(id: number): Promise<void> {
   const projectToDelete = await prisma.project.findUnique({
     where: { id },
-    select: {
-      ...projectPublicSelection,
-      passwordHash: true, // 비밀번호 해시 포함
-    },
+    select: projectPublicSelection,
   });
+
   if (!projectToDelete) {
     throw new NotFoundError("Project not found for deletion.");
-  }
-  if (!projectToDelete.passwordHash) {
-    throw new Error("Project password integrity error.");
-  }
-
-  const isAuthorized = await verifyResourcePassword(
-    currentPassword,
-    projectToDelete.passwordHash
-  );
-  if (!isAuthorized) {
-    throw new UnauthorizedError(
-      "Incorrect current password for project deletion."
-    );
   }
 
   // 관련 레코드(Applicant) 삭제 후 프로젝트 삭제 (onDelete: Cascade 미설정 시)
@@ -368,45 +325,15 @@ export async function deleteProject(
   }
 }
 
-// 비밀번호 검증
-export async function validateProjectPassword(
-  id: number,
-  password: string
-): Promise<boolean> {
-  const project = await prisma.project.findUnique({
-    where: { id },
-    select: { passwordHash: true },
-  });
-
-  if (!project) {
-    throw new NotFoundError("Project not found.");
-  }
-
-  return await verifyResourcePassword(password, project.passwordHash);
-}
-
-export async function reopenProject(
-  id: number,
-  currentPassword: string
-): Promise<Project> {
+// 프로젝트 재개 (비밀번호 검증 제거됨)
+export async function reopenProject(id: number): Promise<Project> {
   const projectToReopen = await prisma.project.findUnique({
     where: { id },
-    select: {
-      ...projectPublicSelection,
-      passwordHash: true, // 비밀번호 해시 포함
-    },
+    select: projectPublicSelection,
   });
 
   if (!projectToReopen) {
     throw new NotFoundError("Project not found for reopening.");
-  }
-
-  const isAuthorized = await verifyResourcePassword(
-    currentPassword,
-    projectToReopen.passwordHash
-  );
-  if (!isAuthorized) {
-    throw new UnauthorizedError("Incorrect current password for reopening.");
   }
 
   const reopenedProject = await prisma.project.update({
@@ -430,28 +357,15 @@ export async function reopenProject(
   return reopenedProject;
 }
 
-export async function closeProject(
-  id: number,
-  currentPassword: string
-): Promise<Project> {
+// 프로젝트 종료 (비밀번호 검증 제거됨)
+export async function closeProject(id: number): Promise<Project> {
   const projectToClose = await prisma.project.findUnique({
     where: { id },
-    select: {
-      ...projectPublicSelection,
-      passwordHash: true, // 비밀번호 해시 포함
-    },
+    select: projectPublicSelection,
   });
 
   if (!projectToClose) {
     throw new NotFoundError("Project not found for closing.");
-  }
-
-  const isAuthorized = await verifyResourcePassword(
-    currentPassword,
-    projectToClose.passwordHash
-  );
-  if (!isAuthorized) {
-    throw new UnauthorizedError("Incorrect current password for closing.");
   }
 
   const closedProject = await prisma.project.update({
