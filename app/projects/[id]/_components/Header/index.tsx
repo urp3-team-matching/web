@@ -4,6 +4,8 @@ import ApplyStatueBadge from "@/components/Badge/ApplyStatueBadge";
 import KeywordBadge from "@/components/Badge/KeywordBadge";
 import ProposalBadge from "@/components/Badge/ProposalBadge";
 import ProjectNameForm from "@/components/Project/Form/ProjectNameForm";
+import { Button } from "@/components/ui/button";
+import useUser from "@/hooks/use-user";
 import { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
 import { parseDate } from "@/lib/utils";
 import { ProjectInput } from "@/types/project";
@@ -16,6 +18,7 @@ interface ProjectDetailHeaderProps {
   className?: string;
   control: Control<ProjectInput>;
   mode: ProjectPageMode;
+  onDelete: () => void;
   toggleMode: () => void;
 }
 
@@ -24,9 +27,12 @@ const ProjectDetailHeader = ({
   className,
   control,
   mode,
+  onDelete,
   toggleMode,
 }: ProjectDetailHeaderProps) => {
   const projectStatus = project.status;
+  const user = useUser();
+
   return (
     <div className={className}>
       {/* 최상단: 프로젝트 뱃지, 키워드, 관리자 스위치 */}
@@ -44,6 +50,11 @@ const ProjectDetailHeader = ({
             </div>
           )}
           {mode === null && <KeywordMenubar mode={mode} project={project} />}
+          {mode === null && user && (
+            <Button onClick={onDelete} variant="destructive" className="h-7">
+              삭제(관리자 전용)
+            </Button>
+          )}
         </div>
 
         <div className="flex gap-x-2 items-center">

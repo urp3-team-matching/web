@@ -11,6 +11,7 @@ import apiClient, {
   PublicApplicant,
   PublicProjectWithForeignKeys,
 } from "@/lib/apiClientHelper";
+import { NotFoundError } from "@/lib/authUtils";
 import { ProjectUpdateInput, ProjectUpdateSchema } from "@/types/project";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -24,7 +25,7 @@ export type ProjectPageMode = ProjectPageModeEnum | null;
 
 export default function Project({ params }: { params: { id: string } }) {
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const projectId = parseInt(params.id);
   const [project, setProject] = useState<PublicProjectWithForeignKeys>();
   const [applicants, setApplicants] = useState<PublicApplicant[]>();
@@ -34,11 +35,23 @@ export default function Project({ params }: { params: { id: string } }) {
   // 프로젝트 ID를 기반으로 프로젝트 데이터를 가져옵니다.
   useEffect(() => {
     (async () => {
-      const resProject = await apiClient.getProjectById(projectId);
-      const resApplicant = await apiClient.getApplicants(projectId);
+      setLoading(true);
+      let resProject;
+      let resApplicant;
+      try {
+        resProject = await apiClient.getProjectById(projectId);
+        resApplicant = await apiClient.getApplicants(projectId);
+      } catch (error) {
+        if (error instanceof NotFoundError) {
+          resProject = null;
+        }
+        console.error("Error fetching project data:", error);
+      } finally {
+        setLoading(false);
+      }
+
       if (resProject) {
         setProject(resProject);
-        setLoading(false);
       } else {
         console.error("Failed to fetch project data.");
       }
@@ -191,7 +204,7 @@ export default function Project({ params }: { params: { id: string } }) {
       </div>
     );
   }
-  if (project === undefined) {
+  if (project === undefined || project === null) {
     return <div>프로젝트를 찾을 수 없습니다!</div>;
   }
 
@@ -206,6 +219,7 @@ export default function Project({ params }: { params: { id: string } }) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         control={control as any}
         mode={mode}
+        onDelete={handleDelete}
         toggleMode={toggleMode}
       />
 
