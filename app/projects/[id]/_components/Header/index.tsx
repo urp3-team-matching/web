@@ -9,7 +9,7 @@ import useUser from "@/hooks/use-user";
 import { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
 import { parseDate } from "@/lib/utils";
 import { ProjectInput } from "@/types/project";
-import { Calendar, Eye } from "lucide-react";
+import { Calendar, Eye, Trash2 } from "lucide-react";
 import { Control } from "react-hook-form";
 import KeywordMenubar from "./KeywordMenubar";
 
@@ -33,6 +33,12 @@ const ProjectDetailHeader = ({
   const projectStatus = project.status;
   const user = useUser();
 
+  const handleDelete = () => {
+    if (window.confirm("정말로 이 프로젝트를 삭제하시겠습니까?")) {
+      onDelete();
+    }
+  };
+
   return (
     <div className={className}>
       {/* 최상단: 프로젝트 뱃지, 키워드, 관리자 스위치 */}
@@ -50,20 +56,28 @@ const ProjectDetailHeader = ({
             </div>
           )}
           {mode === null && <KeywordMenubar mode={mode} project={project} />}
-          {mode === null && user && (
-            <Button onClick={onDelete} variant="destructive" className="h-7">
-              삭제(관리자 전용)
-            </Button>
-          )}
         </div>
 
-        <div className="flex gap-x-2 items-center">
-          <AdminSwitch
-            mode={mode}
-            toggleMode={toggleMode}
-            projectId={project.id}
-          />
-          <span className="text-sm font-medium text-nowrap">관리자</span>
+        <div className="flex gap-4 items-center">
+          <div className="flex gap-x-2 items-center">
+            <AdminSwitch
+              mode={mode}
+              toggleMode={toggleMode}
+              projectId={project.id}
+            />
+            <span className="text-sm font-medium text-nowrap">관리자</span>
+          </div>
+
+          {mode === null && user && (
+            <Button
+              onClick={handleDelete}
+              variant="destructive"
+              className="h-7"
+            >
+              <Trash2 className="size-4" />
+              삭제
+            </Button>
+          )}
         </div>
       </div>
 
