@@ -409,3 +409,13 @@ export async function closeProject(id: number): Promise<Project> {
   });
   return closedProject;
 }
+
+// 비밀번호 검증 함수 (권한 검증용으로 별도 분리)
+export async function getProjectForPasswordVerification(
+  id: number
+): Promise<{ passwordHash: string | null } | null> {
+  return await prisma.project.findUnique({
+    where: { id },
+    select: { passwordHash: true },
+  });
+}

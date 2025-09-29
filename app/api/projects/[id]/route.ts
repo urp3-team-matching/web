@@ -1,4 +1,9 @@
-import { NotFoundError, UnauthorizedError } from "@/lib/authUtils";
+import {
+  NotFoundError,
+  UnauthorizedError,
+  verifyProjectPermission,
+} from "@/lib/authUtils";
+import { ProjectPasswordManager } from "@/lib/projectPasswordManager";
 import {
   extractPasswordForDelete,
   parseAndValidateRequestBody,
@@ -55,18 +60,36 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
     if (!validatedData)
       throw new Error("Validated data is unexpectedly undefined.");
 
-    if (
-      Object.keys(validatedData).length <= 1 &&
+    const hasPermission = await verifyProjectPermission(
+      request,
+      projectId,
       validatedData.currentPassword
-    ) {
+    );
+    if (!hasPermission) {
+      return NextResponse.json(
+        { error: "Insufficient permissions for this project" },
+        { status: 401 }
+      );
+    }
+
+    const { currentPassword, ...updateData } = validatedData;
+
+    if (Object.keys(updateData).length === 0) {
       return NextResponse.json(
         { error: "No update data provided beyond current password" },
         { status: 400 }
       );
     }
 
-    const updatedProject = await updateProject(projectId, validatedData);
-    return NextResponse.json(updatedProject, { status: 200 });
+    const updatedProject = await updateProject(projectId, updateData);
+    const response = NextResponse.json(updatedProject, { status: 200 });
+    ProjectPasswordManager.setPasswordCookie(
+      response,
+      projectId,
+      currentPassword
+    );
+
+    return response;
   } catch (error) {
     if (error instanceof UnauthorizedError)
       return NextResponse.json({ error: error.message }, { status: 403 });
@@ -106,11 +129,25 @@ export async function DELETE(request: NextRequest, { params }: RouteContext) {
       request
     );
     if (errorResponse) return errorResponse;
-    if (!currentPassword)
-      throw new UnauthorizedError("Current password is required for deletion.");
 
-    await deleteProject(projectId, currentPassword);
-    return new NextResponse(null, { status: 204 });
+    const hasPermission = await verifyProjectPermission(
+      request,
+      projectId,
+      currentPassword
+    );
+    if (!hasPermission) {
+      return NextResponse.json(
+        { error: "Insufficient permissions for this project" },
+        { status: 401 }
+      );
+    }
+
+    await deleteProject(projectId);
+
+    const response = new NextResponse(null, { status: 204 });
+    ProjectPasswordManager.removePasswordCookie(response, projectId);
+
+    return response;
   } catch (error) {
     if (error instanceof UnauthorizedError)
       return NextResponse.json({ error: error.message }, { status: 403 });
