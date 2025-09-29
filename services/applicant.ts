@@ -3,8 +3,6 @@ import {
   BadRequestError,
   MaxApplicantsError,
   NotFoundError,
-  UnauthorizedError,
-  verifyResourcePassword,
 } from "@/lib/authUtils";
 import sendEmail from "@/lib/email";
 import emailTemplates from "@/lib/email/templates";
@@ -113,7 +111,7 @@ export async function updateApplicant(
   return updatedApplicant;
 }
 
-// 지원자 삭제
+// 지원자 삭제 (비밀번호 검증 제거됨)
 export async function deleteApplicant(
   applicantId: number,
   projectId: number
@@ -137,24 +135,17 @@ export async function deleteApplicant(
   return deletedApplicant;
 }
 
+// 지원자 승인 (비밀번호 검증 제거됨)
 export async function acceptApplicant(
   projectId: number,
-  applicantId: number,
-  projectProposerPassword: string
+  applicantId: number
 ): Promise<ApplicantForProject> {
   const project = await prisma.project.findUnique({
     where: { id: projectId },
+    select: projectPublicSelection,
   });
   if (!project) {
     throw new NotFoundError(`Project with id ${projectId} not found.`);
-  }
-
-  const isAuthorized = await verifyResourcePassword(
-    projectProposerPassword,
-    project.passwordHash
-  );
-  if (!isAuthorized) {
-    throw new UnauthorizedError("Incorrect project proposer password.");
   }
 
   const applicant = await prisma.applicant.findUnique({
@@ -213,24 +204,17 @@ export async function acceptApplicant(
   return updatedApplicant;
 }
 
+// 지원자 거절 (비밀번호 검증 제거됨)
 export async function rejectApplicant(
   projectId: number,
-  applicantId: number,
-  projectProposerPassword: string
+  applicantId: number
 ): Promise<ApplicantForProject> {
   const project = await prisma.project.findUnique({
     where: { id: projectId },
+    select: projectPublicSelection,
   });
   if (!project) {
     throw new NotFoundError(`Project with id ${projectId} not found.`);
-  }
-
-  const isAuthorized = await verifyResourcePassword(
-    projectProposerPassword,
-    project.passwordHash
-  );
-  if (!isAuthorized) {
-    throw new UnauthorizedError("Incorrect project proposer password.");
   }
 
   const applicant = await prisma.applicant.findUnique({
@@ -268,24 +252,17 @@ export async function rejectApplicant(
   return updatedApplicant;
 }
 
+// 지원자 대기 상태로 변경 (비밀번호 검증 제거됨)
 export async function pendingApplicant(
   projectId: number,
-  applicantId: number,
-  projectProposerPassword: string
+  applicantId: number
 ): Promise<ApplicantForProject> {
   const project = await prisma.project.findUnique({
     where: { id: projectId },
+    select: projectPublicSelection,
   });
   if (!project) {
     throw new NotFoundError(`Project with id ${projectId} not found.`);
-  }
-
-  const isAuthorized = await verifyResourcePassword(
-    projectProposerPassword,
-    project.passwordHash
-  );
-  if (!isAuthorized) {
-    throw new UnauthorizedError("Incorrect project proposer password.");
   }
 
   const applicant = await prisma.applicant.findUnique({
