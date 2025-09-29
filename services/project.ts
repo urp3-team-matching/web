@@ -1,4 +1,8 @@
-import { BadRequestError, NotFoundError } from "@/lib/authUtils";
+import {
+  BadRequestError,
+  NotFoundError,
+  verifyResourcePassword,
+} from "@/lib/authUtils";
 import sendEmail from "@/lib/email";
 import emailTemplates from "@/lib/email/templates";
 import { prisma } from "@/lib/prisma";
@@ -323,6 +327,23 @@ export async function deleteProject(id: number): Promise<void> {
     }
     throw new Error("Failed to delete project and associated data."); // 일반적인 실패 에러
   }
+}
+
+// 비밀번호 검증
+export async function validateProjectPassword(
+  id: number,
+  password: string
+): Promise<boolean> {
+  const project = await prisma.project.findUnique({
+    where: { id },
+    select: { passwordHash: true },
+  });
+
+  if (!project) {
+    throw new NotFoundError("Project not found.");
+  }
+
+  return await verifyResourcePassword(password, project.passwordHash);
 }
 
 // 프로젝트 재개 (비밀번호 검증 제거됨)
