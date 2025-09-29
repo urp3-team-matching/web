@@ -144,7 +144,6 @@ export async function getAllProjects(
   }
 
   const inputYearOrCurrentYear = year ?? new Date().getFullYear();
-  console.log(inputYearOrCurrentYear, semester);
 
   if (inputYearOrCurrentYear) {
     let startDate: Date;
