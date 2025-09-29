@@ -1,4 +1,5 @@
 import { NotFoundError } from "@/lib/authUtils";
+import { supabase } from "@/lib/supabaseClient";
 import { validateProjectPassword as verifyProjectPassword } from "@/services/project";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -23,8 +24,11 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
       );
     }
 
-    const isVerified = await verifyProjectPassword(projectId, password);
-    if (!isVerified) {
+    const isPasswordVerified = await verifyProjectPassword(projectId, password);
+    const isAdminVerified = await supabase.auth
+      .getUser()
+      .then(({ data }) => !!data.user);
+    if (!isPasswordVerified && !isAdminVerified) {
       return NextResponse.json({ error: "Invalid password" }, { status: 401 });
     }
     return NextResponse.json(
