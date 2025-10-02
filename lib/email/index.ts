@@ -1,4 +1,3 @@
-import { env } from "@/lib/env";
 import nodemailer from "nodemailer";
 import { MailOptions } from "nodemailer/lib/sendmail-transport";
 
@@ -14,13 +13,13 @@ export default async function sendEmail({
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: env.EMAIL_SERVER_USER,
-      pass: env.EMAIL_SERVER_PASSWORD,
+      user: process.env.EMAIL_SERVER_USER,
+      pass: process.env.EMAIL_SERVER_PASSWORD,
     },
   });
 
   const mailOptions: MailOptions = {
-    from: env.EMAIL_SERVER_USER,
+    from: process.env.EMAIL_SERVER_USER,
     to,
     subject,
     html,

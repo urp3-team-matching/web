@@ -1,7 +1,6 @@
 import Header from "@/components/Header";
 import { AppSidebar } from "@/components/Header/AppSidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import "@/lib/env";
 import { cn } from "@/lib/utils";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";

@@ -1,4 +1,3 @@
-import { env } from "@/lib/env";
 import {
   BadRequestError,
   InternalServerError,
@@ -75,8 +74,8 @@ class ApiClient {
     // 서버 환경에서는 절대경로 필요
     if (typeof window === "undefined" && endpoint.startsWith("/")) {
       const base =
-        env.NEXT_PUBLIC_BASE_URL ||
-        (env.VERCEL_URL && `https://${env.VERCEL_URL}`) ||
+        process.env.NEXT_PUBLIC_BASE_URL ||
+        (process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`) ||
         "http://localhost:3000";
       url = base + endpoint;
     }

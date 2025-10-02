@@ -1,8 +1,7 @@
-import { env } from "@/lib/env";
 import { getCurrentKoreanDate } from "@/lib/utils";
 import { ApplicantStatus, Project, ProjectStatus } from "@prisma/client";
 
-const VERCEL_URL = env.VERCEL_URL || "http://localhost:3000";
+const VERCEL_URL = process.env.VERCEL_URL || "http://localhost:3000";
 
 type EmailTemplate = {
   subject: string;

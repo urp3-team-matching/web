@@ -1,4 +1,3 @@
-import { env } from "@/lib/env";
 import { createBrowserClient } from "@supabase/ssr";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
@@ -12,11 +11,11 @@ export function getClientSupabase() {
   }
 
   client = createBrowserClient(
-    env.NEXT_PUBLIC_SUPABASE_URL!,
-    env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
     {
       db: {
-        schema: env.NODE_ENV === "production" ? "public" : "dev",
+        schema: process.env.NODE_ENV === "production" ? "public" : "dev",
       },
     }
   );

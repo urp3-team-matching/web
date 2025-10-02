@@ -1,4 +1,3 @@
-import { env } from "@/lib/env";
 import { NotFoundError } from "@/lib/errors";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
@@ -47,7 +46,7 @@ export class ProjectPasswordManager {
 
       response.cookies.set(`project_auth_${projectId}`, encryptedPassword, {
         httpOnly: true,
-        secure: env.NODE_ENV === "production",
+        secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
         maxAge: 60 * 60 * 24, // 24시간
         path: "/",

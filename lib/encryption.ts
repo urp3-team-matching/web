@@ -1,10 +1,9 @@
-import { env } from "@/lib/env";
 import crypto from "crypto";
 
 const ALGORITHM = "aes-256-gcm";
 
 function getEncryptionKey(): Buffer {
-  const key = env.PROJECT_ENCRYPTION_KEY;
+  const key = process.env.PROJECT_ENCRYPTION_KEY;
   if (!key) {
     throw new Error("PROJECT_ENCRYPTION_KEY environment variable is required");
   }
