@@ -3,6 +3,7 @@
 import { ProjectPageModeEnum } from "@/app/projects/[id]/_components/constants";
 import ProjectDetailHeader from "@/app/projects/[id]/_components/Header";
 import ProjectDetailRightPanel from "@/app/projects/[id]/_components/RightPanel";
+import Chat from "@/app/projects/[id]/_components/RightPanel/Chat";
 import ProjectForm from "@/components/Project/Form/ProjectForm";
 import ProjectProposerForm from "@/components/Project/Form/ProjectProposerForm";
 import Spinner from "@/components/ui/spinner";
@@ -15,8 +16,10 @@ import apiClient, {
   PublicProjectWithForeignKeys,
 } from "@/lib/apiClientHelper";
 import { NotFoundError } from "@/lib/errors";
+import { cn } from "@/lib/utils";
 import { ProjectUpdateInput, ProjectUpdateSchema } from "@/types/project";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ApplicantStatus } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { parseAsStringEnum, useQueryState } from "nuqs";
 import { useEffect, useState } from "react";
@@ -196,6 +199,24 @@ function ProjectContent({ params }: { params: { id: string } }) {
     setmode(ProjectPageModeEnum.ADMIN);
   }
 
+  function handleApplicantStatusChange(
+    applicantId: number,
+    status: ApplicantStatus
+  ) {
+    setApplicants((prev) => {
+      if (!prev) return prev;
+      return prev.map((applicant) => {
+        if (applicant.id === applicantId) {
+          return {
+            ...applicant,
+            status,
+          };
+        }
+        return applicant;
+      });
+    });
+  }
+
   if (loading) {
     return (
       <div className="w-full flex justify-center items-center py-10">
@@ -266,41 +287,20 @@ function ProjectContent({ params }: { params: { id: string } }) {
               return [...prev, newApplicant];
             });
           }}
-          onApplicantStatusChange={(applicantId, status) => {
-            setApplicants((prev) => {
-              if (!prev) return prev;
-              return prev.map((applicant) => {
-                if (applicant.id === applicantId) {
-                  return {
-                    ...applicant,
-                    status,
-                  };
-                }
-                return applicant;
-              });
-            });
-          }}
+          onApplicantStatusChange={handleApplicantStatusChange}
           applicants={applicants}
         />
       </div>
 
       {/* Mobile 본문 */}
-      <div className="pt-2 lg:hidden flex justify-between">
+      <div
+        className={cn(
+          "pt-2 lg:hidden flex-col justify-between",
+          mode === null && project.status === "RECRUITING" && "pb-14"
+        )}
+      >
         <MobileTab
-          onApplicantStatusChange={(applicantId, status) => {
-            setApplicants((prev) => {
-              if (!prev) return prev;
-              return prev.map((applicant) => {
-                if (applicant.id === applicantId) {
-                  return {
-                    ...applicant,
-                    status,
-                  };
-                }
-                return applicant;
-              });
-            });
-          }}
+          onApplicantStatusChange={handleApplicantStatusChange}
           project={project}
           onSubmit={handleSubmit(onSuccess, onInvalidSubmit)}
           onToggleClose={handleToggleClose}
@@ -335,6 +335,13 @@ function ProjectContent({ params }: { params: { id: string } }) {
             }}
           />
         )}
+
+        <Chat
+          className="w-full text-sm font-medium flex flex-col shadow-md rounded-lg"
+          project={project}
+          applicants={applicants ?? []}
+          onApplicantStatusChange={handleApplicantStatusChange}
+        />
       </div>
     </form>
   );
