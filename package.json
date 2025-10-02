@@ -2,7 +2,7 @@
   "name": "web",
   "version": "0.1.0",
   "private": true,
-  "packageManager": "pnpm@10.6.3",
+  "packageManager": "pnpm@10.17.1",
   "scripts": {
     "dev": "NODE_ENV=development next dev --turbo",
     "build": "NODE_ENV=production && prisma generate && next build",
