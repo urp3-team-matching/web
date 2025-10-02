@@ -1,17 +1,11 @@
-import {
-  NotFoundError,
-  UnauthorizedError,
-  verifyProjectPermission,
-} from "@/lib/authUtils";
+import { NotFoundError, UnauthorizedError } from "@/lib/errors";
 import { ProjectPasswordManager } from "@/lib/projectPasswordManager";
-import {
-  extractPasswordForDelete,
-  parseAndValidateRequestBody,
-} from "@/lib/routeUtils";
+import { parseAndValidateRequestBody } from "@/lib/routeUtils";
 import {
   deleteProject,
   getProjectById,
   updateProject,
+  verifyProjectPermission,
 } from "@/services/project";
 import { ProjectUpdateSchema } from "@/types/project";
 import { NextRequest, NextResponse } from "next/server";
@@ -29,7 +23,7 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
         { status: 400 }
       );
 
-    const project = await getProjectById(projectId); // 서비스에서 NotFound 에러 throw 가능성
+    const project = await getProjectById(projectId);
     if (!project) {
       return NextResponse.json({ error: "Project not found" }, { status: 404 });
     }
@@ -54,40 +48,34 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
         { status: 400 }
       );
 
+    const isVerified = await verifyProjectPermission(
+      Number(projectId),
+      request
+    );
+    if (!isVerified) {
+      return NextResponse.json(
+        { error: "Invalid project password" },
+        { status: 401 }
+      );
+    }
+
     const { data: validatedData, errorResponse } =
       await parseAndValidateRequestBody(request, ProjectUpdateSchema);
     if (errorResponse) return errorResponse;
     if (!validatedData)
       throw new Error("Validated data is unexpectedly undefined.");
 
-    const hasPermission = await verifyProjectPermission(
-      request,
-      projectId,
-      validatedData.currentPassword
-    );
-    if (!hasPermission) {
-      return NextResponse.json(
-        { error: "Insufficient permissions for this project" },
-        { status: 401 }
-      );
-    }
-
-    const { currentPassword, ...updateData } = validatedData;
-
-    if (Object.keys(updateData).length === 0) {
-      return NextResponse.json(
-        { error: "No update data provided beyond current password" },
-        { status: 400 }
-      );
-    }
-
-    const updatedProject = await updateProject(projectId, updateData);
+    const updatedProject = await updateProject(projectId, validatedData);
     const response = NextResponse.json(updatedProject, { status: 200 });
-    ProjectPasswordManager.setPasswordCookie(
-      response,
-      projectId,
-      currentPassword
-    );
+
+    // 새 비밀번호가 설정되었다면 쿠키 업데이트
+    if (validatedData.password) {
+      ProjectPasswordManager.setPasswordCookie(
+        response,
+        projectId,
+        validatedData.password
+      );
+    }
 
     return response;
   } catch (error) {
@@ -106,7 +94,6 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
       error instanceof Error &&
       error.message.includes("Failed to delete project and associated data")
     ) {
-      // 트랜잭션 에러
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
     return NextResponse.json(
@@ -125,19 +112,13 @@ export async function DELETE(request: NextRequest, { params }: RouteContext) {
         { status: 400 }
       );
 
-    const { currentPassword, errorResponse } = await extractPasswordForDelete(
+    const isVerified = await verifyProjectPermission(
+      Number(projectId),
       request
     );
-    if (errorResponse) return errorResponse;
-
-    const hasPermission = await verifyProjectPermission(
-      request,
-      projectId,
-      currentPassword
-    );
-    if (!hasPermission) {
+    if (!isVerified) {
       return NextResponse.json(
-        { error: "Insufficient permissions for this project" },
+        { error: "Invalid project password" },
         { status: 401 }
       );
     }
@@ -164,7 +145,6 @@ export async function DELETE(request: NextRequest, { params }: RouteContext) {
       error instanceof Error &&
       error.message.includes("Failed to delete project and associated data")
     ) {
-      // 트랜잭션 에러
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
     return NextResponse.json(

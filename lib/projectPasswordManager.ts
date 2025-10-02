@@ -1,7 +1,32 @@
+import { NotFoundError } from "@/lib/errors";
+import { prisma } from "@/lib/prisma";
+import bcrypt from "bcryptjs";
 import { NextRequest, NextResponse } from "next/server";
 import { decryptPassword, encryptPassword } from "./encryption";
 
 export class ProjectPasswordManager {
+  static async validateProjectPassword(
+    id: number,
+    password: string
+  ): Promise<boolean> {
+    const project = await prisma.project.findUnique({
+      where: { id },
+      select: { passwordHash: true },
+    });
+
+    if (!project) {
+      throw new NotFoundError("Project not found.");
+    }
+
+    if (!password || !project.passwordHash) {
+      console.debug("Password or password hash is missing");
+      return false;
+    }
+    const isValid = await bcrypt.compare(password, project.passwordHash);
+    console.debug(`Password validation for project ${id}:`, isValid);
+    return isValid;
+  }
+
   /**
    * 암호화된 비밀번호를 HttpOnly 쿠키에 저장
    */
@@ -26,49 +51,29 @@ export class ProjectPasswordManager {
   }
 
   /**
-   * HttpOnly 쿠키에서 암호화된 비밀번호 복호화
-   */
-  static getPasswordFromCookie(
-    request: Request,
-    projectId: number
-  ): string | null {
-    try {
-      const cookieHeader = request.headers.get("cookie");
-      if (!cookieHeader) return null;
-
-      // 쿠키 파싱
-      const cookies: Record<string, string> = {};
-      cookieHeader.split("; ").forEach((cookie) => {
-        const [name, value] = cookie.split("=");
-        if (name && value) {
-          cookies[name] = decodeURIComponent(value);
-        }
-      });
-
-      const encryptedPassword = cookies[`project_auth_${projectId}`];
-      if (!encryptedPassword) return null;
-
-      return decryptPassword(encryptedPassword);
-    } catch (error) {
-      console.error("Failed to get password from cookie:", error);
-      return null;
-    }
-  }
-
-  /**
    * NextRequest에서 쿠키 읽기 (Next.js API 라우트용)
    */
   static getPasswordFromNextRequest(
     request: NextRequest,
     projectId: number
   ): string | null {
+    console.debug("Getting password from NextRequest for project:", projectId);
     try {
       const encryptedPassword = request.cookies.get(
         `project_auth_${projectId}`
       )?.value;
-      if (!encryptedPassword) return null;
+      if (!encryptedPassword) {
+        console.debug("No password cookie found for project:", projectId);
+        return null;
+      }
 
-      return decryptPassword(encryptedPassword);
+      const decryptedPassword = decryptPassword(encryptedPassword);
+      console.debug(
+        "Decrypted password for project:",
+        projectId,
+        decryptedPassword
+      );
+      return decryptedPassword;
     } catch (error) {
       console.error("Failed to get password from NextRequest:", error);
       return null;
@@ -98,5 +103,31 @@ export class ProjectPasswordManager {
         response.cookies.delete(name);
       }
     });
+  }
+
+  /**
+   * 쿠키에서 가져온 비밀번호로 프로젝트 권한 검증
+   */
+  static async validateProjectPasswordFromCookie(
+    request: NextRequest,
+    projectId: number
+  ): Promise<boolean> {
+    try {
+      const cookiePassword = this.getPasswordFromNextRequest(
+        request,
+        projectId
+      );
+
+      if (!cookiePassword) {
+        console.debug("No password found in cookie for project:", projectId);
+        return false;
+      }
+
+      // 🔹 쿠키의 평문 비밀번호를 validateProjectPassword로 검증
+      return await this.validateProjectPassword(projectId, cookiePassword);
+    } catch (error) {
+      console.error("Cookie password validation failed:", error);
+      return false;
+    }
   }
 }

@@ -1,11 +1,8 @@
-import {
-  BadRequestError,
-  NotFoundError,
-  verifyResourcePassword,
-} from "@/lib/authUtils";
 import sendEmail from "@/lib/email";
 import emailTemplates from "@/lib/email/templates";
+import { BadRequestError, NotFoundError } from "@/lib/errors";
 import { prisma } from "@/lib/prisma";
+import { ProjectPasswordManager } from "@/lib/projectPasswordManager";
 import {
   ApplicantForProject,
   GetProjectsQueryInput,
@@ -15,14 +12,67 @@ import {
   Semester,
 } from "@/types/project";
 import { PaginatedType, PasswordOmittedType } from "@/types/utils";
+import { createClient } from "@/utils/supabase/server";
 import { Prisma, Project } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { NextRequest } from "next/server";
 
 const SALT_ROUNDS = 10;
 type PasswordOmittedProject = PasswordOmittedType<Project>;
 type ProjectWithForeignKeys = Project & {
   applicants: ApplicantForProject[];
 };
+
+/**
+ * 프로젝트 권한을 검증하는 통합 가드 함수
+ */
+export async function verifyProjectPermission(
+  projectId: number,
+  request: NextRequest
+): Promise<boolean>;
+export async function verifyProjectPermission(
+  projectId: number,
+  password: string
+): Promise<boolean>;
+export async function verifyProjectPermission(
+  projectId: number,
+  requestOrPassword: NextRequest | string
+): Promise<boolean> {
+  try {
+    // 1. 관리자인 경우 무조건 통과
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await (await supabase).auth.getUser();
+    if (user) return true;
+
+    // 2. 관리자가 아닌 일반 사용자인 경우
+    // 2-1. 두 번째 매개변수가 string인 경우 (명시적 비밀번호)
+    if (typeof requestOrPassword === "string") {
+      return await ProjectPasswordManager.validateProjectPassword(
+        projectId,
+        requestOrPassword
+      );
+    }
+
+    // 2-2. 두 번째 매개변수가 NextRequest인 경우 (쿠키에서 추출)
+    const cookiePassword = ProjectPasswordManager.getPasswordFromNextRequest(
+      requestOrPassword,
+      projectId
+    );
+    if (cookiePassword) {
+      return await ProjectPasswordManager.validateProjectPassword(
+        projectId,
+        cookiePassword
+      );
+    }
+
+    return false;
+  } catch (error) {
+    console.error("Permission verification failed:", error);
+    return false;
+  }
+}
 
 export async function createProject(data: ProjectInput): Promise<Project> {
   const { password: projectPlainTextPassword, ...projectDataRest } = data;
@@ -329,23 +379,6 @@ export async function deleteProject(id: number): Promise<void> {
   }
 }
 
-// 비밀번호 검증
-export async function validateProjectPassword(
-  id: number,
-  password: string
-): Promise<boolean> {
-  const project = await prisma.project.findUnique({
-    where: { id },
-    select: { passwordHash: true },
-  });
-
-  if (!project) {
-    throw new NotFoundError("Project not found.");
-  }
-
-  return await verifyResourcePassword(password, project.passwordHash);
-}
-
 // 프로젝트 재개 (비밀번호 검증 제거됨)
 export async function reopenProject(id: number): Promise<Project> {
   const projectToReopen = await prisma.project.findUnique({
@@ -408,14 +441,4 @@ export async function closeProject(id: number): Promise<Project> {
     });
   });
   return closedProject;
-}
-
-// 비밀번호 검증 함수 (권한 검증용으로 별도 분리)
-export async function getProjectForPasswordVerification(
-  id: number
-): Promise<{ passwordHash: string | null } | null> {
-  return await prisma.project.findUnique({
-    where: { id },
-    select: { passwordHash: true },
-  });
 }

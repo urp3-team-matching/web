@@ -1,11 +1,11 @@
 import { MAX_APPLICANT_MAJOR_COUNT, MAX_APPLICANTS } from "@/constants";
+import sendEmail from "@/lib/email";
+import emailTemplates from "@/lib/email/templates";
 import {
   BadRequestError,
   MaxApplicantsError,
   NotFoundError,
-} from "@/lib/authUtils";
-import sendEmail from "@/lib/email";
-import emailTemplates from "@/lib/email/templates";
+} from "@/lib/errors";
 import { prisma } from "@/lib/prisma";
 import {
   ApplicantInput,
@@ -15,7 +15,6 @@ import {
 import { ApplicantForProject, projectPublicSelection } from "@/types/project";
 import { Applicant } from "@prisma/client";
 
-// 지원자 생성
 export async function applyToProject(
   projectId: number,
   data: ApplicantInput
@@ -59,7 +58,6 @@ export async function applyToProject(
   return createdApplicant;
 }
 
-// 특정 프로젝트의 모든 지원자 조회
 export async function getApplicantsByProjectId(
   projectId: number
 ): Promise<Applicant[]> {
@@ -71,7 +69,6 @@ export async function getApplicantsByProjectId(
   return applicants;
 }
 
-// 특정 프로젝트의 특정 지원자 조회
 export async function getApplicantByIdForProject(
   applicantId: number,
   projectId: number
@@ -86,7 +83,6 @@ export async function getApplicantByIdForProject(
   return applicant;
 }
 
-// 지원자 정보 수정
 export async function updateApplicant(
   applicantId: number,
   projectId: number,
@@ -111,7 +107,6 @@ export async function updateApplicant(
   return updatedApplicant;
 }
 
-// 지원자 삭제 (비밀번호 검증 제거됨)
 export async function deleteApplicant(
   applicantId: number,
   projectId: number
@@ -135,7 +130,6 @@ export async function deleteApplicant(
   return deletedApplicant;
 }
 
-// 지원자 승인 (비밀번호 검증 제거됨)
 export async function acceptApplicant(
   projectId: number,
   applicantId: number
@@ -204,7 +198,7 @@ export async function acceptApplicant(
   return updatedApplicant;
 }
 
-// 지원자 거절 (비밀번호 검증 제거됨)
+// 지원자 거절
 export async function rejectApplicant(
   projectId: number,
   applicantId: number
@@ -252,7 +246,7 @@ export async function rejectApplicant(
   return updatedApplicant;
 }
 
-// 지원자 대기 상태로 변경 (비밀번호 검증 제거됨)
+// 지원자 대기 상태로 변경
 export async function pendingApplicant(
   projectId: number,
   applicantId: number

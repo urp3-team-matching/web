@@ -17,7 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import apiClient, { PublicApplicant } from "@/lib/apiClientHelper";
-import { MaxApplicantsError } from "@/lib/authUtils";
+import { MaxApplicantsError } from "@/lib/errors";
 import { cn } from "@/lib/utils";
 import { ApplicantInput, ApplicantSchema } from "@/types/applicant";
 import { zodResolver } from "@hookform/resolvers/zod";

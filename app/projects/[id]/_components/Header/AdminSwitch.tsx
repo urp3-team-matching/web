@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import useProjectPassword from "@/hooks/use-project-password";
+import { useProjectVerification } from "@/contexts/ProjectVerificationContext";
 import apiClient from "@/lib/apiClientHelper";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
@@ -33,31 +33,35 @@ const AdminSwitch = ({
   projectId,
 }: AdminSwitchProps) => {
   const [open, setOpen] = useState(false);
-  const currentPasswordSchema = z.object({
-    currentPassword: z.string().min(1, "비밀번호를 입력해주세요"),
+  const { isVerified, setVerified } = useProjectVerification(); // 🔹 컨텍스트에서 검증 상태 가져오기
+
+  const passwordSchema = z.object({
+    password: z.string().min(1, "비밀번호를 입력해주세요"),
   });
-  const passwordForm = useForm<z.infer<typeof currentPasswordSchema>>({
-    resolver: zodResolver(currentPasswordSchema),
+
+  const passwordForm = useForm<z.infer<typeof passwordSchema>>({
+    resolver: zodResolver(passwordSchema),
     defaultValues: {
-      currentPassword: "",
+      password: "",
     },
   });
   const { control, handleSubmit } = passwordForm;
-  const { getPassword, setPassword } = useProjectPassword(projectId);
 
-  async function onValid(data: z.infer<typeof currentPasswordSchema>) {
-    const isVerified = await apiClient.verifyProjectPassword(
+  async function onValid(data: z.infer<typeof passwordSchema>) {
+    const isPasswordValid = await apiClient.verifyProjectPassword(
       projectId,
-      data.currentPassword
+      data.password
     );
-    if (!isVerified) {
-      control.setError("currentPassword", {
+
+    if (!isPasswordValid) {
+      control.setError("password", {
         type: "manual",
         message: "비밀번호가 틀렸습니다.",
       });
       return;
     }
-    setPassword(data.currentPassword);
+
+    setVerified(true);
     setOpen(false);
     toggleMode();
   }
@@ -69,23 +73,15 @@ const AdminSwitch = ({
         checked={mode === ProjectPageModeEnum.ADMIN}
         onClick={() => {
           if (mode === ProjectPageModeEnum.ADMIN) {
+            // 🔹 관리자 모드 해제 (검증 불필요)
             toggleMode();
           } else {
-            const password = getPassword();
-            if (password) {
-              apiClient
-                .verifyProjectPassword(projectId, password)
-                .then((isVerified) => {
-                  if (isVerified) {
-                    toggleMode();
-                    return;
-                  } else {
-                    // 저장된 비밀번호가 틀린 경우, 모달 열기
-                    setOpen(true);
-                  }
-                });
+            // 🔹 관리자 모드 활성화 시도
+            if (isVerified === true) {
+              // 이미 검증됨 (쿠키에 올바른 비밀번호 저장됨)
+              toggleMode();
             } else {
-              // 비밀번호가 없는 경우, 모달 열기
+              // 검증되지 않음 또는 검증 중 - 비밀번호 입력 모달 열기
               setOpen(true);
             }
           }
@@ -106,7 +102,7 @@ const AdminSwitch = ({
             }}
           >
             <Controller
-              name="currentPassword"
+              name="password"
               control={control}
               render={({ field, fieldState }) => (
                 <Input

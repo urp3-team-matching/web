@@ -12,8 +12,8 @@ import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import { SCHEMA_NAME } from "@/constants";
-import useProjectPassword from "@/hooks/use-project-password";
-import apiClient, { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
+import { useProjectVerification } from "@/contexts/ProjectVerificationContext";
+import { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
 import { supabase } from "@/lib/supabaseClient";
 import type {
   ChatItemGroup,
@@ -115,8 +115,8 @@ interface ChatFieldProps {
 
 export default function ChatField({ project }: ChatFieldProps) {
   const projectId = project.id;
+  const { isVerified } = useProjectVerification();
   const [open, setOpen] = useState(false);
-  const { getPassword } = useProjectPassword(projectId);
 
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const lastBubbleRef = useRef<HTMLDivElement>(null);
@@ -143,24 +143,18 @@ export default function ChatField({ project }: ChatFieldProps) {
 
   // 페이지 로드시 자동으로 채팅 참여
   useEffect(() => {
-    (async () => {
-      const currentPassword = getPassword();
-      if (currentPassword) {
-        const isVerified = await apiClient.verifyProjectPassword(
-          projectId,
-          currentPassword
-        );
-        if (isVerified) {
-          enterChatRoom(true, project.proposerName, "관리자");
-          return;
-        }
-      }
-      const chatUserData = getChatUserData();
-      if (chatUserData) {
-        enterChatRoom(false, chatUserData.major, chatUserData.nickname);
-      }
-    })();
-  }, [projectId, project.proposerName, getPassword]);
+    if (isVerified === null) return; // 아직 검증 중
+
+    if (isVerified) {
+      enterChatRoom(true, project.proposerName, "관리자");
+      return;
+    }
+
+    const chatUserData = getChatUserData();
+    if (chatUserData) {
+      enterChatRoom(false, chatUserData.major, chatUserData.nickname);
+    }
+  }, [isVerified, project.proposerName]); // 🔹 isVerified 의존성 추가
 
   useEffect(() => {
     const fetchInitialMessages = async () => {

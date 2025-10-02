@@ -34,7 +34,9 @@ const ProjectDetailHeader = ({
   const user = useUser();
 
   const handleDelete = () => {
-    if (window.confirm("정말로 이 프로젝트를 삭제하시겠습니까?")) {
+    const confirm = window.confirm("정말로 이 프로젝트를 삭제하시겠습니까?");
+    console.log(confirm);
+    if (confirm) {
       onDelete();
     }
   };
@@ -70,7 +72,11 @@ const ProjectDetailHeader = ({
 
           {mode === null && user && (
             <Button
-              onClick={handleDelete}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDelete();
+              }}
+              type="button"
               variant="destructive"
               className="h-7"
             >

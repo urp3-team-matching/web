@@ -6,12 +6,15 @@ import ProjectDetailRightPanel from "@/app/projects/[id]/_components/RightPanel"
 import ProjectForm from "@/components/Project/Form/ProjectForm";
 import ProjectProposerForm from "@/components/Project/Form/ProjectProposerForm";
 import Spinner from "@/components/ui/spinner";
-import useProjectPassword from "@/hooks/use-project-password";
+import {
+  ProjectVerificationProvider,
+  useProjectVerification,
+} from "@/contexts/ProjectVerificationContext";
 import apiClient, {
   PublicApplicant,
   PublicProjectWithForeignKeys,
 } from "@/lib/apiClientHelper";
-import { NotFoundError } from "@/lib/authUtils";
+import { NotFoundError } from "@/lib/errors";
 import { ProjectUpdateInput, ProjectUpdateSchema } from "@/types/project";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -24,13 +27,22 @@ import MobileTab from "./_components/MobileTab";
 export type ProjectPageMode = ProjectPageModeEnum | null;
 
 export default function Project({ params }: { params: { id: string } }) {
+  const projectId = parseInt(params.id);
+
+  return (
+    <ProjectVerificationProvider projectId={projectId}>
+      <ProjectContent params={params} />
+    </ProjectVerificationProvider>
+  );
+}
+
+function ProjectContent({ params }: { params: { id: string } }) {
+  const { isVerified } = useProjectVerification();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const projectId = parseInt(params.id);
   const [project, setProject] = useState<PublicProjectWithForeignKeys>();
   const [applicants, setApplicants] = useState<PublicApplicant[]>();
-  const { getPassword } = useProjectPassword(projectId);
-  const currentPassword = getPassword();
 
   // 프로젝트 ID를 기반으로 프로젝트 데이터를 가져옵니다.
   useEffect(() => {
@@ -65,22 +77,17 @@ export default function Project({ params }: { params: { id: string } }) {
     "mode",
     parseAsStringEnum<ProjectPageModeEnum>(Object.values(ProjectPageModeEnum))
   );
-  // 페이지가 로드될 때, 현재 프로젝트의 비밀번호를 로컬 스토리지에서 가져옵니다.
+
+  // 검증 결과에 따라 mode 설정
   useEffect(() => {
-    (async () => {
-      if (currentPassword) {
-        const isVerified = await apiClient.verifyProjectPassword(
-          projectId,
-          currentPassword
-        );
-        if (isVerified) {
-          setmode(ProjectPageModeEnum.ADMIN);
-          return;
-        }
-      }
+    if (isVerified === null) return; // 아직 검증 중
+
+    if (isVerified) {
+      setmode(ProjectPageModeEnum.ADMIN);
+    } else {
       setmode(null);
-    })();
-  }, [currentPassword, projectId, setmode]);
+    }
+  }, [isVerified, setmode]);
 
   // 프로젝트 정보 폼
   const { handleSubmit, control, reset } = useForm<ProjectUpdateInput>({
@@ -95,7 +102,6 @@ export default function Project({ params }: { params: { id: string } }) {
       attachments: [],
       keywords: [],
       password: "",
-      currentPassword: "",
       proposerName: "",
       proposerType: "STUDENT",
       proposerMajor: "",
@@ -116,7 +122,6 @@ export default function Project({ params }: { params: { id: string } }) {
         attachments: project.attachments || [],
         keywords: project.keywords || [],
         password: "",
-        currentPassword: currentPassword,
         proposerName: project.proposerName || "",
         proposerType: project.proposerType || "STUDENT",
         proposerMajor: project.proposerMajor || "",
@@ -125,7 +130,7 @@ export default function Project({ params }: { params: { id: string } }) {
         status: project.status || "RECRUITING",
       });
     }
-  }, [project, reset, projectId, currentPassword]);
+  }, [project, reset, projectId]);
 
   async function onSuccess(data: ProjectUpdateInput) {
     setLoading(true);
@@ -155,7 +160,7 @@ export default function Project({ params }: { params: { id: string } }) {
   async function handleDelete() {
     setLoading(true);
     try {
-      await apiClient.deleteProject(projectId, currentPassword);
+      await apiClient.deleteProject(projectId);
     } catch {
       alert("프로젝트 삭제 실패");
     }
@@ -170,16 +175,10 @@ export default function Project({ params }: { params: { id: string } }) {
       let updatedProject;
       if (project?.status === "RECRUITING") {
         // 모집 마감
-        updatedProject = await apiClient.closeProject(
-          projectId,
-          currentPassword
-        );
+        updatedProject = await apiClient.closeProject(projectId);
       } else {
         // 재모집
-        updatedProject = await apiClient.reopenProject(
-          projectId,
-          currentPassword
-        );
+        updatedProject = await apiClient.reopenProject(projectId);
       }
       setProject(updatedProject);
     } catch {

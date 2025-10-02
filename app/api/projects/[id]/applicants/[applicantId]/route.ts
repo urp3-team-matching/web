@@ -1,4 +1,4 @@
-import { NotFoundError } from "@/lib/authUtils";
+import { NotFoundError } from "@/lib/errors";
 import { parseAndValidateRequestBody } from "@/lib/routeUtils";
 import {
   deleteApplicant,

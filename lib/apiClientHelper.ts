@@ -4,7 +4,7 @@ import {
   MaxApplicantsError,
   NotFoundError,
   UnauthorizedError,
-} from "@/lib/authUtils";
+} from "@/lib/errors";
 import type { ApplicantInput } from "@/types/applicant";
 import { PostInput } from "@/types/post";
 import type {
@@ -281,13 +281,8 @@ class ApiClient {
     return await request.json();
   }
 
-  public async deleteProject(
-    id: number,
-    currentPassword: string
-  ): Promise<void> {
-    const request = await this._request(`/api/projects/${id}`, "DELETE", {
-      currentPassword,
-    });
+  public async deleteProject(id: number): Promise<void> {
+    const request = await this._request(`/api/projects/${id}`, "DELETE");
 
     if (!request.ok) {
       switch (request.status) {
@@ -309,10 +304,21 @@ class ApiClient {
     return await request.json();
   }
 
+  /**
+   *
+   * @param id 프로젝트 ID
+   * @param password 프로젝트 비밀번호: 비밀번호 처음 입력하는 상황이라 쿠키에 저장되어 있지 않은 경우는 필수
+   * @returns
+   */
   public async verifyProjectPassword(
     id: number,
-    password: string
+    password?: string
   ): Promise<boolean> {
+    if (!password) {
+      console.warn(
+        "Password not provided to verifyProjectPassword; relying on cookie only."
+      );
+    }
     const request = await this._request(`/api/projects/${id}/verify`, "POST", {
       password,
     });
@@ -467,13 +473,11 @@ class ApiClient {
 
   public async acceptApplicant(
     projectId: number,
-    applicantId: number,
-    projectProposerPassword: string
+    applicantId: number
   ): Promise<PublicApplicant> {
     const response = await this._request(
       `/api/projects/${projectId}/applicants/${applicantId}/accept`,
-      "POST",
-      { projectProposerPassword }
+      "POST"
     );
 
     if (!response.ok) {
@@ -496,13 +500,11 @@ class ApiClient {
 
   public async rejectApplicant(
     projectId: number,
-    applicantId: number,
-    projectProposerPassword: string
+    applicantId: number
   ): Promise<PublicApplicant> {
     const response = await this._request(
       `/api/projects/${projectId}/applicants/${applicantId}/reject`,
-      "POST",
-      { projectProposerPassword }
+      "POST"
     );
 
     if (!response.ok) {
@@ -523,13 +525,11 @@ class ApiClient {
 
   public async pendingApplicant(
     projectId: number,
-    applicantId: number,
-    projectProposerPassword: string
+    applicantId: number
   ): Promise<PublicApplicant> {
     const response = await this._request(
       `/api/projects/${projectId}/applicants/${applicantId}/pending`,
-      "POST",
-      { projectProposerPassword }
+      "POST"
     );
 
     if (!response.ok) {
@@ -548,13 +548,8 @@ class ApiClient {
     return await response.json();
   }
 
-  public async closeProject(
-    id: number,
-    currentPassword: string
-  ): Promise<PublicProjectWithForeignKeys> {
-    const response = await this._request(`/api/projects/${id}/close`, "POST", {
-      currentPassword,
-    });
+  public async closeProject(id: number): Promise<PublicProjectWithForeignKeys> {
+    const response = await this._request(`/api/projects/${id}/close`, "POST");
 
     if (!response.ok) {
       switch (response.status) {
@@ -575,12 +570,9 @@ class ApiClient {
   }
 
   public async reopenProject(
-    id: number,
-    currentPassword: string
+    id: number
   ): Promise<PublicProjectWithForeignKeys> {
-    const response = await this._request(`/api/projects/${id}/reopen`, "POST", {
-      currentPassword,
-    });
+    const response = await this._request(`/api/projects/${id}/reopen`, "POST");
 
     if (!response.ok) {
       switch (response.status) {
