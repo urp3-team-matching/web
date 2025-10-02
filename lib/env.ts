@@ -37,18 +37,27 @@ const envSchema = z.object({
     .default("development"),
 });
 
+// 🔹 즉시 실행 함수로 변경하여 초기화 순서 문제 해결
 const validateEnv = (() => {
-  const result = envSchema.safeParse(process.env);
+  // 빌드 타임에만 검증
+  if (
+    process.env.NODE_ENV !== "development" ||
+    process.env.BUILD_TIME === "true"
+  ) {
+    console.log("🔍 Build-time environment validation...");
 
-  if (!result.success) {
-    console.error("❌ Environment validation error:");
-    result.error.errors.forEach((err) => {
-      console.error(`  - ${err.path.join(".")}: ${err.message}`);
-    });
-    process.exit(1);
+    const result = envSchema.safeParse(process.env);
+
+    if (!result.success) {
+      console.error("❌ Build failed: Environment validation error:");
+      result.error.errors.forEach((err) => {
+        console.error(`  - ${err.path.join(".")}: ${err.message}`);
+      });
+      process.exit(1);
+    }
+
+    console.log("✅ Build-time environment validation passed");
   }
-
-  console.log("✅ Environment validation passed");
 
   return process.env;
 })();
