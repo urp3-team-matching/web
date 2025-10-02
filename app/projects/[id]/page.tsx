@@ -42,7 +42,7 @@ export default function Project({ params }: { params: { id: string } }) {
 function ProjectContent({ params }: { params: { id: string } }) {
   const { isVerified } = useProjectVerification();
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const projectId = parseInt(params.id);
   const [project, setProject] = useState<PublicProjectWithForeignKeys>();
   const [applicants, setApplicants] = useState<PublicApplicant[]>();
@@ -296,7 +296,7 @@ function ProjectContent({ params }: { params: { id: string } }) {
       <div
         className={cn(
           "pt-2 lg:hidden flex-col justify-between",
-          mode === null && project.status === "RECRUITING" && "pb-14"
+          mode === null && "pb-14"
         )}
       >
         <MobileTab
