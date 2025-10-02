@@ -1,4 +1,4 @@
-import { NotFoundError } from "@/lib/authUtils";
+import { NotFoundError } from "@/lib/errors";
 import { prisma } from "@/lib/prisma";
 import {
   GetPostsQueryInput,

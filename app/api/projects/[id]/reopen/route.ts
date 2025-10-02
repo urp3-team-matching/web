@@ -2,8 +2,8 @@ import {
   BadRequestError,
   NotFoundError,
   UnauthorizedError,
-} from "@/lib/authUtils";
-import { reopenProject } from "@/services/project";
+} from "@/lib/errors";
+import { reopenProject, verifyProjectPermission } from "@/services/project";
 import { NextRequest, NextResponse } from "next/server";
 
 interface RouteContext {
@@ -20,15 +20,18 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
       );
     }
 
-    const { currentPassword } = await request.json();
-    if (!currentPassword) {
+    const isVerified = await verifyProjectPermission(
+      Number(projectId),
+      request
+    );
+    if (!isVerified) {
       return NextResponse.json(
-        { error: "Current password is required" },
-        { status: 400 }
+        { error: "Invalid project password" },
+        { status: 401 }
       );
     }
 
-    const project = await reopenProject(projectId, currentPassword);
+    const project = await reopenProject(projectId);
     return NextResponse.json(project);
   } catch (error) {
     if (error instanceof NotFoundError) {

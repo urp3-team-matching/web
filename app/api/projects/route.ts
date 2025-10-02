@@ -1,4 +1,5 @@
-import { BadRequestError } from "@/lib/authUtils";
+import { BadRequestError } from "@/lib/errors";
+import { ProjectPasswordManager } from "@/lib/projectPasswordManager";
 import { parseAndValidateRequestBody } from "@/lib/routeUtils";
 import { createProject, getAllProjects } from "@/services/project";
 import { GetProjectsQuerySchema, ProjectSchema } from "@/types/project";
@@ -14,7 +15,13 @@ export async function POST(request: NextRequest) {
       throw new Error("Validated data is unexpectedly undefined.");
 
     const project = await createProject(validatedData);
-    return NextResponse.json(project, { status: 201 });
+    const response = NextResponse.json(project, { status: 201 });
+    ProjectPasswordManager.setPasswordCookie(
+      response,
+      project.id,
+      validatedData.password
+    );
+    return response;
   } catch (error) {
     console.error("Error creating project:", error);
     if (error instanceof BadRequestError) {

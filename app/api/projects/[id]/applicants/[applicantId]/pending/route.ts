@@ -2,8 +2,9 @@ import {
   BadRequestError,
   NotFoundError,
   UnauthorizedError,
-} from "@/lib/authUtils";
+} from "@/lib/errors";
 import { pendingApplicant } from "@/services/applicant";
+import { verifyProjectPermission } from "@/services/project";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(
@@ -11,14 +12,18 @@ export async function POST(
   { params }: { params: { id: string; applicantId: string } }
 ) {
   const { id: projectId, applicantId } = params;
-  const body = await request.json();
-  const projectProposerPassword = body.projectProposerPassword;
+    const isVerified = await verifyProjectPermission(Number(projectId), request);
+    if (!isVerified) {
+      return NextResponse.json(
+        { error: "Invalid project password" },
+        { status: 401 }
+      );
+    }
 
   try {
     const updatedApplicant = await pendingApplicant(
       Number(projectId),
-      Number(applicantId),
-      projectProposerPassword
+      Number(applicantId)
     );
     return NextResponse.json(updatedApplicant);
   } catch (error) {

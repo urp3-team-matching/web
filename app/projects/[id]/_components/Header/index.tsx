@@ -70,7 +70,11 @@ const ProjectDetailHeader = ({
 
           {mode === null && user && (
             <Button
-              onClick={handleDelete}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDelete();
+              }}
+              type="button"
               variant="destructive"
               className="h-7"
             >

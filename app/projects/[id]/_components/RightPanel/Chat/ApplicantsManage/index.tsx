@@ -7,9 +7,8 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { MAX_APPLICANT_MAJOR_COUNT, MAX_APPLICANTS } from "@/constants";
-import useProjectPassword from "@/hooks/use-project-password";
 import apiClient, { PublicApplicant } from "@/lib/apiClientHelper";
-import { MaxApplicantsError } from "@/lib/authUtils";
+import { MaxApplicantsError } from "@/lib/errors";
 import { ApplicantStatus } from "@prisma/client";
 
 interface ApplicantGroupProps {
@@ -31,10 +30,9 @@ const ApplicantGroup = ({
 
   onApplicantStatusChange,
 }: ApplicantGroupProps) => {
-  const { getPassword } = useProjectPassword(projectId);
   async function handleAccept(applicantId: number) {
     try {
-      await apiClient.acceptApplicant(projectId, applicantId, getPassword());
+      await apiClient.acceptApplicant(projectId, applicantId);
       onApplicantStatusChange(applicantId, "APPROVED");
     } catch (error) {
       if (error instanceof MaxApplicantsError) {
@@ -50,7 +48,7 @@ const ApplicantGroup = ({
 
   async function handleReject(applicantId: number) {
     try {
-      await apiClient.rejectApplicant(projectId, applicantId, getPassword());
+      await apiClient.rejectApplicant(projectId, applicantId);
       onApplicantStatusChange(applicantId, "REJECTED");
     } catch (error) {
       alert("신청자 거절 요청에 실패했습니다" + error);
@@ -60,7 +58,7 @@ const ApplicantGroup = ({
 
   async function handlePending(applicantId: number) {
     try {
-      await apiClient.pendingApplicant(projectId, applicantId, getPassword());
+      await apiClient.pendingApplicant(projectId, applicantId);
       onApplicantStatusChange(applicantId, "PENDING");
     } catch (error) {
       alert("신청자 상태 변경 요청에 실패했습니다" + error);

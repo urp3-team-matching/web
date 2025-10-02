@@ -6,7 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import Spinner from "@/components/ui/spinner";
 import useUser from "@/hooks/use-user";
 import apiClient, { PublicPost } from "@/lib/apiClientHelper";
-import { NotFoundError } from "@/lib/authUtils";
+import { NotFoundError } from "@/lib/errors";
 import { parseDate } from "@/lib/utils";
 import { Attachment } from "@/types/post";
 import { Calendar, Eye } from "lucide-react";

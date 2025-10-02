@@ -1,20 +1,3 @@
-import bcrypt from "bcryptjs";
-
-/**
- * 평문 비밀번호와 저장된 해시를 비교합니다.
- */
-export async function verifyResourcePassword(
-  plainPassword: string,
-  hashedPassword: string | null
-): Promise<boolean> {
-  if (!plainPassword || !hashedPassword) {
-    // "모든 리소스는 비밀번호 설정되어있을거야" 원칙에 따라, hashedPassword가 null이면 안됨.
-    // plainPassword (currentPassword)가 없는 경우도 실패 처리.
-    return false;
-  }
-  return bcrypt.compare(plainPassword, hashedPassword);
-}
-
 export class BadRequestError extends Error {
   constructor(message = "Bad Request") {
     super(message);
