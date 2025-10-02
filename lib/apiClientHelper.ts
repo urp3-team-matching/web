@@ -315,7 +315,7 @@ class ApiClient {
     password?: string
   ): Promise<boolean> {
     if (!password) {
-      console.warn(
+      console.debug(
         "Password not provided to verifyProjectPassword; relying on cookie only."
       );
     }
