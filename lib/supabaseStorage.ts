@@ -1,6 +1,7 @@
-import { supabase } from "../lib/supabaseClient";
+import { getClientSupabase } from "@/utils/supabase/client";
 
 export function getStorage() {
+  const supabase = getClientSupabase();
   const storageName =
     process.env.NODE_ENV === "production"
       ? "web-production"

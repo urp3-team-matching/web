@@ -1,9 +1,9 @@
-import { createClient } from "@/utils/supabase/client";
+import { getClientSupabase } from "@/utils/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 
 const useUser = () => {
-  const supabase = createClient();
+  const supabase = getClientSupabase();
   const [user, setUser] = useState<User | null>(null);
   useEffect(() => {
     const fetchUser = async () => {

@@ -14,12 +14,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { SCHEMA_NAME } from "@/constants";
 import { useProjectVerification } from "@/contexts/ProjectVerificationContext";
 import { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
-import { supabase } from "@/lib/supabaseClient";
 import type {
   ChatItemGroup,
   ChatMessageContent,
   MessageFromDB,
 } from "@/types/chat"; // 타입 정의 경로 확인
+import { getClientSupabase } from "@/utils/supabase/client";
 import { Send } from "lucide-react";
 import { KeyboardEvent, useEffect, useRef, useState } from "react";
 import ChatBubble from "./ChatBubble";
@@ -128,6 +128,8 @@ export default function ChatField({ project }: ChatFieldProps) {
   const [currentMajor, setCurrentMajor] = useState<string>("");
   const [currentNickname, setCurrentNickname] = useState<string>("");
 
+  const supabase = getClientSupabase();
+
   function enterChatRoom(isAdmin: boolean, major: string, nickname: string) {
     let userId = "";
     if (!isAdmin) {
@@ -204,7 +206,7 @@ export default function ChatField({ project }: ChatFieldProps) {
     return () => {
       supabase.removeChannel(channel).catch(console.error);
     };
-  }, [projectId]);
+  }, [projectId, supabase]);
 
   useEffect(() => {
     setDisplayedChats(transformMessagesForDisplay(rawMessages, currentUserId));

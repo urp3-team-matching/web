@@ -1,9 +1,9 @@
 import { logout } from "@/actions/auth";
-import { createClient } from "@/utils/supabase/server";
+import { getServerSupabase } from "@/utils/supabase/server";
 import Link from "next/link";
 
 export default async function TopHeaderBox() {
-  const supabase = await createClient();
+  const supabase = await getServerSupabase();
   const { data, error } = await supabase.auth.getUser();
 
   return (

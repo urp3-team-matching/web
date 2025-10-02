@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabaseClient";
+import { getClientSupabase } from "@/utils/supabase/client";
 import { useCallback, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
@@ -23,6 +23,7 @@ interface UseFileResult {
 export function useFile({
   bucketName = `web-${process.env.NODE_ENV || "development"}`,
 }: UseFileProps = {}): UseFileResult {
+  const supabase = getClientSupabase();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isError, setIsError] = useState<Error | null>(null);
 
@@ -77,7 +78,7 @@ export function useFile({
         setIsLoading(false);
       }
     },
-    [bucketName]
+    [bucketName, supabase.storage]
   );
 
   /**
@@ -110,7 +111,7 @@ export function useFile({
         setIsLoading(false);
       }
     },
-    [bucketName]
+    [bucketName, supabase.storage]
   );
 
   /**
@@ -132,7 +133,7 @@ export function useFile({
         return null;
       }
     },
-    [bucketName]
+    [bucketName, supabase.storage]
   );
 
   /**
@@ -165,7 +166,7 @@ export function useFile({
         setIsLoading(false);
       }
     },
-    [bucketName]
+    [bucketName, supabase.storage]
   );
 
   return {
