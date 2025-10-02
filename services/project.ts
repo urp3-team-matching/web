@@ -12,7 +12,7 @@ import {
   Semester,
 } from "@/types/project";
 import { PaginatedType, PasswordOmittedType } from "@/types/utils";
-import { createClient } from "@/utils/supabase/server";
+import { getServerSupabase } from "@/utils/supabase/server";
 import { Prisma, Project } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { NextRequest } from "next/server";
@@ -40,7 +40,7 @@ export async function verifyProjectPermission(
 ): Promise<boolean> {
   try {
     // 1. 관리자인 경우 무조건 통과
-    const supabase = await createClient();
+    const supabase = await getServerSupabase();
     const {
       data: { user },
     } = await supabase.auth.getUser();
