@@ -1,6 +1,7 @@
 import Header from "@/components/Header";
 import { AppSidebar } from "@/components/Header/AppSidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import "@/lib/env";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 import { Noto_Sans_KR } from "next/font/google";

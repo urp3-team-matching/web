@@ -1,5 +1,6 @@
 import sendEmail from "@/lib/email";
 import emailTemplates from "@/lib/email/templates";
+import { env } from "@/lib/env";
 import { BadRequestError, NotFoundError } from "@/lib/errors";
 import { prisma } from "@/lib/prisma";
 import { ProjectPasswordManager } from "@/lib/projectPasswordManager";
@@ -108,7 +109,7 @@ export async function createProject(data: ProjectInput): Promise<Project> {
 
     const newProjectCreatedEmail = emailTemplates.newProjectCreated(project);
     sendEmail({
-      to: process.env.EMAIL_SERVER_USER,
+      to: env.EMAIL_SERVER_USER,
       subject: newProjectCreatedEmail.subject,
       html: newProjectCreatedEmail.html,
     });
@@ -127,7 +128,7 @@ export async function createProject(data: ProjectInput): Promise<Project> {
 
     const newProjectCreatedEmail = emailTemplates.newProjectCreated(project);
     sendEmail({
-      to: process.env.EMAIL_SERVER_USER,
+      to: env.EMAIL_SERVER_USER,
       subject: newProjectCreatedEmail.subject,
       html: newProjectCreatedEmail.html,
     });
