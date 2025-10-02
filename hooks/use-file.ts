@@ -1,3 +1,4 @@
+import { env } from "@/lib/env";
 import { getClientSupabase } from "@/utils/supabase/client";
 import { useCallback, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
@@ -21,7 +22,7 @@ interface UseFileResult {
  * @param bucketName 사용할 Storage 버킷 이름 (기본값: web-{NODE_ENV})
  */
 export function useFile({
-  bucketName = `web-${process.env.NODE_ENV || "development"}`,
+  bucketName = `web-${env.NODE_ENV || "development"}`,
 }: UseFileProps = {}): UseFileResult {
   const supabase = getClientSupabase();
   const [isLoading, setIsLoading] = useState<boolean>(false);

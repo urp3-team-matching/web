@@ -1,11 +1,10 @@
+import { env } from "@/lib/env";
 import { getClientSupabase } from "@/utils/supabase/client";
 
 export function getStorage() {
   const supabase = getClientSupabase();
   const storageName =
-    process.env.NODE_ENV === "production"
-      ? "web-production"
-      : "web-development";
+    env.NODE_ENV === "production" ? "web-production" : "web-development";
   return supabase.storage.from(storageName);
 }
 
