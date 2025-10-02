@@ -2,6 +2,7 @@ import Header from "@/components/Header";
 import { AppSidebar } from "@/components/Header/AppSidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
+import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import { Noto_Sans_KR } from "next/font/google";
@@ -43,6 +44,7 @@ export default function RootLayout({
                 <Header />
                 <main className="container">{children}</main>
                 <SpeedInsights />
+                <Analytics />
               </div>
             </div>
           </SidebarProvider>
