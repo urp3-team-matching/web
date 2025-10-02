@@ -18,10 +18,16 @@ export class ProjectPasswordManager {
       throw new NotFoundError("Project not found.");
     }
 
-    if (!password || !project.passwordHash) {
-      console.debug("Password or password hash is missing");
+    if (!password) {
+      console.debug("Password is missing");
       return false;
     }
+    if (!project.passwordHash) {
+      throw new Error(
+        `Data integrity error: Project ${id} is missing a password hash.`
+      );
+    }
+
     const isValid = await bcrypt.compare(password, project.passwordHash);
     console.debug(`Password validation for project ${id}:`, isValid);
     return isValid;
@@ -68,11 +74,7 @@ export class ProjectPasswordManager {
       }
 
       const decryptedPassword = decryptPassword(encryptedPassword);
-      console.debug(
-        "Decrypted password for project:",
-        projectId,
-        decryptedPassword
-      );
+      console.debug("Decrypted password for project:", projectId);
       return decryptedPassword;
     } catch (error) {
       console.error("Failed to get password from NextRequest:", error);

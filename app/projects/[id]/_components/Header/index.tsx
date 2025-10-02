@@ -34,9 +34,7 @@ const ProjectDetailHeader = ({
   const user = useUser();
 
   const handleDelete = () => {
-    const confirm = window.confirm("정말로 이 프로젝트를 삭제하시겠습니까?");
-    console.log(confirm);
-    if (confirm) {
+    if (window.confirm("정말로 이 프로젝트를 삭제하시겠습니까?")) {
       onDelete();
     }
   };

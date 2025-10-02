@@ -50,7 +50,6 @@ export function ProjectVerificationProvider({
 
       if (user) {
         // 🔹 로그인된 사용자는 무조건 인증됨
-        console.log("User is authenticated with Supabase:", user.email);
         setIsVerified(true);
         return;
       }
@@ -58,7 +57,6 @@ export function ProjectVerificationProvider({
       // 🔹 로그인되지 않은 경우에만 프로젝트 비밀번호 검증
       const result = await apiClient.verifyProjectPassword(projectId);
       setIsVerified(result);
-      console.log("Project password verification result:", result);
     } catch (error) {
       console.error("Project verification failed:", error);
       setIsVerified(false);
@@ -80,7 +78,6 @@ export function ProjectVerificationProvider({
     }
 
     // 프로젝트 ID가 변경되었거나 최초 로드인 경우
-    console.log("Verifying project:", projectId);
     setIsVerified(null);
     verifyingRef.current = false;
     lastProjectIdRef.current = projectId;
@@ -93,15 +90,12 @@ export function ProjectVerificationProvider({
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth state changed:", event, session?.user?.email);
 
       if (event === "SIGNED_IN" && session?.user) {
         // 🔹 로그인 시 즉시 인증됨으로 설정
-        console.log("User signed in, setting verified to true");
         setIsVerified(true);
       } else if (event === "SIGNED_OUT") {
         // 🔹 로그아웃 시 재검증 필요
-        console.log("User signed out, re-verifying project access");
         setIsVerified(null);
         verifyingRef.current = false;
         verifyProject();

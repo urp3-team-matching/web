@@ -40,10 +40,10 @@ export async function verifyProjectPermission(
 ): Promise<boolean> {
   try {
     // 1. 관리자인 경우 무조건 통과
-    const supabase = createClient();
+    const supabase = await createClient();
     const {
       data: { user },
-    } = await (await supabase).auth.getUser();
+    } = await supabase.auth.getUser();
     if (user) return true;
 
     // 2. 관리자가 아닌 일반 사용자인 경우
