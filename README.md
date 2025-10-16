@@ -35,6 +35,17 @@ The `ADMIN_EMAILS` environment variable is used for Supabase keep-alive monitori
 
 > **Note:** The automated keep-alive system helps prevent Supabase project from going inactive by sending regular health checks every hour.
 
+#### Testing Email Alerts (Debug Mode)
+
+To test the email notification system:
+
+1. Go to GitHub Actions → "Supabase Keep-Alive" workflow
+2. Click "Run workflow"
+3. Check the "Debug mode" checkbox
+4. Run the workflow
+
+When debug mode is enabled, emails will be sent to all admin addresses regardless of success/failure status, allowing you to verify the notification system is working correctly.
+
 ### Running the Development Server
 
 First, run the development server:

@@ -147,8 +147,16 @@ const supabaseKeepAliveFailed = (data: {
     success: boolean;
     error: string | null;
   }>;
+  isDebugMode?: boolean;
 }): EmailTemplate => {
-  const { timestamp, successCount, totalOperations, duration, results } = data;
+  const {
+    timestamp,
+    successCount,
+    totalOperations,
+    duration,
+    results,
+    isDebugMode = false,
+  } = data;
   const kstTime = new Date(timestamp).toLocaleString("ko-KR", {
     timeZone: "Asia/Seoul",
     year: "numeric",
@@ -159,8 +167,17 @@ const supabaseKeepAliveFailed = (data: {
     second: "2-digit",
   });
 
+  const isHealthy = successCount >= 2; // 최소 2개 테이블이 응답해야 건강한 상태
+  const headerColor = isHealthy ? "#4caf50" : "#d32f2f";
+  const headerEmoji = isHealthy ? "✅" : "⚠️";
+  const headerTitle = isHealthy
+    ? "Supabase 연결 정상 (디버그 모드)"
+    : "Supabase 연결 상태 문제 감지";
+
   return {
-    subject: "🚨 [긴급] Supabase Keep-Alive 실패 알림",
+    subject: isDebugMode
+      ? `🐛 [테스트] Supabase Keep-Alive ${isHealthy ? "성공" : "실패"} 알림`
+      : "🚨 [긴급] Supabase Keep-Alive 실패 알림",
     html: `
       <!DOCTYPE html>
       <html>
@@ -168,7 +185,7 @@ const supabaseKeepAliveFailed = (data: {
         <style>
           body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
           .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-          .header { background-color: #d32f2f; color: white; padding: 15px; border-radius: 5px; }
+          .header { background-color: ${headerColor}; color: white; padding: 15px; border-radius: 5px; }
           .content { background-color: #f5f5f5; padding: 20px; margin-top: 20px; border-radius: 5px; }
           .info-row { margin: 10px 0; }
           .label { font-weight: bold; color: #555; }
@@ -177,15 +194,28 @@ const supabaseKeepAliveFailed = (data: {
           .status-success { background-color: #e8f5e9; color: #2e7d32; }
           .status-failed { background-color: #ffebee; color: #c62828; }
           .alert { background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 12px; margin-top: 20px; }
+          .debug-badge { background-color: #9c27b0; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px; }
         </style>
       </head>
       <body>
         <div class="container">
           <div class="header">
-            <h2 style="margin: 0;">⚠️ Supabase 연결 상태 문제 감지</h2>
+            <h2 style="margin: 0;">
+              ${headerEmoji} ${headerTitle}
+              ${
+                isDebugMode
+                  ? '<span class="debug-badge">🐛 디버그 모드</span>'
+                  : ""
+              }
+            </h2>
           </div>
           
           <div class="content">
+            ${
+              isDebugMode
+                ? '<div style="background-color: #f3e5f5; padding: 10px; border-radius: 5px; margin-bottom: 15px;"><strong>ℹ️ 테스트 알림:</strong> 이 메일은 디버그 모드로 발송된 테스트 알림입니다.</div>'
+                : ""
+            }
             <div class="info-row">
               <span class="label">발생 시간:</span> ${kstTime}
             </div>
@@ -216,6 +246,9 @@ const supabaseKeepAliveFailed = (data: {
                 .join("")}
             </ul>
             
+            ${
+              !isHealthy && !isDebugMode
+                ? `
             <div class="alert">
               <strong>⚠️ 조치 필요:</strong>
               <p>즉시 Supabase 프로젝트 상태를 확인해주세요.</p>
@@ -225,6 +258,16 @@ const supabaseKeepAliveFailed = (data: {
                 <li>필요시 프로젝트 재시작 고려</li>
               </ul>
             </div>
+            `
+                : isHealthy && isDebugMode
+                ? `
+            <div style="background-color: #e8f5e9; border-left: 4px solid #4caf50; padding: 12px; margin-top: 20px;">
+              <strong>✅ 연결 상태 정상:</strong>
+              <p>모든 시스템이 정상적으로 작동하고 있습니다. (테스트 모드)</p>
+            </div>
+            `
+                : ""
+            }
           </div>
         </div>
       </body>

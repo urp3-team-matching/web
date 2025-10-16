@@ -11,9 +11,13 @@ import { NextResponse } from "next/server";
  *
  * GitHub Actions workflow에서 주기적으로 실행
  * 실패 시 환경 변수에 등록된 모든 관리자에게 즉시 이메일 알림 발송
+ *
+ * @param request - Query params: ?debug=true (테스트 모드, 성공해도 이메일 발송)
  */
-export async function GET() {
+export async function GET(request: Request) {
   const timestamp = new Date().toISOString();
+  const { searchParams } = new URL(request.url);
+  const isDebugMode = searchParams.get("debug") === "true";
 
   try {
     const supabase = getClientSupabase();
@@ -68,10 +72,11 @@ export async function GET() {
       successCount: `${successCount}/${operations.length}`,
       operations: results,
       environment: process.env.NODE_ENV,
+      debugMode: isDebugMode,
     };
 
-    // 실패 시 모든 관리자에게 즉시 알림 발송
-    if (!isHealthy) {
+    // 실패 시 또는 디버그 모드일 때 모든 관리자에게 즉시 알림 발송
+    if (!isHealthy || isDebugMode) {
       const adminEmails = process.env.ADMIN_EMAILS?.split(",").map((email) =>
         email.trim()
       );
@@ -83,6 +88,7 @@ export async function GET() {
           totalOperations: operations.length,
           duration,
           results,
+          isDebugMode,
         });
 
         // 모든 관리자에게 병렬로 이메일 발송
@@ -113,7 +119,12 @@ export async function GET() {
     }
 
     if (isHealthy) {
-      console.log("✅ Supabase keep-alive successful:", logData);
+      console.log(
+        `✅ Supabase keep-alive successful${
+          isDebugMode ? " (Debug mode)" : ""
+        }:`,
+        logData
+      );
     } else {
       console.error("⚠️ Supabase keep-alive issues detected:", logData);
     }
@@ -121,12 +132,16 @@ export async function GET() {
     return NextResponse.json(
       {
         message: isHealthy
-          ? "Supabase connection healthy"
+          ? isDebugMode
+            ? "Supabase connection healthy (Debug mode - email sent)"
+            : "Supabase connection healthy"
           : "Supabase connection issues detected",
         timestamp,
         duration,
         healthy: isHealthy,
+        debugMode: isDebugMode,
         operations: results,
+        ...(isDebugMode && { emailSent: true }),
       },
       {
         status: isHealthy ? 200 : 207, // 207 Multi-Status for partial success

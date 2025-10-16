@@ -5,6 +5,12 @@ on:
     # 1시간마다 실행 (매시 정각)
     - cron: "0 * * * *"
   workflow_dispatch: # 수동 실행 가능
+    inputs:
+      debug:
+        description: "Debug mode (sends email even on success)"
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   keep-alive:
@@ -14,9 +20,17 @@ jobs:
       - name: Ping Supabase keep-alive endpoint
         run: |
           echo "🚀 Calling keep-alive endpoint..."
+          echo "🐛 Debug mode: ${{ github.event.inputs.debug || 'false' }}"
+
+          DEBUG_PARAM=""
+          if [ "${{ github.event.inputs.debug }}" == "true" ]; then
+            DEBUG_PARAM="?debug=true"
+            echo "📧 Debug mode enabled: Will send email notification regardless of result"
+          fi
+
           response=$(curl -s -w "\n%{http_code}" \
             -X GET \
-            "${{ secrets.VERCEL_DEPLOYMENT_URL }}/api/cron/keep-alive")
+            "${{ secrets.VERCEL_DEPLOYMENT_URL }}/api/cron/keep-alive${DEBUG_PARAM}")
 
           http_code=$(echo "$response" | tail -n1)
           body=$(echo "$response" | sed '$d')
