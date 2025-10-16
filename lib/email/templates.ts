@@ -134,11 +134,111 @@ const projectStatusChanged = (
   };
 };
 
+/**
+ * Supabase Keep-Alive 실패 알림
+ */
+const supabaseKeepAliveFailed = (data: {
+  timestamp: string;
+  successCount: number;
+  totalOperations: number;
+  duration: number;
+  results: Array<{
+    table: string;
+    success: boolean;
+    error: string | null;
+  }>;
+}): EmailTemplate => {
+  const { timestamp, successCount, totalOperations, duration, results } = data;
+  const kstTime = new Date(timestamp).toLocaleString("ko-KR", {
+    timeZone: "Asia/Seoul",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+
+  return {
+    subject: "🚨 [긴급] Supabase Keep-Alive 실패 알림",
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background-color: #d32f2f; color: white; padding: 15px; border-radius: 5px; }
+          .content { background-color: #f5f5f5; padding: 20px; margin-top: 20px; border-radius: 5px; }
+          .info-row { margin: 10px 0; }
+          .label { font-weight: bold; color: #555; }
+          .status-list { list-style: none; padding: 0; }
+          .status-item { padding: 10px; margin: 5px 0; border-radius: 3px; }
+          .status-success { background-color: #e8f5e9; color: #2e7d32; }
+          .status-failed { background-color: #ffebee; color: #c62828; }
+          .alert { background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 12px; margin-top: 20px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h2 style="margin: 0;">⚠️ Supabase 연결 상태 문제 감지</h2>
+          </div>
+          
+          <div class="content">
+            <div class="info-row">
+              <span class="label">발생 시간:</span> ${kstTime}
+            </div>
+            <div class="info-row">
+              <span class="label">성공률:</span> ${successCount}/${totalOperations} 작업
+            </div>
+            <div class="info-row">
+              <span class="label">응답 시간:</span> ${duration}ms
+            </div>
+            
+            <h3>상세 내역:</h3>
+            <ul class="status-list">
+              ${results
+                .map(
+                  (r) => `
+                <li class="status-item ${
+                  r.success ? "status-success" : "status-failed"
+                }">
+                  <strong>${r.table}:</strong> 
+                  ${
+                    r.success
+                      ? "✅ 성공"
+                      : `❌ 실패 - ${r.error || "알 수 없는 오류"}`
+                  }
+                </li>
+              `
+                )
+                .join("")}
+            </ul>
+            
+            <div class="alert">
+              <strong>⚠️ 조치 필요:</strong>
+              <p>즉시 Supabase 프로젝트 상태를 확인해주세요.</p>
+              <ul>
+                <li>Supabase 대시보드에서 프로젝트 상태 확인</li>
+                <li>데이터베이스 연결 및 권한 확인</li>
+                <li>필요시 프로젝트 재시작 고려</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </body>
+      </html>
+    `,
+  };
+};
+
 const emailTemplates = {
   newProjectCreated,
   applicantApplied,
   applicantStatusChanged,
   projectStatusChanged,
+  supabaseKeepAliveFailed,
 };
 
 export default emailTemplates;
