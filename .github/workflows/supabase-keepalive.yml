@@ -1,0 +1,42 @@
+name: Supabase Keep-Alive
+
+on:
+  schedule:
+    # 6시간마다 실행 (UTC 기준: 00:00, 06:00, 12:00, 18:00)
+    - cron: "0 */6 * * *"
+  workflow_dispatch: # 수동 실행 가능
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Ping Supabase keep-alive endpoint
+        run: |
+          echo "🚀 Calling keep-alive endpoint..."
+          response=$(curl -s -w "\n%{http_code}" \
+            -X GET \
+            "${{ secrets.VERCEL_DEPLOYMENT_URL }}/api/cron/keep-alive")
+
+          http_code=$(echo "$response" | tail -n1)
+          body=$(echo "$response" | sed '$d')
+
+          echo "📊 Response Status: $http_code"
+          echo "📝 Response Body:"
+          echo "$body" | jq '.' || echo "$body"
+
+          if [ "$http_code" -ge 200 ] && [ "$http_code" -lt 300 ]; then
+            echo "✅ Keep-alive successful!"
+            exit 0
+          else
+            echo "❌ Keep-alive failed with status $http_code"
+            exit 1
+          fi
+        env:
+          TZ: "Asia/Seoul"
+
+      - name: Log execution
+        if: always()
+        run: |
+          echo "⏰ Execution time: $(date +'%Y-%m-%d %H:%M:%S %Z')"
+          echo "🌏 Timezone: Asia/Seoul"
