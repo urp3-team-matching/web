@@ -1,5 +1,4 @@
-import nodemailer from "nodemailer";
-import { MailOptions } from "nodemailer/lib/sendmail-transport";
+import { Resend } from "resend";
 
 export default async function sendEmail({
   to,
@@ -10,23 +9,17 @@ export default async function sendEmail({
   subject: string;
   html: string;
 }) {
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.EMAIL_SERVER_USER,
-      pass: process.env.EMAIL_SERVER_PASSWORD,
-    },
-  });
-
-  const mailOptions: MailOptions = {
-    from: process.env.EMAIL_SERVER_USER,
-    to,
-    subject,
-    html,
-  };
-
+  const resend = new Resend(process.env.RESEND_API_KEY);
   try {
-    await transporter.sendMail(mailOptions);
+    const result = await resend.emails.send({
+      from: process.env.EMAIL_FROM!,
+      to,
+      subject,
+      html,
+    });
+    if (result.error) {
+      throw new Error(result.error.message);
+    }
     console.log(`Email sent to ${to} with subject ${subject}`);
   } catch (error) {
     console.error(
