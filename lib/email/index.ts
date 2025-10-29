@@ -1,4 +1,5 @@
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
+import { MailOptions } from "nodemailer/lib/sendmail-transport";
 
 const EMAIL_SEND_RETRY_COUNT = 3;
 
@@ -11,19 +12,23 @@ export default async function sendEmail({
   subject: string;
   html: string;
 }) {
-  const resend = new Resend(process.env.RESEND_API_KEY);
   let lastError;
   for (let i = 0; i < EMAIL_SEND_RETRY_COUNT; i++) {
     try {
-      const result = await resend.emails.send({
-        from: process.env.EMAIL_FROM!,
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.EMAIL_SERVER_USER,
+          pass: process.env.EMAIL_SERVER_PASSWORD,
+        },
+      });
+      const mailOptions: MailOptions = {
+        from: process.env.EMAIL_SERVER_USER,
         to,
         subject,
         html,
-      });
-      if (result.error) {
-        throw new Error(result.error.message);
-      }
+      };
+      await transporter.sendMail(mailOptions);
       console.log(`Email sent to ${to} with subject ${subject}`);
       return;
     } catch (error) {
