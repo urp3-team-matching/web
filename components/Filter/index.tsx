@@ -23,7 +23,7 @@ const Filter = () => {
     parseAsStringEnum<ProjectStatus>(Object.values(ProjectStatus))
   );
 
-  const currentYear = new Date().getFullYear();
+  const currentYear = new Date().getFullYear() + 1;
 
   const [year, setYear] = useQueryState<number>(
     "year",
