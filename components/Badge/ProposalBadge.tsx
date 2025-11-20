@@ -16,11 +16,11 @@ export default function ProposalBadge({ proposerType }: ProposalBadgeProps) {
       break;
     case ProposerType.STUDENT:
       proposerText = "학생제안";
-      badgeColor = "bg-teal-800";
+      badgeColor = "bg-indigo-800";
       break;
     case ProposerType.HOST:
       proposerText = "융합원제안";
-      badgeColor = "bg-indigo-800";
+      badgeColor = "bg-teal-800";
       break;
     default:
       proposerText = "제안자 없음";
