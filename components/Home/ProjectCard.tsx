@@ -14,9 +14,7 @@ export interface ProjectCardProps {
 
 export default function ProjectCard({ project, className }: ProjectCardProps) {
   const projectStatus = project.status;
-  const approvedApplicantCount = project.applicants.filter(
-    (applicant) => applicant.status === "APPROVED"
-  ).length;
+  const applicantCount = project.applicants.length;
 
   return (
     <div
@@ -73,7 +71,7 @@ export default function ProjectCard({ project, className }: ProjectCardProps) {
       {/* 신청 현황 */}
       <Badge className="bg-green-400 text-white font-black flex flex-col *:text-xs gap-0 lg:text-base absolute w-14 h-10 lg:w-16 lg:h-12 top-1/2 -translate-y-1/2 right-0">
         <span>지원현황</span>
-        {approvedApplicantCount} / {MAX_APPLICANTS}
+        {ApplicantCount} / {MAX_APPLICANTS}
       </Badge>
     </div>
   );
