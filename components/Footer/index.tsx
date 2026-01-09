@@ -20,14 +20,14 @@ export default function Footer() {
             </p>
 
             <p className="mt-[10px] text-[12px] leading-[18px]">
-              COPYRIGHT © 2024 SKKU Institute for Cross-disciplinary Studies ALL RIGHTS RESERVED
+              COPYRIGHT © 2025 SKKU Institute for Cross-disciplinary Studies ALL RIGHTS RESERVED
             </p>
           </div>
 
           {/* Right (TEL만) */}
           <div className="shrink-0 text-right">
             <div className="inline-flex items-center justify-center rounded-full border-2 border-white px-[24px] py-[6px] text-[18px] leading-[24px] font-semibold">
-              TEL : 031.290.5703
+              Email : urp3@skku.edu
             </div>
           </div>
         </div>
