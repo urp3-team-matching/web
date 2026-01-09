@@ -43,7 +43,7 @@ export default function RootLayout({
               {/* 본문 영역 */}
               <div className="flex flex-col flex-1 min-w-0">
                 <Header />
-                <main className="container">{children}</main>
+                
                 {/* ✅ flex-1 추가 (Footer가 항상 하단으로 가도록) */}
                 <main className="container flex-1">{children}</main>
 
