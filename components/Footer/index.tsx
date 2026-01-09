@@ -15,7 +15,7 @@ export default function Footer() {
             </p>
 
             <p className="mt-[12px] text-[12px] leading-[18px]">
-              이 홈페이지는 2025학년도 1학기 융합연구학점제 수행팀 '김장순'팀과 성균융합원행정실이 협업하여 제작하였습니다.
+              이 홈페이지는 2025학년도 1학기 융합연구학점제 수행팀 김장순팀과 성균융합원행정실이 협업하여 제작하였습니다.
             </p>
 
             <p className="mt-[10px] text-[12px] leading-[18px]">
