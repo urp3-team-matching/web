@@ -1,4 +1,5 @@
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import { AppSidebar } from "@/components/Header/AppSidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
@@ -43,6 +44,12 @@ export default function RootLayout({
               <div className="flex flex-col flex-1 min-w-0">
                 <Header />
                 <main className="container">{children}</main>
+                {/* ✅ flex-1 추가 (Footer가 항상 하단으로 가도록) */}
+                <main className="container flex-1">{children}</main>
+
+                {/* ✅ Footer 추가 */}
+                <Footer />
+                
                 <SpeedInsights />
                 <Analytics />
               </div>
