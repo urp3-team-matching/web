@@ -19,22 +19,8 @@ export default function Footer() {
             </p>
 
             <p className="mt-[10px] text-[12px] leading-[18px]">
-              COPYRIGHT © 2024 SUNGKYUNKWAN UNIVERSITY ALL RIGHTS RESERVED
+              COPYRIGHT © 2024 SKKU Institute for Cross-disciplinary Studies ALL RIGHTS RESERVED
             </p>
-
-            <div className="mt-[30px] text-[14px] leading-[20px]">
-              <a href="#" className="text-[#69BA93] hover:underline">
-                개인정보처리방침
-              </a>
-              <span className="mx-[10px]">|</span>
-              <a href="#" className="text-white hover:underline">
-                네티즌윤리규약
-              </a>
-              <span className="mx-[10px]">|</span>
-              <a href="#" className="text-white hover:underline">
-                이메일무단수집거부
-              </a>
-            </div>
           </div>
 
           {/* Right */}
