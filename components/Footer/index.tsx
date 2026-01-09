@@ -6,7 +6,7 @@ export default function Footer() {
           {/* Left */}
           <div className="min-w-0">
             <p className="text-[26px] leading-[28px] font-semibold tracking-[0.3px]">
-              SUNGKYUNKWAN UNIVERSITY (SKKU)
+              SUNGKYUN KWAN UNIVERSITY (SKKU)
             </p>
 
             <p className="mt-[14px] text-[20px] leading-[24px] font-semibold">
@@ -19,7 +19,7 @@ export default function Footer() {
             </p>
 
             <p className="mt-[10px] text-[12px] leading-[18px]">
-              COPYRIGHT © 2025 SKKU Institute for Cross-disciplinary Studies ALL RIGHTS RESERVED
+              COPYRIGHT © 2024 SKKU Institute for Cross-disciplinary Studies ALL RIGHTS RESERVED
             </p>
           </div>
 
