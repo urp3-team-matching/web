@@ -1,6 +1,5 @@
 export default function Footer() {
   return (
-    // ✅ 헤더처럼: 전체 폭 + px-6, container 없이 시작점이 왼쪽으로 붙는 느낌
     <footer className="w-full bg-[#343338] text-white px-6">
       <div className="py-10 w-full">
         <div className="flex items-start justify-between gap-10">
