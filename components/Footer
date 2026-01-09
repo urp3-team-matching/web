@@ -7,7 +7,7 @@ export default function Footer() {
           {/* Left */}
           <div className="min-w-0">
             <p className="text-[26px] leading-[28px] font-semibold tracking-[0.3px]">
-              SUNG KYUN KWAN UNIVERSITY (SKKU)
+              SUNGKYUN KWAN UNIVERSITY (SKKU)
             </p>
 
             <p className="mt-[14px] text-[20px] leading-[24px] font-semibold">
