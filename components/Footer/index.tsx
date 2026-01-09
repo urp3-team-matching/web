@@ -21,7 +21,7 @@ export default function Footer() {
               </p>
 
               <p className="mt-[10px] text-[12px] leading-[18px]">
-                COPYRIGHT © 2024 SKKU Institute for Cross-disciplinary Studies ALL RIGHTS RESERVED
+                COPYRIGHT © 2025 SKKU Institute for Cross-disciplinary Studies ALL RIGHTS RESERVED
               </p>
             </div>
 
