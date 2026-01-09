@@ -1,12 +1,13 @@
 export default function Footer() {
   return (
+    // ✅ 헤더처럼: 전체 폭 + px-6, container 없이 시작점이 왼쪽으로 붙는 느낌
     <footer className="w-full bg-[#343338] text-white px-6">
       <div className="py-10 w-full">
         <div className="flex items-start justify-between gap-10">
           {/* Left */}
           <div className="min-w-0">
             <p className="text-[26px] leading-[28px] font-semibold tracking-[0.3px]">
-              SUNGKYUNKWAN UNIVERSITY (SKKU)
+              SUNGKYUN KWAN UNIVERSITY (SKKU)
             </p>
 
             <p className="mt-[14px] text-[20px] leading-[24px] font-semibold">
@@ -14,7 +15,8 @@ export default function Footer() {
             </p>
 
             <p className="mt-[12px] text-[12px] leading-[18px]">
-              이 홈페이지는 2025학년도 1학기 융합연구학점제 수행팀 김장순팀과 성균융합원행정실이 협업하여 제작하였습니다.
+              이 홈페이지는 2025학년도 1학기 융합연구학점제 수행팀 &apos;김장순&apos;팀과 성균융합원행정실이
+              협업하여 제작하였습니다.
             </p>
 
             <p className="mt-[10px] text-[12px] leading-[18px]">
