@@ -197,12 +197,11 @@ export async function getAllProjects(
     let startDate: Date;
     let endDate: Date;
 
-    if (semester) {
       // 2학기: 해당 년도 3월 1일 ~ 9월 30일
       // 1학기(차년도): 9월 1일 ~ 다음 해 2월 28/29일
       if (semester === Semester.SECOND) {
         startDate = new Date(inputYearOrCurrentYear, 2, 1); // 3월 1일
-        endDate = new Date(inputYearOrCurrentYear, 9, 0, 23, 59, 59, 999); // 9월 30일
+        endDate = new Date(inputYearOrCurrentYear, 8, 30, 23, 59, 59, 999); // 9월 30일
       } else if (semester === Semester.FIRST) {
         startDate = new Date(inputYearOrCurrentYear, 9, 1); // 10월 1일
         endDate = new Date(inputYearOrCurrentYear + 1, 2, 0, 23, 59, 59, 999); // 2월 28일
