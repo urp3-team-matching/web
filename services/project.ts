@@ -192,23 +192,19 @@ export async function getAllProjects(
     orderByConditions.createdDatetime = "desc";
   }
 
-// 1. 기준 연도 설정
 const inputYearOrCurrentYear = year ?? new Date().getFullYear();
 
-// 2. 변수 선언 (나중에 사용하기 위해 let으로 선언)
 let startDate: Date;
 let endDate: Date;
 
 // 3. 학기 구분에 따른 날짜 범위 설정
 if (semester === Semester.SECOND) {
   // 2학기: 해당 년도 3월 1일 ~ 9월 30일
-  // (JavaScript Month: 2=3월, 9=10월 -> 10월 0일은 9월 말일)
   startDate = new Date(inputYearOrCurrentYear, 2, 1);
   endDate = new Date(inputYearOrCurrentYear, 9, 0, 23, 59, 59, 999);
 } 
 else if (semester === Semester.FIRST) {
   // 1학기(차년도): 해당 년도 10월 1일 ~ 다음 해 2월 말일
-  // (JavaScript Month: 9=10월, 2=3월 -> 3월 0일은 2월 말일)
   startDate = new Date(inputYearOrCurrentYear, 9, 1);
   endDate = new Date(inputYearOrCurrentYear + 1, 2, 0, 23, 59, 59, 999);
 } 
@@ -217,10 +213,6 @@ else {
   startDate = new Date(inputYearOrCurrentYear, 2, 1);
   endDate = new Date(inputYearOrCurrentYear + 1, 2, 0, 23, 59, 59, 999);
 }
-
-// 4. whereConditions가 정의되어 있는지 확인 후 값 할당
-// (만약 위에서 whereConditions가 선언되지 않았다면 아래 주석을 해제하세요)
-// const whereConditions: any = {}; 
 
 whereConditions.createdDatetime = {
   gte: startDate,
