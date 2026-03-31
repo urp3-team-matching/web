@@ -39,15 +39,12 @@ export async function verifyProjectPermission(
   requestOrPassword: NextRequest | string
 ): Promise<boolean> {
   try {
-    // 1. 관리자인 경우 무조건 통과
     const supabase = await getServerSupabase();
     const {
       data: { user },
     } = await supabase.auth.getUser();
     if (user) return true;
 
-    // 2. 관리자가 아닌 일반 사용자인 경우
-    // 2-1. 두 번째 매개변수가 string인 경우 (명시적 비밀번호)
     if (typeof requestOrPassword === "string") {
       return await ProjectPasswordManager.validateProjectPassword(
         projectId,
@@ -55,7 +52,6 @@ export async function verifyProjectPermission(
       );
     }
 
-    // 2-2. 두 번째 매개변수가 NextRequest인 경우 (쿠키에서 추출)
     const cookiePassword = ProjectPasswordManager.getPasswordFromNextRequest(
       requestOrPassword,
       projectId
@@ -83,7 +79,6 @@ export async function createProject(data: ProjectInput): Promise<Project> {
   );
 
   if (data.proposerType === "STUDENT") {
-    // 학생이 제안하는 경우 자동으로 해당 학생을 지원자로도 등록
     if (!data.proposerMajor) {
       throw new BadRequestError(
         "Proposer major is required when proposer type is STUDENT."
@@ -96,14 +91,14 @@ export async function createProject(data: ProjectInput): Promise<Project> {
         applicants: {
           create: {
             name: data.proposerName,
-            email: data.email || "", // 본인 이메일은 저장할 필요 없음
+            email: data.email || "",
             major: data.proposerMajor,
             introduction: "",
             status: "APPROVED",
           },
         },
       },
-      select: projectPublicSelection, // passwordHash 제외 확인
+      select: projectPublicSelection,
     });
 
     const newProjectCreatedEmail = emailTemplates.newProjectCreated(project);
@@ -119,7 +114,7 @@ export async function createProject(data: ProjectInput): Promise<Project> {
         ...projectDataRest,
         passwordHash: projectPasswordHash,
       },
-      select: projectPublicSelection, // passwordHash 제외 확인
+      select: projectPublicSelection,
     });
     if (data.proposerType === "HOST") {
       return project;
@@ -140,8 +135,8 @@ export async function getAllProjects(
   query: GetProjectsQueryInput
 ): Promise<PaginatedType<PasswordOmittedProject>> {
   const {
-    page = 1, // 기본값 설정
-    limit = 10, // 기본값 설정
+    page = 1,
+    limit = 10,
     sortBy = "createdDatetime",
     sortOrder = "desc",
     name,
@@ -152,6 +147,7 @@ export async function getAllProjects(
     year,
     semester,
   } = query;
+
   const skip = (page - 1) * limit;
   const take = limit;
 
@@ -173,112 +169,82 @@ export async function getAllProjects(
   if (sortBy) {
     if (sortBy.includes(".")) {
       const [relation, field] = sortBy.split(".");
-
-      // 관계형 필드 정렬을 위한 적절한 객체 구조 생성
       if (relation === "applicants") {
         orderByConditions.applicants = { [field]: sortOrder };
       } else {
-        // 다른 관계가 있다면 여기에 추가
-        console.warn(`Unsupported relation for sorting: ${relation}`);
-        // 기본값 설정
         orderByConditions.createdDatetime = "desc";
       }
     } else {
-      orderByConditions[
-        sortBy as keyof Prisma.ProjectOrderByWithRelationInput
-      ] = sortOrder;
+      orderByConditions[sortBy as keyof Prisma.ProjectOrderByWithRelationInput] = sortOrder;
     }
   } else {
     orderByConditions.createdDatetime = "desc";
   }
 
-const inputYearOrCurrentYear = year ?? new Date().getFullYear();
-  
-let startDate: Date;
-let endDate: Date;
+  // --- 학기 날짜 로직 수정 ---
+  let startDate: Date;
+  let endDate: Date;
+  const inputYearOrCurrentYear = year ?? new Date().getFullYear();
 
-// 3. 학기 구분에 따른 날짜 범위 설정
-if (semester === Semester.SECOND) {
-  // 2학기: 해당 년도 3월 1일 ~ 9월 30일
-  startDate = new Date(inputYearOrCurrentYear, 2, 1);
-  endDate = new Date(inputYearOrCurrentYear, 9, 0, 23, 59, 59, 999);
-} 
-else if (semester === Semester.FIRST) {
-  // 1학기(차년도): 해당 년도 10월 1일 ~ 다음 해 2월 말일
-  startDate = new Date(inputYearOrCurrentYear, 9, 1);
-  endDate = new Date(inputYearOrCurrentYear + 1, 2, 0, 23, 59, 59, 999);
-} 
-else {
-  // 학기가 지정되지 않았을 때 (전체 범위: 해당 년도 3월 1일 ~ 차년도 2월 말)
-  startDate = new Date(inputYearOrCurrentYear, 2, 1);
-  endDate = new Date(inputYearOrCurrentYear + 1, 2, 0, 23, 59, 59, 999);
-}
+  if (semester === Semester.SECOND) {
+    // 2학기: 해당 년도 3월 1일 ~ 9월 30일
+    startDate = new Date(inputYearOrCurrentYear, 2, 1);
+    endDate = new Date(inputYearOrCurrentYear, 9, 0, 23, 59, 59, 999);
+  } else if (semester === Semester.FIRST) {
+    // 1학기(차년도): 해당 년도 10월 1일 ~ 다음 해 2월 말일
+    startDate = new Date(inputYearOrCurrentYear, 9, 1);
+    endDate = new Date(inputYearOrCurrentYear + 1, 2, 0, 23, 59, 59, 999);
+  } else {
+    // 학기 미지정 시 전체 범위
+    startDate = new Date(inputYearOrCurrentYear, 2, 1);
+    endDate = new Date(inputYearOrCurrentYear + 1, 2, 0, 23, 59, 59, 999);
+  }
 
-whereConditions.createdDatetime = {
-  gte: startDate,
-  lte: endDate,
-};
+  whereConditions.createdDatetime = {
+    gte: startDate,
+    lte: endDate,
+  };
 
+  const totalCount = await prisma.project.count({ where: whereConditions });
 
-  // 먼저 총 항목 수를 계산하기 위해 카운트 쿼리 실행
-  const totalCount = await prisma.project.count({
-    where: whereConditions,
-  });
-
-  // 그 다음 페이지네이션된 데이터 조회
   const projectsFromDb = await prisma.project.findMany({
     where: whereConditions,
-    select: projectPublicSelection, // passwordHash 제외 확인
+    select: projectPublicSelection,
     orderBy: orderByConditions,
     skip: skip,
     take: take,
   });
 
-  let filteredProjects: PasswordOmittedProject[] =
-    projectsFromDb as PasswordOmittedProject[];
-
-  // recruiting 필터링이 있는 경우, 전체 데이터를 대상으로 다시 계산 필요
+  let filteredProjects: PasswordOmittedProject[] = projectsFromDb as PasswordOmittedProject[];
   let finalTotalCount = totalCount;
 
   if (status) {
-    // 이 경우에는 모든 프로젝트를 가져와서 applicants 수로 필터링해야 함
     const allProjects = await prisma.project.findMany({
       where: whereConditions,
       select: projectPublicSelection,
     });
 
-    // 필터링 로직 적용
-    const filteredAllProjects = allProjects.filter((project) => {
-      return project.status === status;
-    });
-
-    // 총 항목 수 업데이트
+    const filteredAllProjects = allProjects.filter((project) => project.status === status);
     finalTotalCount = filteredAllProjects.length;
-
-    // 현재 페이지의 데이터만 추출 (메모리에서 페이지네이션)
     filteredProjects = filteredAllProjects.slice(skip, skip + take);
   }
 
   return {
     data: filteredProjects,
-    totalItems: finalTotalCount, // 전체 항목 수 반영
-    totalPages: Math.ceil(finalTotalCount / limit), // 전체 항목 수 기준으로 계산
+    totalItems: finalTotalCount,
+    totalPages: Math.ceil(finalTotalCount / limit),
     currentPage: page,
     itemsPerPage: limit,
   };
-}
+} // getAllProjects 함수 끝
 
-// ID로 특정 프로젝트 조회 (조회수 증가)
-export async function getProjectById(
-  id: number
-): Promise<ProjectWithForeignKeys | null> {
+export async function getProjectById(id: number): Promise<ProjectWithForeignKeys | null> {
   const project = await prisma.project.findUnique({
     where: { id },
-    select: projectPublicSelection, // passwordHash 제외 확인
+    select: projectPublicSelection,
   });
 
   if (project) {
-    // 조회수 증가 - 에러 발생해도 무시하거나 로깅만 할 수 있음
     try {
       await prisma.project.update({
         where: { id },
@@ -287,78 +253,59 @@ export async function getProjectById(
       return {
         ...project,
         viewCount: project.viewCount + 1,
-      };
+      } as ProjectWithForeignKeys;
     } catch (error) {
       console.error(`Failed to increment view count for project ${id}:`, error);
-      // 에러 발생해도 조회된 프로젝트 정보는 반환
-      return project;
+      return project as ProjectWithForeignKeys;
     }
   }
   return null;
 }
 
-// 프로젝트 수정 (비밀번호 검증 제거됨)
 export async function updateProject(
   id: number,
   data: Omit<ProjectUpdateInput, "currentPassword">
 ): Promise<Project> {
   const { password: newPlainTextPassword, ...projectDataRest } = data;
+  const projectToUpdate = await prisma.project.findUnique({ where: { id } });
 
-  const projectToUpdate = await prisma.project.findUnique({
-    where: { id },
-    select: projectPublicSelection,
-  });
-
-  if (!projectToUpdate) {
-    throw new NotFoundError("Project not found.");
-  }
+  if (!projectToUpdate) throw new NotFoundError("Project not found.");
 
   let projectPasswordHashToUpdate;
   if (newPlainTextPassword) {
-    projectPasswordHashToUpdate = await bcrypt.hash(
-      newPlainTextPassword,
-      SALT_ROUNDS
-    );
+    projectPasswordHashToUpdate = await bcrypt.hash(newPlainTextPassword, SALT_ROUNDS);
   }
 
-  const updatedProject = await prisma.project.update({
+  return await prisma.project.update({
     where: { id },
     data: {
       ...projectDataRest,
-      ...(projectPasswordHashToUpdate && {
-        passwordHash: projectPasswordHashToUpdate,
-      }),
+      ...(projectPasswordHashToUpdate && { passwordHash: projectPasswordHashToUpdate }),
     },
-    select: projectPublicSelection, // passwordHash 제외 확인
+    select: projectPublicSelection,
   });
-
-  return updatedProject;
 }
 
-// 프로젝트 삭제 (비밀번호 검증 제거됨)
 export async function deleteProject(id: number): Promise<void> {
   const projectToDelete = await prisma.project.findUnique({
     where: { id },
-    select: projectPublicSelection,
+    include: { applicants: true }
   });
 
-  if (!projectToDelete) {
-    throw new NotFoundError("Project not found for deletion.");
-  }
+  if (!projectToDelete) throw new NotFoundError("Project not found for deletion.");
 
-  // 관련 레코드(Applicant) 삭제 후 프로젝트 삭제 (onDelete: Cascade 미설정 시)
   try {
-    const deletedProject = await prisma.$transaction([
+    const [_, deletedProject] = await prisma.$transaction([
       prisma.applicant.deleteMany({ where: { projectId: id } }),
       prisma.project.delete({ where: { id } }),
     ]);
 
     const projectStatusChangedEmail = emailTemplates.projectStatusChanged(
-      deletedProject[1],
+      deletedProject,
       projectToDelete.status,
       "DELETED"
     );
-    projectToDelete.applicants.map((applicant) => {
+    projectToDelete.applicants.forEach((applicant) => {
       sendEmail({
         to: applicant.email,
         subject: projectStatusChangedEmail.subject,
@@ -366,34 +313,23 @@ export async function deleteProject(id: number): Promise<void> {
       });
     });
   } catch (error) {
-    // 트랜잭션 롤백 시 에러 처리
     console.error("Error during project deletion transaction:", error);
-    if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
-      error.code === "P2025"
-    ) {
-      // 이미 삭제되었거나 존재하지 않는 경우
-      throw new NotFoundError("Project not found during deletion attempt.");
-    }
-    throw new Error("Failed to delete project and associated data."); // 일반적인 실패 에러
+    throw new Error("Failed to delete project and associated data.");
   }
 }
 
-// 프로젝트 재개 (비밀번호 검증 제거됨)
 export async function reopenProject(id: number): Promise<Project> {
   const projectToReopen = await prisma.project.findUnique({
     where: { id },
-    select: projectPublicSelection,
+    include: { applicants: true }
   });
 
-  if (!projectToReopen) {
-    throw new NotFoundError("Project not found for reopening.");
-  }
+  if (!projectToReopen) throw new NotFoundError("Project not found for reopening.");
 
   const reopenedProject = await prisma.project.update({
     where: { id },
     data: { status: "RECRUITING" },
-    select: projectPublicSelection, // passwordHash 제외 확인
+    select: projectPublicSelection,
   });
 
   const projectStatusChangedEmail = emailTemplates.projectStatusChanged(
@@ -401,7 +337,7 @@ export async function reopenProject(id: number): Promise<Project> {
     projectToReopen.status,
     reopenedProject.status
   );
-  reopenedProject.applicants.map((applicant) => {
+  reopenedProject.applicants.forEach((applicant: any) => {
     sendEmail({
       to: applicant.email,
       subject: projectStatusChangedEmail.subject,
@@ -411,21 +347,18 @@ export async function reopenProject(id: number): Promise<Project> {
   return reopenedProject;
 }
 
-// 프로젝트 종료 (비밀번호 검증 제거됨)
 export async function closeProject(id: number): Promise<Project> {
   const projectToClose = await prisma.project.findUnique({
     where: { id },
-    select: projectPublicSelection,
+    include: { applicants: true }
   });
 
-  if (!projectToClose) {
-    throw new NotFoundError("Project not found for closing.");
-  }
+  if (!projectToClose) throw new NotFoundError("Project not found for closing.");
 
   const closedProject = await prisma.project.update({
     where: { id },
     data: { status: "CLOSED" },
-    select: projectPublicSelection, // passwordHash 제외 확인
+    select: projectPublicSelection,
   });
 
   const projectStatusChangedEmail = emailTemplates.projectStatusChanged(
@@ -433,7 +366,7 @@ export async function closeProject(id: number): Promise<Project> {
     projectToClose.status,
     closedProject.status
   );
-  closedProject.applicants.map((applicant) => {
+  closedProject.applicants.forEach((applicant: any) => {
     sendEmail({
       to: applicant.email,
       subject: projectStatusChangedEmail.subject,
