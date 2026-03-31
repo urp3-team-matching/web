@@ -181,23 +181,29 @@ export async function getAllProjects(
     orderByConditions.createdDatetime = "desc";
   }
 
-  // --- 학기 날짜 로직 수정 ---
+// --- 학기 날짜 로직 수정 (요청하신 기준 적용) ---
   let startDate: Date;
   let endDate: Date;
-  const inputYearOrCurrentYear = year ?? new Date().getFullYear();
+  
+  // 사용자가 선택한 연도(예: 2026) 혹은 현재 연도
+  const targetYear = year ?? new Date().getFullYear();
 
-  if (semester === Semester.SECOND) {
-    // 2학기: 해당 년도 3월 1일 ~ 9월 30일
-    startDate = new Date(inputYearOrCurrentYear, 2, 1);
-    endDate = new Date(inputYearOrCurrentYear, 9, 0, 23, 59, 59, 999);
-  } else if (semester === Semester.FIRST) {
-    // 1학기(차년도): 해당 년도 10월 1일 ~ 다음 해 2월 말일
-    startDate = new Date(inputYearOrCurrentYear, 9, 1);
-    endDate = new Date(inputYearOrCurrentYear + 1, 2, 0, 23, 59, 59, 999);
-  } else {
-    // 학기 미지정 시 전체 범위
-    startDate = new Date(inputYearOrCurrentYear, 2, 1);
-    endDate = new Date(inputYearOrCurrentYear + 1, 2, 0, 23, 59, 59, 999);
+  if (semester === Semester.FIRST) {
+    // [1학기 기준] 전년도 10월 1일 ~ 해당 연도 2월 말일
+    // 예: 2026년 1학기 조회 시 -> 2025년 10월 1일 ~ 2026년 2월 28/29일
+    startDate = new Date(targetYear - 1, 9, 1); // targetYear-1년 10월 1일
+    endDate = new Date(targetYear, 2, 0, 23, 59, 59, 999); // targetYear년 3월 0일 = 2월 말일
+  } 
+  else if (semester === Semester.SECOND) {
+    // [2학기 기준] 해당 연도 3월 1일 ~ 해당 연도 9월 30일
+    // 예: 2026년 2학기 조회 시 -> 2026년 3월 1일 ~ 2026년 9월 30일
+    startDate = new Date(targetYear, 2, 1); // targetYear년 3월 1일
+    endDate = new Date(targetYear, 9, 0, 23, 59, 59, 999); // targetYear년 10월 0일 = 9월 30일
+  } 
+  else {
+    // [학기 미지정 시] 해당 학년도 전체 (전년도 10월 1일 ~ 해당 연도 9월 30일)
+    startDate = new Date(targetYear - 1, 9, 1);
+    endDate = new Date(targetYear, 9, 0, 23, 59, 59, 999);
   }
 
   whereConditions.createdDatetime = {
