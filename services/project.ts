@@ -199,19 +199,19 @@ export async function getAllProjects(
     let endDate: Date;
 
     if (semester) {
-      // 1학기: 3월 1일 ~ 8월 31일
-      // 2학기: 9월 1일 ~ 다음 해 2월 28/29일
-      if (semester === Semester.FIRST) {
+      // 2학기: 해당 년도 3월 1일 ~ 9월 30일
+      // 1학기(차년도): 9월 1일 ~ 다음 해 2월 28/29일
+      if (semester === Semester.SECOND) {
         startDate = new Date(inputYearOrCurrentYear, 2, 1); // 3월 1일
-        endDate = new Date(inputYearOrCurrentYear, 7, 31, 23, 59, 59, 999); // 8월 31일
-      } else {
-        startDate = new Date(inputYearOrCurrentYear, 8, 1); // 9월 1일
-        endDate = new Date(inputYearOrCurrentYear + 1, 2, 28, 23, 59, 59, 999); // 2월 28일
+        endDate = new Date(inputYearOrCurrentYear, 8, 30, 23, 59, 59, 999); // 9월 30일
+      } else if (semester === Semester.FIRST) {
+        startDate = new Date(inputYearOrCurrentYear, 9, 1); // 10월 1일
+        endDate = new Date(inputYearOrCurrentYear + 1, 2, 0, 23, 59, 59, 999); // 2월 28일
       }
     } else {
-      // semester가 없으면 해당 연도 전체
-      startDate = new Date(inputYearOrCurrentYear, 0, 1); // 1월 1일
-      endDate = new Date(inputYearOrCurrentYear + 1, 2, 28, 23, 59, 59, 999); // 2월 28일
+      // semester가 없으면 해당 연도 전체(해당 연도 3월 1일 ~ 다음 해 2월 말)
+      startDate = new Date(inputYearOrCurrentYear, 2, 1); // 3월 1일
+      endDate = new Date(inputYearOrCurrentYear + 1, 1, 28, 23, 59, 59, 999); // 2월 28일
     }
 
     whereConditions.createdDatetime = {
