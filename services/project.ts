@@ -193,6 +193,7 @@ export async function getAllProjects(
   }
 
 const inputYearOrCurrentYear = year ?? new Date().getFullYear();
+  
 let startDate: Date;
 let endDate: Date;
 
