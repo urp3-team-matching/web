@@ -201,11 +201,13 @@ if (semester === Semester.SECOND) {
   // 2학기: 해당 년도 3월 1일 ~ 9월 30일
   startDate = new Date(inputYearOrCurrentYear, 2, 1);
   endDate = new Date(inputYearOrCurrentYear, 9, 0, 23, 59, 59, 999);
-} else if (semester === Semester.FIRST) {
+} 
+else if (semester === Semester.FIRST) {
   // 1학기(차년도): 해당 년도 10월 1일 ~ 다음 해 2월 말일
   startDate = new Date(inputYearOrCurrentYear, 9, 1);
   endDate = new Date(inputYearOrCurrentYear + 1, 2, 0, 23, 59, 59, 999);
-} else {
+} 
+else {
   // 학기가 지정되지 않았을 때 (전체 범위: 해당 년도 3월 1일 ~ 차년도 2월 말)
   startDate = new Date(inputYearOrCurrentYear, 2, 1);
   endDate = new Date(inputYearOrCurrentYear + 1, 2, 0, 23, 59, 59, 999);
