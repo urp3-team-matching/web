@@ -200,13 +200,11 @@ export async function getAllProjects(
   // 1. 학기 구분에 따른 날짜 범위 설정
   if (semester === Semester.SECOND) {
     // 2학기: 해당 년도 3월 1일 ~ 9월 30일
-    // Month index: 2 = 3월, 8 = 9월 (9월 30일은 9월 31일의 이전이므로 8, 30 또는 9, 0)
     startDate = new Date(inputYearOrCurrentYear, 2, 1);
     endDate = new Date(inputYearOrCurrentYear, 9, 0, 23, 59, 59, 999); // 10월 0일 = 9월 30일
   } 
   else if (semester === Semester.FIRST) {
     // 1학기(차년도): 해당 년도 10월 1일 ~ 다음 해 2월 말일
-    // Month index: 9 = 10월, 2 = 3월 (3월 0일 = 2월 말일)
     startDate = new Date(inputYearOrCurrentYear, 9, 1);
     endDate = new Date(inputYearOrCurrentYear + 1, 2, 0, 23, 59, 59, 999);
   } 
@@ -214,13 +212,12 @@ export async function getAllProjects(
     // 학기가 지정되지 않았을 때 (해당 연도 전체 범위: 3월 1일 ~ 차년도 2월 말)
     startDate = new Date(inputYearOrCurrentYear, 2, 1);
     endDate = new Date(inputYearOrCurrentYear + 1, 2, 0, 23, 59, 59, 999);
-}
+  }
 
     whereConditions.createdDatetime = {
       gte: startDate,
       lte: endDate,
     };
-  }
 
   // 먼저 총 항목 수를 계산하기 위해 카운트 쿼리 실행
   const totalCount = await prisma.project.count({
