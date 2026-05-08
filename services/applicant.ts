@@ -14,6 +14,7 @@ import {
 } from "@/types/applicant";
 import { ApplicantForProject, projectPublicSelection } from "@/types/project";
 import { Applicant } from "@prisma/client";
+import { waitUntil } from "@vercel/functions"; // Vercel 백그라운드 작업 유지를 위해 추가됨
 
 export async function applyToProject(
   projectId: number,
@@ -29,10 +30,12 @@ export async function applyToProject(
     );
   }
 
-  if (
-    project.applicants.filter((applicant) => applicant.status === "APPROVED")
-      .length >= MAX_APPLICANTS
-  ) {
+  // 데이터베이스 쿼리를 통한 성능 및 메모리 최적화 적용
+  const currentApplicantsCount = await prisma.applicant.count({
+    where: { projectId, status: "APPROVED" }
+  });
+
+  if (currentApplicantsCount >= MAX_APPLICANTS) {
     throw new MaxApplicantsError(
       `Maximum number of applicants (${MAX_APPLICANTS}) reached for this project.`
     );
@@ -50,11 +53,18 @@ export async function applyToProject(
     project,
     createdApplicant.name
   );
-  sendEmail({
+  
+  // 비동기 이메일 발송 작업을 waitUntil로 감싸서 Vercel 서버 종료 방지
+  const emailPromise = sendEmail({
     to: project.email,
     subject: applicantAppliedEmail.subject,
     html: applicantAppliedEmail.html,
+  }).catch((error) => {
+    console.error(`[이메일 발송 실패] 지원자 알림 - 프로젝트 ID: ${projectId}`, error);
   });
+  
+  waitUntil(emailPromise);
+
   return createdApplicant;
 }
 
@@ -161,18 +171,18 @@ export async function acceptApplicant(
     throw new BadRequestError("Applicant is already rejected.");
   }
 
+  // 동시성 문제를 고려한 트랜잭션 최적화
+  const [currentApplicantsCount, currentApplicantMajorsCount] = await prisma.$transaction([
+    prisma.applicant.count({ where: { projectId, status: "APPROVED" } }),
+    prisma.applicant.count({ where: { projectId, status: "APPROVED", major: applicant.major } })
+  ]);
+
   // 지원자 수가 최대 지원자 수를 초과하는 경우
-  const currentApplicantsCount = await prisma.applicant.count({
-    where: { projectId, status: "APPROVED" },
-  });
   if (currentApplicantsCount >= MAX_APPLICANTS) {
     throw new MaxApplicantsError();
   }
 
   // 전공 수가 최대 전공 수를 초과하는 경우
-  const currentApplicantMajorsCount = await prisma.applicant.count({
-    where: { projectId, status: "APPROVED", major: applicant.major },
-  });
   if (currentApplicantMajorsCount >= MAX_APPLICANT_MAJOR_COUNT) {
     throw new MaxApplicantsError();
   }
@@ -190,11 +200,18 @@ export async function acceptApplicant(
     applicant.status,
     updatedApplicant.status
   );
-  sendEmail({
+  
+  // 비동기 이메일 발송 작업을 waitUntil로 감싸서 Vercel 서버 종료 방지
+  const emailPromise = sendEmail({
     to: applicant.email,
     subject: applicantStatusChangedEmail.subject,
     html: applicantStatusChangedEmail.html,
+  }).catch((error) => {
+    console.error(`[이메일 발송 실패] 승인 알림 - 지원자 ID: ${applicantId}`, error);
   });
+  
+  waitUntil(emailPromise);
+
   return updatedApplicant;
 }
 
@@ -238,11 +255,18 @@ export async function rejectApplicant(
     applicant.status,
     updatedApplicant.status
   );
-  sendEmail({
+  
+  // 비동기 이메일 발송 작업을 waitUntil로 감싸서 Vercel 서버 종료 방지
+  const emailPromise = sendEmail({
     to: applicant.email,
     subject: applicantStatusChangedEmail.subject,
     html: applicantStatusChangedEmail.html,
+  }).catch((error) => {
+    console.error(`[이메일 발송 실패] 거절 알림 - 지원자 ID: ${applicantId}`, error);
   });
+  
+  waitUntil(emailPromise);
+
   return updatedApplicant;
 }
 
@@ -286,10 +310,17 @@ export async function pendingApplicant(
     applicant.status,
     updatedApplicant.status
   );
-  sendEmail({
+  
+  // 비동기 이메일 발송 작업을 waitUntil로 감싸서 Vercel 서버 종료 방지
+  const emailPromise = sendEmail({
     to: applicant.email,
     subject: applicantStatusChangedEmail.subject,
     html: applicantStatusChangedEmail.html,
+  }).catch((error) => {
+    console.error(`[이메일 발송 실패] 대기 알림 - 지원자 ID: ${applicantId}`, error);
   });
+  
+  waitUntil(emailPromise);
+
   return updatedApplicant;
 }
