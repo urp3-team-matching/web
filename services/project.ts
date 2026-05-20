@@ -40,16 +40,27 @@ export async function verifyProjectPermission(
 ): Promise<boolean> {
   try {
     const supabase = await getServerSupabase();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (user) return true;
 
     if (typeof requestOrPassword === "string") {
-      return await ProjectPasswordManager.validateProjectPassword(projectId, requestOrPassword);
+      return await ProjectPasswordManager.validateProjectPassword(
+        projectId,
+        requestOrPassword
+      );
     }
 
-    const cookiePassword = ProjectPasswordManager.getPasswordFromNextRequest(requestOrPassword, projectId);
+    const cookiePassword = ProjectPasswordManager.getPasswordFromNextRequest(
+      requestOrPassword,
+      projectId
+    );
     if (cookiePassword) {
-      return await ProjectPasswordManager.validateProjectPassword(projectId, cookiePassword);
+      return await ProjectPasswordManager.validateProjectPassword(
+        projectId,
+        cookiePassword
+      );
     }
 
     return false;
@@ -61,11 +72,17 @@ export async function verifyProjectPermission(
 
 export async function createProject(data: ProjectInput): Promise<Project> {
   const { password: projectPlainTextPassword, ...projectDataRest } = data;
-  const projectPasswordHash = await bcrypt.hash(projectPlainTextPassword, SALT_ROUNDS);
+
+  const projectPasswordHash = await bcrypt.hash(
+    projectPlainTextPassword,
+    SALT_ROUNDS
+  );
 
   if (data.proposerType === "STUDENT") {
     if (!data.proposerMajor) {
-      throw new BadRequestError("Proposer major is required when proposer type is STUDENT.");
+      throw new BadRequestError(
+        "Proposer major is required when proposer type is STUDENT."
+      );
     }
     const project = await prisma.project.create({
       data: {
@@ -99,6 +116,10 @@ export async function createProject(data: ProjectInput): Promise<Project> {
       },
       select: projectPublicSelection,
     });
+    // HOST(운영진)가 직접 만든 프로젝트는 관리자 자기알림 메일을 생략
+    if (data.proposerType === "HOST") {
+      return project;
+    }
 
     const newProjectCreatedEmail = emailTemplates.newProjectCreated(project);
     sendEmail({
@@ -150,7 +171,9 @@ export async function getAllProjects(
     if (sortBy.includes(".")) {
       const [relation, field] = sortBy.split(".");
       if (relation === "applicants") {
-        orderByConditions.applicants = { _count: sortOrder };
+        orderByConditions.applicants = { [field]: sortOrder };
+      } else {
+        orderByConditions.createdDatetime = "desc";
       }
     } else {
       orderByConditions[sortBy as keyof Prisma.ProjectOrderByWithRelationInput] = sortOrder;
@@ -159,7 +182,9 @@ export async function getAllProjects(
     orderByConditions.createdDatetime = "desc";
   }
 
-  // --- [중요] 학기 날짜 로직 수정 (9월~2월: 차년도 1학기 / 3월~8월: 당해 2학기) ---
+  // --- [중요] 학기 날짜 로직 (9월~2월: 차년도 1학기 / 3월~8월: 당해 2학기) ---
+  // URP3는 이번 학기에 모집해 다음 학기에 진행할 팀원을 매칭하므로,
+  // 글 작성 시기가 아니라 모집 대상(다음) 학기로 분류한다.
   let startDate: Date;
   let endDate: Date;
   const targetYear = year ?? new Date().getFullYear();
@@ -203,6 +228,7 @@ export async function getAllProjects(
       where: whereConditions,
       select: projectPublicSelection,
     });
+
     const filteredAllProjects = allProjects.filter((project) => project.status === status);
     finalTotalCount = filteredAllProjects.length;
     filteredProjects = filteredAllProjects.slice(skip, skip + take);
@@ -220,7 +246,7 @@ export async function getAllProjects(
 export async function getProjectById(id: number): Promise<ProjectWithForeignKeys | null> {
   const project = await prisma.project.findUnique({
     where: { id },
-    select: { ...projectPublicSelection, applicants: true },
+    select: projectPublicSelection,
   });
 
   if (project) {
@@ -229,15 +255,128 @@ export async function getProjectById(id: number): Promise<ProjectWithForeignKeys
         where: { id },
         data: { viewCount: { increment: 1 } },
       });
-      return { ...project, viewCount: project.viewCount + 1 } as ProjectWithForeignKeys;
+      return {
+        ...project,
+        viewCount: project.viewCount + 1,
+      } as ProjectWithForeignKeys;
     } catch (error) {
-      console.error(`Failed to increment view count:`, error);
+      console.error(`Failed to increment view count for project ${id}:`, error);
       return project as ProjectWithForeignKeys;
     }
   }
   return null;
 }
 
-export async function updateProject(id: number, data: Omit<ProjectUpdateInput, "currentPassword">): Promise<Project> {
+export async function updateProject(
+  id: number,
+  data: Omit<ProjectUpdateInput, "currentPassword">
+): Promise<Project> {
   const { password: newPlainTextPassword, ...projectDataRest } = data;
-  const projectToUpdate = await prisma.
+  const projectToUpdate = await prisma.project.findUnique({ where: { id } });
+
+  if (!projectToUpdate) throw new NotFoundError("Project not found.");
+
+  let projectPasswordHashToUpdate;
+  if (newPlainTextPassword) {
+    projectPasswordHashToUpdate = await bcrypt.hash(newPlainTextPassword, SALT_ROUNDS);
+  }
+
+  return await prisma.project.update({
+    where: { id },
+    data: {
+      ...projectDataRest,
+      ...(projectPasswordHashToUpdate && { passwordHash: projectPasswordHashToUpdate }),
+    },
+    select: projectPublicSelection,
+  });
+}
+
+export async function deleteProject(id: number): Promise<void> {
+  const projectToDelete = await prisma.project.findUnique({
+    where: { id },
+    include: { applicants: true }
+  });
+
+  if (!projectToDelete) throw new NotFoundError("Project not found for deletion.");
+
+  try {
+    const [_, deletedProject] = await prisma.$transaction([
+      prisma.applicant.deleteMany({ where: { projectId: id } }),
+      prisma.project.delete({ where: { id } }),
+    ]);
+
+    const projectStatusChangedEmail = emailTemplates.projectStatusChanged(
+      deletedProject,
+      projectToDelete.status,
+      "DELETED"
+    );
+    projectToDelete.applicants.forEach((applicant) => {
+      sendEmail({
+        to: applicant.email,
+        subject: projectStatusChangedEmail.subject,
+        html: projectStatusChangedEmail.html,
+      });
+    });
+  } catch (error) {
+    console.error("Error during project deletion transaction:", error);
+    throw new Error("Failed to delete project and associated data.");
+  }
+}
+
+export async function reopenProject(id: number): Promise<Project> {
+  const projectToReopen = await prisma.project.findUnique({
+    where: { id },
+    include: { applicants: true }
+  });
+
+  if (!projectToReopen) throw new NotFoundError("Project not found for reopening.");
+
+  const reopenedProject = await prisma.project.update({
+    where: { id },
+    data: { status: "RECRUITING" },
+    select: projectPublicSelection,
+  });
+
+  const projectStatusChangedEmail = emailTemplates.projectStatusChanged(
+    reopenedProject,
+    projectToReopen.status,
+    reopenedProject.status
+  );
+  reopenedProject.applicants.forEach((applicant: any) => {
+    sendEmail({
+      to: applicant.email,
+      subject: projectStatusChangedEmail.subject,
+      html: projectStatusChangedEmail.html,
+    });
+  });
+  return reopenedProject;
+}
+
+export async function closeProject(id: number): Promise<Project> {
+  const projectToClose = await prisma.project.findUnique({
+    where: { id },
+    include: { applicants: true }
+  });
+
+  if (!projectToClose) throw new NotFoundError("Project not found for closing.");
+
+  const closedProject = await prisma.project.update({
+    where: { id },
+    data: { status: "CLOSED" },
+    select: projectPublicSelection,
+  });
+
+  const projectStatusChangedEmail = emailTemplates.projectStatusChanged(
+    closedProject,
+    projectToClose.status,
+    closedProject.status
+  );
+  closedProject.applicants.forEach((applicant: any) => {
+    sendEmail({
+      to: applicant.email,
+      subject: projectStatusChangedEmail.subject,
+      html: projectStatusChangedEmail.html,
+    });
+  });
+  return closedProject;
+}
