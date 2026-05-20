@@ -7,8 +7,12 @@ import { ZodError } from "zod";
 
 export async function POST(request: NextRequest) {
   const supabase = await getServerSupabase();
-  const session = await supabase.auth.getSession();
-  if (!session.data.session) {
+  // getSession()은 쿠키 값을 그대로 신뢰하므로 서버 인증에 사용하면 안 된다.
+  // getUser()는 Supabase Auth 서버에 토큰을 재검증한다.
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
