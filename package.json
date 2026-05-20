@@ -42,6 +42,7 @@
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.49.8",
     "@vercel/analytics": "^1.5.0",
+    "@vercel/functions": "^3.6.0",
     "@vercel/otel": "^2.0.1",
     "@vercel/speed-insights": "^1.2.0",
     "class-variance-authority": "^0.7.1",
