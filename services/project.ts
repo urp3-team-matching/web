@@ -116,6 +116,7 @@ export async function createProject(data: ProjectInput): Promise<Project> {
       },
       select: projectPublicSelection,
     });
+    // HOST(운영진)가 직접 만든 프로젝트는 관리자 자기알림 메일을 생략
     if (data.proposerType === "HOST") {
       return project;
     }
