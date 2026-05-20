@@ -240,7 +240,7 @@ export async function getAllProjects(
     currentPage: page,
     itemsPerPage: limit,
   };
-} // getAllProjects 함수 끝
+}
 
 export async function getProjectById(id: number): Promise<ProjectWithForeignKeys | null> {
   const project = await prisma.project.findUnique({
