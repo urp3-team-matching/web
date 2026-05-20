@@ -64,7 +64,6 @@ const ProjectApplyButton = ({
       major: "",
       email: "",
       introduction: "",
-      status: "PENDING",
     },
   });
 

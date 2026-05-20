@@ -45,6 +45,7 @@ export async function applyToProject(
     data: {
       ...data,
       projectId,
+      status: "PENDING", // 신규 지원자는 항상 대기 상태로 생성 (자가 승인 방지)
     },
     select: applicantPublicSelection,
   });
