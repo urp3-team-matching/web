@@ -7,10 +7,11 @@ import { closeProject, verifyProjectPermission } from "@/services/project";
 import { NextRequest, NextResponse } from "next/server";
 
 interface RouteContext {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
-export async function POST(request: NextRequest, { params }: RouteContext) {
+export async function POST(request: NextRequest, props: RouteContext) {
+  const params = await props.params;
   try {
     const projectId = parseInt(params.id, 10);
     if (isNaN(projectId)) {

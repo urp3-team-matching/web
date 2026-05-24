@@ -1,8 +1,10 @@
 "use client";
+import { use } from "react";
 
 import PostForm from "@/app/posts/[id]/_components/PostForm";
 
-const PostEditPage = ({ params }: { params: { id: string } }) => {
+const PostEditPage = (props: { params: Promise<{ id: string }> }) => {
+  const params = use(props.params);
   return (
     <div>
       <div className="py-3 border-b-1">

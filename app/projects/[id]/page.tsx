@@ -22,14 +22,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ApplicantStatus } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { parseAsStringEnum, useQueryState } from "nuqs";
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
 import { useForm } from "react-hook-form";
 import ProjectApplyButton from "./_components/ApplyButton";
 import MobileTab from "./_components/MobileTab";
 
 export type ProjectPageMode = ProjectPageModeEnum | null;
 
-export default function Project({ params }: { params: { id: string } }) {
+export default function Project(props: { params: Promise<{ id: string }> }) {
+  const params = use(props.params);
   const projectId = parseInt(params.id);
 
   return (
@@ -242,14 +243,13 @@ function ProjectContent({ params }: { params: { id: string } }) {
         onDelete={handleDelete}
         toggleMode={toggleMode}
       />
-
       {/* Desktop 본문 */}
       <div className="w-full pt-5 lg:flex hidden justify-between">
         {/* 좌측 */}
         <div className="w-[70%] pr-5 pt-5 flex flex-col gap-5">
           {mode === ProjectPageModeEnum.ADMIN && (
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            <ProjectProposerForm control={control as any} />
+            (<ProjectProposerForm control={control as any} />)
           )}
           <ProjectForm
             className="w-full h-full flex flex-col gap-5"
@@ -291,7 +291,6 @@ function ProjectContent({ params }: { params: { id: string } }) {
           applicants={applicants}
         />
       </div>
-
       {/* Mobile 본문 */}
       <div
         className={cn(

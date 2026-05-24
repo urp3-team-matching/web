@@ -9,8 +9,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string; applicantId: string } }
+  props: { params: Promise<{ id: string; applicantId: string }> }
 ) {
+  const params = await props.params;
   const { id: projectId, applicantId } = params;
   const isVerified = await verifyProjectPermission(Number(projectId), request);
   if (!isVerified) {

@@ -6,10 +6,11 @@ import { getServerSupabase } from "@/utils/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 
 interface RouteContext {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
-export async function GET(request: NextRequest, { params }: RouteContext) {
+export async function GET(request: NextRequest, props: RouteContext) {
+  const params = await props.params;
   try {
     const postId = parseInt(params.id, 10);
     if (isNaN(postId))
@@ -37,7 +38,8 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
   }
 }
 
-export async function PUT(request: NextRequest, { params }: RouteContext) {
+export async function PUT(request: NextRequest, props: RouteContext) {
+  const params = await props.params;
   const supabase = await getServerSupabase();
   // 서버 인증은 getUser()로 — getSession()은 쿠키를 재검증 없이 신뢰한다.
   const {
@@ -81,7 +83,8 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: RouteContext) {
+export async function DELETE(request: NextRequest, props: RouteContext) {
+  const params = await props.params;
   const supabase = await getServerSupabase();
   // 서버 인증은 getUser()로 — getSession()은 쿠키를 재검증 없이 신뢰한다.
   const {

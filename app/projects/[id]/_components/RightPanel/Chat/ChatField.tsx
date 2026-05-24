@@ -318,10 +318,10 @@ export default function ChatField({ project }: ChatFieldProps) {
   };
 
   const handleTextareaInput = (
-    event: React.ChangeEvent<HTMLTextAreaElement>
+    event: React.FormEvent<HTMLTextAreaElement>
   ) => {
-    event.target.style.height = "auto";
-    event.target.style.height = `${event.target.scrollHeight}px`;
+    event.currentTarget.style.height = "auto";
+    event.currentTarget.style.height = `${event.currentTarget.scrollHeight}px`;
   };
 
   return (

@@ -11,10 +11,11 @@ import { ProjectUpdateSchema } from "@/types/project";
 import { NextRequest, NextResponse } from "next/server";
 
 interface RouteContext {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
-export async function GET(request: NextRequest, { params }: RouteContext) {
+export async function GET(request: NextRequest, props: RouteContext) {
+  const params = await props.params;
   try {
     const projectId = parseInt(params.id, 10);
     if (isNaN(projectId))
@@ -41,7 +42,8 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
   }
 }
 
-export async function PUT(request: NextRequest, { params }: RouteContext) {
+export async function PUT(request: NextRequest, props: RouteContext) {
+  const params = await props.params;
   try {
     const projectId = parseInt(params.id, 10);
     if (isNaN(projectId))
@@ -105,7 +107,8 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: RouteContext) {
+export async function DELETE(request: NextRequest, props: RouteContext) {
+  const params = await props.params;
   try {
     const projectId = parseInt(params.id, 10);
     if (isNaN(projectId))
