@@ -1,7 +1,12 @@
 "use client";
 
 import TabTrigger from "@/components/Filter/TabTrigger";
-import { GetProjectsQuerySchema } from "@/types/project";
+import {
+  GetProjectsQuerySchema,
+  STATUS_FILTER_ALL,
+  StatusFilter,
+  StatusFilterSchema,
+} from "@/types/project";
 import { parseAsInteger, parseAsStringEnum, useQueryState } from "nuqs";
 import { z } from "zod";
 
@@ -17,10 +22,17 @@ import {
 import { Semester } from "@/types/project";
 import { ProjectStatus } from "@prisma/client";
 
+const STATUS_FILTER_VALUES: StatusFilter[] = [
+  ...Object.values(ProjectStatus),
+  STATUS_FILTER_ALL,
+];
+
 const Filter = () => {
   const [filter, setFilter] = useQueryState(
     "status" as keyof z.infer<typeof GetProjectsQuerySchema>,
-    parseAsStringEnum<ProjectStatus>(Object.values(ProjectStatus))
+    parseAsStringEnum<StatusFilter>(STATUS_FILTER_VALUES).withDefault(
+      ProjectStatus.RECRUITING
+    )
   );
 
   const currentYear = new Date().getFullYear();
@@ -77,7 +89,10 @@ const Filter = () => {
       {/* 필터 대상: 상태 */}
       {/* PC : TAP 방식 */}
       <div className="flex-1 max-sm:hidden h-10 *:cursor-pointer items-center border-b-[1px] *:border-black border-b-black flex">
-        <TabTrigger active={filter === null} onClick={() => setFilter(null)}>
+        <TabTrigger
+          active={filter === STATUS_FILTER_ALL}
+          onClick={() => setFilter(STATUS_FILTER_ALL)}
+        >
           전체
         </TabTrigger>
 
@@ -100,17 +115,17 @@ const Filter = () => {
       <div className="min-sm:hidden flex gap-x-1">
         <Label htmlFor="status">상태</Label>
         <Select
-          value={filter ?? "all"} // null이면 all로 보여줌
+          value={filter}
           onValueChange={(value) => {
-            if (value === "all") setFilter(null);
-            else setFilter(value as ProjectStatus);
+            const parsed = StatusFilterSchema.safeParse(value);
+            if (parsed.success) setFilter(parsed.data);
           }}
         >
           <SelectTrigger className="w-[110px]">
-            <SelectValue placeholder="전체" />
+            <SelectValue placeholder="모집중" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">전체</SelectItem>
+            <SelectItem value={STATUS_FILTER_ALL}>전체</SelectItem>
             <SelectItem value={ProjectStatus.RECRUITING}>모집중</SelectItem>
             <SelectItem value={ProjectStatus.CLOSED}>모집마감</SelectItem>
           </SelectContent>

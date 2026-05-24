@@ -19,7 +19,7 @@ const ProjectSort = () => {
 
   const [sort, setSort] = useQueryState(
     "sortBy" as keyof z.infer<typeof GetProjectsQuerySchema>,
-    parseAsStringEnum<Sort>(Object.values(Sort))
+    parseAsStringEnum<Sort>(Object.values(Sort)).withDefault(Sort.LATEST)
   );
 
   return (

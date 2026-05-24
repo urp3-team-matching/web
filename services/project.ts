@@ -11,6 +11,7 @@ import {
   projectPublicSelection,
   ProjectUpdateInput,
   Semester,
+  STATUS_FILTER_ALL,
 } from "@/types/project";
 import { PaginatedType, PasswordOmittedType } from "@/types/utils";
 import { getServerSupabase } from "@/utils/supabase/server";
@@ -159,6 +160,7 @@ export async function getAllProjects(
   if (name) whereConditions.name = { contains: name, mode: "insensitive" };
   if (keyword) whereConditions.keywords = { has: keyword };
   if (proposerType) whereConditions.proposerType = proposerType;
+  if (status && status !== STATUS_FILTER_ALL) whereConditions.status = status;
   if (searchTerm) {
     whereConditions.OR = [
       { name: { contains: searchTerm, mode: "insensitive" } },
@@ -221,24 +223,10 @@ export async function getAllProjects(
     take: take,
   });
 
-  let filteredProjects: PasswordOmittedProject[] = projectsFromDb as PasswordOmittedProject[];
-  let finalTotalCount = totalCount;
-
-  if (status) {
-    const allProjects = await prisma.project.findMany({
-      where: whereConditions,
-      select: projectPublicSelection,
-    });
-
-    const filteredAllProjects = allProjects.filter((project) => project.status === status);
-    finalTotalCount = filteredAllProjects.length;
-    filteredProjects = filteredAllProjects.slice(skip, skip + take);
-  }
-
   return {
-    data: filteredProjects,
-    totalItems: finalTotalCount,
-    totalPages: Math.ceil(finalTotalCount / limit),
+    data: projectsFromDb as PasswordOmittedProject[],
+    totalItems: totalCount,
+    totalPages: Math.ceil(totalCount / limit),
     currentPage: page,
     itemsPerPage: limit,
   };
