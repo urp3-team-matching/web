@@ -18,7 +18,7 @@ const ChatBubble = forwardRef<HTMLDivElement, ChatBubbleProps>(
       : "items-start"; // 상대방 메시지 내용물 왼쪽 정렬
 
     const messageBubbleColor = chatGroup.isCurrentUser
-      ? "bg-sky-500 text-white" // 내 메시지 배경색
+      ? "bg-primary text-primary-foreground" // 내 메시지 배경색
       : "bg-gray-200 text-gray-800"; // 상대방 메시지 배경색
 
     const nameVisibility = chatGroup.isCurrentUser ? "hidden" : "visible"; // 내 이름은 숨김 (선택 사항)
@@ -53,7 +53,9 @@ const ChatBubble = forwardRef<HTMLDivElement, ChatBubbleProps>(
               {msg.text}
               <div
                 className={`text-xs mt-1 ${
-                  chatGroup.isCurrentUser ? "text-sky-200" : "text-gray-500"
+                  chatGroup.isCurrentUser
+                    ? "text-primary-foreground/70"
+                    : "text-gray-500"
                 } ${chatGroup.isCurrentUser ? "text-right" : "text-left"}`}
               >
                 {msg.time}

@@ -356,7 +356,7 @@ export default function ChatField({ project }: ChatFieldProps) {
             <Textarea
               ref={textareaRef}
               name="text"
-              className="flex-grow resize-none text-sm text-gray-800 font-medium mr-2 py-2 px-3 border-gray-300 rounded-lg focus:ring-sky-500 focus:border-sky-500"
+              className="flex-grow resize-none text-sm text-gray-800 font-medium mr-2 py-2 px-3 border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
               placeholder="프로젝트에 관심있는 학생들과 자유롭게 대화해보세요!"
               rows={1}
               onInput={handleTextareaInput}
