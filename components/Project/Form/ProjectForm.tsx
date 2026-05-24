@@ -37,13 +37,13 @@ const ProjectForm = ({
         "lg:border flex flex-col w-full gap-3 lg:gap-5 rounded-lg lg:shadow-sm lg:p-5"
       )}
     >
-      <span
+      <h2
         className={cn("text-xl lg:text-2xl font-semibold", {
           hidden: withoutProjectName && mode !== ProjectPageModeEnum.ADMIN,
         })}
       >
         프로젝트 정보
-      </span>
+      </h2>
       <Separator
         className={cn("w-full lg:hidden", {
           hidden: withoutProjectName && mode !== ProjectPageModeEnum.ADMIN,
