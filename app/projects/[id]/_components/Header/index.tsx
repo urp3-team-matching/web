@@ -1,4 +1,3 @@
-import AdminSwitch from "@/app/projects/[id]/_components/Header/AdminSwitch";
 import { ProjectPageMode } from "@/app/projects/[id]/page";
 import ApplyStatueBadge from "@/components/Badge/ApplyStatueBadge";
 import KeywordBadge from "@/components/Badge/KeywordBadge";
@@ -9,7 +8,8 @@ import useUser from "@/hooks/use-user";
 import { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
 import { parseDate } from "@/lib/utils";
 import { ProjectInput } from "@/types/project";
-import { Calendar, Eye, Trash2 } from "lucide-react";
+import { Calendar, Eye, Pencil, Trash2 } from "lucide-react";
+import Link from "next/link";
 import { Control } from "react-hook-form";
 
 interface ProjectDetailHeaderProps {
@@ -18,7 +18,6 @@ interface ProjectDetailHeaderProps {
   control: Control<ProjectInput>;
   mode: ProjectPageMode;
   onDelete: () => void;
-  toggleMode: () => void;
 }
 
 const ProjectDetailHeader = ({
@@ -27,7 +26,6 @@ const ProjectDetailHeader = ({
   control,
   mode,
   onDelete,
-  toggleMode,
 }: ProjectDetailHeaderProps) => {
   const projectStatus = project.status;
   const user = useUser();
@@ -56,14 +54,18 @@ const ProjectDetailHeader = ({
         </div>
 
         <div className="flex gap-4 items-center">
-          <div className="flex gap-x-2 items-center">
-            <AdminSwitch
-              mode={mode}
-              toggleMode={toggleMode}
-              projectId={project.id}
-            />
-            <span className="text-sm font-medium text-nowrap">관리자</span>
-          </div>
+          {mode === null ? (
+            <Button asChild type="button" variant="outline" className="h-7">
+              <Link href={`/projects/${project.id}/edit`}>
+                <Pencil className="size-4" />
+                프로젝트 수정
+              </Link>
+            </Button>
+          ) : (
+            <Button asChild type="button" variant="ghost" className="h-7">
+              <Link href={`/projects/${project.id}`}>조회로 돌아가기</Link>
+            </Button>
+          )}
 
           {mode === null && user && (
             <Button
