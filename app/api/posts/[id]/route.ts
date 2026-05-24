@@ -39,8 +39,11 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
 
 export async function PUT(request: NextRequest, { params }: RouteContext) {
   const supabase = await getServerSupabase();
-  const session = await supabase.auth.getSession();
-  if (!session.data.session) {
+  // 서버 인증은 getUser()로 — getSession()은 쿠키를 재검증 없이 신뢰한다.
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -80,8 +83,11 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
 
 export async function DELETE(request: NextRequest, { params }: RouteContext) {
   const supabase = await getServerSupabase();
-  const session = await supabase.auth.getSession();
-  if (!session.data.session) {
+  // 서버 인증은 getUser()로 — getSession()은 쿠키를 재검증 없이 신뢰한다.
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
