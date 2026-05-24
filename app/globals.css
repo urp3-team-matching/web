@@ -39,54 +39,21 @@
   ::file-selector-button {
     border-color: var(--color-gray-200, currentColor);
   }
-
-  :root {
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-
-  .dark {
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
 }
 
 @utility text-balance {
   text-wrap: balance;
 }
 
-@layer utilities {
-  :root {
-    --background: #ffffff;
-    --foreground: #171717;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --background: #0a0a0a;
-      --foreground: #ededed;
-    }
-  }
-
-  body {
-    color: var(--foreground);
-    background: var(--background);
-  }
-}
-
 :root {
+  /* SKKU Brand Identity --- Source: skku.edu/skku/about/symbol/symbol_01.do
+     공식 가이드는 인쇄 중심(Pantone/CMYK). 디지털 사용 시
+     의미와 사용 강도 권고는 docs/DESIGN.md 참고. */
+  --skku-blue: #072b61;       /* Pantone 541C  --- 리더십, 신뢰, 지성, 책임 */
+  --skku-green: #8dc63f;      /* Pantone 367C  --- 다시 시작되는 역사 */
+  --skku-orange: #ff6c0f;     /* Pantone 1585C --- 창조, 역동, 혁신 */
+  --skku-dark-green: #124633; /* Pantone 3435C --- 소통, 공유, 협력 */
+
   --font-noto-sans-kr: "Noto Sans KR", sans-serif;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -94,10 +61,10 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.3 0.1 259);
+  --primary: var(--skku-blue);
   --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.76 0.17 123);
-  --secondary-foreground: oklch(1 0 0);
+  --secondary: var(--skku-green);
+  --secondary-foreground: oklch(0.145 0 0); /* SKKU Green 위 대비를 위해 ink black */
   --third: oklch(0.27 0.1 147);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
@@ -108,10 +75,10 @@
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-1: var(--skku-blue);
+  --chart-2: var(--skku-green);
+  --chart-3: var(--skku-orange);
+  --chart-4: var(--skku-dark-green);
   --chart-5: oklch(0.769 0.188 70.08);
   --radius: 0.625rem;
   --sidebar: oklch(0.985 0 0);
@@ -139,10 +106,12 @@ body {
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.145 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.985 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
+  /* Dark mode: SKKU Blue가 어두운 배경에 묻히지 않도록 명도만 ↑ (relative color).
+     hue/chroma는 brand 정체성 유지. */
+  --primary: oklch(from var(--skku-blue) 0.62 c h);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: var(--skku-green);
+  --secondary-foreground: oklch(0.145 0 0);
   --muted: oklch(0.269 0 0);
   --muted-foreground: oklch(0.708 0 0);
   --accent: oklch(0.269 0 0);
@@ -152,10 +121,10 @@ body {
   --border: oklch(0.269 0 0);
   --input: oklch(0.269 0 0);
   --ring: oklch(0.439 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-1: oklch(from var(--skku-blue) 0.62 c h);
+  --chart-2: var(--skku-green);
+  --chart-3: var(--skku-orange);
+  --chart-4: oklch(from var(--skku-dark-green) 0.55 c h);
   --chart-5: oklch(0.645 0.246 16.439);
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
@@ -208,20 +177,18 @@ body {
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  /* SKKU raw utilities --- bg-skku-blue, text-skku-orange 등으로 직접 사용 가능.
+     UI 전반엔 semantic 토큰(primary/secondary/...)을 우선 사용. */
+  --color-skku-blue: var(--skku-blue);
+  --color-skku-green: var(--skku-green);
+  --color-skku-orange: var(--skku-orange);
+  --color-skku-dark-green: var(--skku-dark-green);
 }
 
 /*
   ---break---
 */
-
-@layer base {
-  * {
-    @apply border-border outline-none;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-}
 
 @layer base {
   * {
