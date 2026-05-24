@@ -43,7 +43,8 @@ export default function SearchRow({ className }: SearchBarProps) {
       >
         <Button
           asChild
-          className="w-full h-10 sm:hidden sm:w-50 sm:h-full bg-green-400 hover:bg-green-500 hover:cursor-pointer"
+          variant="secondary"
+          className="w-full h-10 sm:hidden sm:w-50 sm:h-full hover:cursor-pointer"
         >
           <Link href="/projects/create">
             <PencilIcon size={24} />
