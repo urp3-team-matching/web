@@ -19,6 +19,8 @@ import type {
   ChatMessageContent,
   MessageFromDB,
 } from "@/types/chat"; // 타입 정의 경로 확인
+import type { RealtimePostgresInsertPayload } from "@supabase/supabase-js";
+
 import { getClientSupabase } from "@/utils/supabase/client";
 import { Send } from "lucide-react";
 import { KeyboardEvent, useEffect, useRef, useState } from "react";
@@ -180,7 +182,7 @@ export default function ChatField({ project }: ChatFieldProps) {
 
     const channel = supabase
       .channel(`project-chat-room-${projectId}`)
-      .on<MessageFromDB>(
+      .on(
         "postgres_changes",
         {
           event: "INSERT",
@@ -188,7 +190,7 @@ export default function ChatField({ project }: ChatFieldProps) {
           table: "Message",
           filter: `projectId=eq.${projectId}`,
         },
-        (payload) => {
+        (payload: RealtimePostgresInsertPayload<MessageFromDB>) => {
           setRawMessages((prevMessages) => {
             if (prevMessages.some((m) => m.id === payload.new.id)) {
               return prevMessages;
@@ -197,7 +199,7 @@ export default function ChatField({ project }: ChatFieldProps) {
           });
         }
       )
-      .subscribe((status) => {
+      .subscribe((status: string) => {
         if (status === "SUBSCRIBED") {
         } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
         }

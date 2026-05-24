@@ -1,8 +1,10 @@
 "use client";
 
+import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
+
 import apiClient from "@/lib/apiClientHelper";
 import { getClientSupabase } from "@/utils/supabase/client";
-import { createContext, useContext, useEffect, useRef, useState } from "react";
 
 interface ProjectVerificationContextType {
   isVerified: boolean | null;
@@ -91,7 +93,7 @@ export function ProjectVerificationProvider({
   useEffect(() => {
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
+    } = supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session: Session | null) => {
       if (event === "SIGNED_IN" && session?.user) {
         // 🔹 로그인 시 즉시 인증됨으로 설정
         setIsVerified(true);
