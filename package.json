@@ -19,6 +19,8 @@
     "db:push": "prisma db push",
     "db:reset": "prisma migrate reset --force",
     "db:deploy": "prisma migrate deploy",
+    "dev:setup": "supabase start && supabase db reset && sleep 5 && prisma migrate deploy && prisma db push --accept-data-loss --skip-generate && prisma db seed",
+    "dev:reset": "supabase db reset && sleep 5 && prisma migrate deploy && prisma db push --accept-data-loss --skip-generate && prisma db seed",
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
@@ -72,12 +74,14 @@
     "eslint-config-next": "14.2.29",
     "postcss": "^8",
     "prisma": "^6.12.0",
+    "supabase": "^2.101.0",
     "tailwindcss": "^4.0.0",
     "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.8.2"
   },
   "prisma": {
-    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+    "seed": "ts-node -r tsconfig-paths/register --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   },
   "pnpm": {
     "ignoredBuiltDependencies": [
