@@ -25,7 +25,6 @@ import type {
 } from "@/types/chat"; // 타입 정의 경로 확인
 import { getClientSupabase } from "@/utils/supabase/client";
 
-
 import ChatBubble from "./ChatBubble";
 
 const COOKIE_KEY = "chat_user_data";
