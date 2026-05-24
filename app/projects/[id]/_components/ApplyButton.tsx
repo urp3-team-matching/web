@@ -98,11 +98,8 @@ const ProjectApplyButton = ({
       <DialogTrigger asChild>
         <Button
           disabled={!active}
-          variant="default"
-          className={cn(
-            `w-full h-[50px] hover:bg-green-400 bg-green-400`,
-            className
-          )}
+          variant="secondary"
+          className={cn("w-full h-[50px]", className)}
         >
           {active ? "신청하기" : "신청 마감"}
         </Button>

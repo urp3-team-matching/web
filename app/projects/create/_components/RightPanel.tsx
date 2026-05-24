@@ -34,13 +34,14 @@ const ProjectCreateRightPanel = ({
       />
       <div className="flex justify-between gap-3">
         <Button
-          className="w-[30%] bg-slate-200 hover:bg-slate-300 text-black"
+          variant="outline"
+          className="w-[30%]"
           onClick={onCancel}
         >
           취소
         </Button>
         <Button
-          className="bg-green-400 w-[65%] hover:bg-green-500"
+          className="w-[65%]"
           onClick={onSubmit}
           disabled={loading}
         >
