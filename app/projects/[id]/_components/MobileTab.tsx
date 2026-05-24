@@ -121,7 +121,6 @@ export default function MobileTab({
             />
           </div>
           {/* 팀 현황 그래프와 채팅 (잠정적으로 제거) */}
-          {/* <MajorGraph applicants={applicants as PublicApplicant[]} /> */}
           {/* <Chat
             className="w-full text-sm font-medium flex flex-col shadow-md rounded-lg h-[500px]"
             project={project}
