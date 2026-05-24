@@ -23,7 +23,7 @@ import type { RealtimePostgresInsertPayload } from "@supabase/supabase-js";
 
 import { getClientSupabase } from "@/utils/supabase/client";
 import { Send } from "lucide-react";
-import { KeyboardEvent, useEffect, useRef, useState } from "react";
+import { KeyboardEvent, useEffect, useId, useRef, useState } from "react";
 import ChatBubble from "./ChatBubble";
 
 const COOKIE_KEY = "chat_user_data";
@@ -132,6 +132,11 @@ export default function ChatField({ project }: ChatFieldProps) {
 
   const supabase = getClientSupabase();
 
+  // ChatField는 Desktop(RightPanel)과 Mobile(page.tsx 하단)에 동시에 마운트된다.
+  // supabase-js v2.106+는 같은 channel name 재호출 시 동일 인스턴스를 반환하고,
+  // 이미 subscribed인 채널에 .on()을 또 부르면 throw — 인스턴스별 suffix로 격리.
+  const instanceId = useId();
+
   function enterChatRoom(isAdmin: boolean, major: string, nickname: string) {
     let userId = "";
     if (!isAdmin) {
@@ -181,7 +186,7 @@ export default function ChatField({ project }: ChatFieldProps) {
     fetchInitialMessages();
 
     const channel = supabase
-      .channel(`project-chat-room-${projectId}`)
+      .channel(`project-chat-room-${projectId}-${instanceId}`)
       .on(
         "postgres_changes",
         {
@@ -208,7 +213,7 @@ export default function ChatField({ project }: ChatFieldProps) {
     return () => {
       supabase.removeChannel(channel).catch(console.error);
     };
-  }, [projectId, supabase]);
+  }, [projectId, supabase, instanceId]);
 
   useEffect(() => {
     setDisplayedChats(transformMessagesForDisplay(rawMessages, currentUserId));
