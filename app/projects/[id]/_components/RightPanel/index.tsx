@@ -1,6 +1,5 @@
 import ProjectApplyButton from "@/app/projects/[id]/_components/ApplyButton";
 import { ProjectPageModeEnum } from "@/app/projects/[id]/_components/constants";
-// import MajorGraph from "@/app/projects/[id]/_components/MajorGraph";
 // import Chat from "@/app/projects/[id]/_components/RightPanel/Chat";
 import { ProjectPageMode } from "@/app/projects/[id]/page";
 import CancelAndSubmitButton from "@/components/Project/Form/CancelAndSubmitButton";
