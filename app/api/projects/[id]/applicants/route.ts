@@ -1,4 +1,5 @@
 import { getApplicantsByProjectId } from "@/services/applicant";
+import { verifyProjectPermission } from "@/services/project";
 import { NextRequest, NextResponse } from "next/server";
 
 interface ProjectContext {
@@ -14,7 +15,9 @@ export async function GET(request: NextRequest, { params }: ProjectContext) {
         { status: 400 }
       );
 
-    const applicants = await getApplicantsByProjectId(projectId);
+    // 인증된 owner에게만 PII(email, introduction) 포함해서 반환
+    const isOwner = await verifyProjectPermission(projectId, request);
+    const applicants = await getApplicantsByProjectId(projectId, isOwner);
     return NextResponse.json(applicants);
   } catch (error) {
     console.error(`Error fetching applicants for project ${params.id}:`, error);

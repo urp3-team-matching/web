@@ -23,7 +23,9 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
         { status: 400 }
       );
 
-    const project = await getProjectById(projectId);
+    // 인증된 owner에게만 임베드된 applicants에 PII(email, introduction) 포함
+    const isOwner = await verifyProjectPermission(projectId, request);
+    const project = await getProjectById(projectId, isOwner);
     if (!project) {
       return NextResponse.json({ error: "Project not found" }, { status: 404 });
     }

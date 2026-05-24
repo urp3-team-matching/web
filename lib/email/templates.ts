@@ -1,7 +1,30 @@
 import { getCurrentKoreanDate } from "@/lib/utils";
 import { ApplicantStatus, Project, ProjectStatus } from "@prisma/client";
 
+// projectAdminSelection / projectPublicSelection 모두 passwordHash를 제외하고
+// 반환하므로, 이메일 템플릿은 그 narrowed shape을 받을 수 있어야 한다.
+// 두 select 모두 admin/public이 사용하는 필드 superset을 포함한다.
+type ProjectForEmail = Omit<Project, "passwordHash">;
+
 const VERCEL_URL = process.env.VERCEL_URL || "http://localhost:3000";
+
+// 사용자 입력을 이메일 HTML 본문에 안전하게 보간하기 위한 HTML 이스케이프.
+// 미인증 라우트(POST /api/projects, /apply 등)에서 흘러들어온 사용자 입력이
+// 관리자/프로젝트 소유자 메일함에 그대로 렌더되는 것을 막는다.
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+// Subject는 메일 헤더라, 개행 문자가 끼면 RFC 5322 header injection이
+// 가능해진다. CR/LF를 공백으로 치환.
+function escapeHeader(s: string): string {
+  return s.replace(/[\r\n]+/g, " ");
+}
 
 type EmailTemplate = {
   subject: string;
@@ -35,7 +58,7 @@ const applicantStatusAsVerboseKorean = (status: ApplicantStatus) => {
 /**
  * 새로운 프로젝트가 생성되었을 때 알림
  */
-const newProjectCreated = (newProject: Project): EmailTemplate => {
+const newProjectCreated = (newProject: ProjectForEmail): EmailTemplate => {
   const {
     id,
     name,
@@ -53,19 +76,19 @@ const newProjectCreated = (newProject: Project): EmailTemplate => {
   const link = `${VERCEL_URL}/projects/${id}`;
 
   return {
-    subject: `신규 프로젝트 생성: ${name}`,
+    subject: escapeHeader(`신규 프로젝트 생성: ${name}`),
     html: `새로운 프로젝트가 생성되었습니다.<br><br>
-    - 키워드: ${keywords.join(", ")}<br>
-    - 제안자: ${proposerName} (${proposerType})${
-      proposerMajor ? `, ${proposerMajor}` : ""
+    - 키워드: ${keywords.map(escapeHtml).join(", ")}<br>
+    - 제안자: ${escapeHtml(proposerName)} (${proposerType})${
+      proposerMajor ? `, ${escapeHtml(proposerMajor)}` : ""
     }<br>
     - 생성일: ${now}<br>
     - 프로젝트 링크: <a href="${link}">${link}</a><br>
-    - 추진배경: ${background}<br>
-    - 실행방: ${method}<br>
-    - 목표: ${objective}<br>
-    - 기대효과: ${result}<br>
-    - 기타 전달사항: ${etc}
+    - 추진배경: ${escapeHtml(background)}<br>
+    - 실행방: ${escapeHtml(method)}<br>
+    - 목표: ${escapeHtml(objective)}<br>
+    - 기대효과: ${escapeHtml(result)}<br>
+    - 기타 전달사항: ${etc ? escapeHtml(etc) : ""}
     `,
   };
 };
@@ -74,15 +97,15 @@ const newProjectCreated = (newProject: Project): EmailTemplate => {
  * 신청자가 프로젝트에 지원했을 때 알림
  */
 const applicantApplied = (
-  project: Project,
+  project: ProjectForEmail,
   applicantName: string
 ): EmailTemplate => {
   const projectLink = `${VERCEL_URL}/projects/${project.id}`;
   const now = getCurrentKoreanDate();
 
   return {
-    subject: `프로젝트 지원 알림: ${project.name}`,
-    html: `지원자 ${applicantName}님이 프로젝트에 지원했습니다.<br><br>
+    subject: escapeHeader(`프로젝트 지원 알림: ${project.name}`),
+    html: `지원자 ${escapeHtml(applicantName)}님이 프로젝트에 지원했습니다.<br><br>
     - 프로젝트 링크: <a href="${projectLink}">${projectLink}</a><br>
     - 지원일: ${now}
     `,
@@ -93,7 +116,7 @@ const applicantApplied = (
  * 신청자의 신청 상태가 변경됐을 때 알림
  */
 const applicantStatusChanged = (
-  project: Project,
+  project: ProjectForEmail,
   applicantName: string,
   prev: ApplicantStatus,
   curr: ApplicantStatus
@@ -102,8 +125,8 @@ const applicantStatusChanged = (
   const now = getCurrentKoreanDate();
 
   return {
-    subject: `프로젝트 지원 상태 변경: ${project.name}`,
-    html: `지원자 ${applicantName}님의 지원 상태가 변경되었습니다.<br><br>
+    subject: escapeHeader(`프로젝트 지원 상태 변경: ${project.name}`),
+    html: `지원자 ${escapeHtml(applicantName)}님의 지원 상태가 변경되었습니다.<br><br>
     - 이전 상태: ${applicantStatusAsVerboseKorean(prev)}<br>
     - 현재 상태: ${applicantStatusAsVerboseKorean(curr)}<br>
     - 프로젝트 링크: <a href="${projectLink}">${projectLink}</a><br>
@@ -116,7 +139,7 @@ const applicantStatusChanged = (
  * 프로젝트 상태 변경 알림
  */
 const projectStatusChanged = (
-  project: Project,
+  project: ProjectForEmail,
   prev: ProjectStatus,
   curr: ProjectStatus | "DELETED"
 ) => {
@@ -124,8 +147,8 @@ const projectStatusChanged = (
   const now = getCurrentKoreanDate();
 
   return {
-    subject: `프로젝트 상태 변경: ${project.name}`,
-    html: `프로젝트 ${project.name}의 상태가 변경되었습니다.<br><br>
+    subject: escapeHeader(`프로젝트 상태 변경: ${project.name}`),
+    html: `프로젝트 ${escapeHtml(project.name)}의 상태가 변경되었습니다.<br><br>
     - 이전 상태: ${projectStatusAsVerboseKorean(prev)}<br>
     - 현재 상태: ${projectStatusAsVerboseKorean(curr)}<br>
     - 프로젝트 링크: <a href="${projectLink}">${projectLink}</a><br>
