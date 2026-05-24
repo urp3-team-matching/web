@@ -72,7 +72,7 @@
   --primary: var(--skku-blue);
   --primary-foreground: oklch(0.985 0 0);
   --secondary: var(--skku-green);
-  --secondary-foreground: oklch(0.145 0 0); /* SKKU Green 위 대비를 위해 ink black */
+  --secondary-foreground: oklch(1 0 0); /* SKKU Green 위 white — 브랜드 일관성 우선, 가독성보다 비주얼 */
   --third: oklch(0.27 0.1 147);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
@@ -111,7 +111,7 @@
   --primary: oklch(from var(--skku-blue) 0.62 c h);
   --primary-foreground: oklch(0.985 0 0);
   --secondary: var(--skku-green);
-  --secondary-foreground: oklch(0.145 0 0);
+  --secondary-foreground: oklch(1 0 0);
   --muted: oklch(0.269 0 0);
   --muted-foreground: oklch(0.708 0 0);
   --accent: oklch(0.269 0 0);
