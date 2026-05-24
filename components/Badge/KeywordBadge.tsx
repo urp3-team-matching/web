@@ -1,6 +1,6 @@
 export default function KeywordBadge({ keyword }: { keyword: string }) {
   return (
-    <div className="h-5 px-2.5 text-xs sm:text-sm font-medium py-1 bg-gray-200 rounded-sm inline-flex justify-center items-center gap-2.5">
+    <div className="min-h-5 px-2.5 text-xs sm:text-sm font-medium py-1 bg-gray-200 rounded-sm inline-flex justify-center items-center gap-2.5 whitespace-nowrap">
       {`#` + keyword}
     </div>
   );
