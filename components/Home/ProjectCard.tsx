@@ -57,7 +57,7 @@ export default function ProjectCard({ project, className }: ProjectCardProps) {
           {/*키워드*/}
           <div
             className={cn(
-              "flex gap-1 my-[2px]",
+              "flex flex-wrap gap-1 my-[2px]",
               !project.keywords.length && "hidden"
             )}
           >
