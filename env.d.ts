@@ -10,6 +10,9 @@ declare global {
 
       EMAIL_SERVER_USER: string;
       EMAIL_SERVER_PASSWORD: string;
+
+      PROJECT_ENCRYPTION_KEY: string;
+      ADMIN_EMAILS: string;
     }
   }
 }
