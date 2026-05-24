@@ -11,6 +11,7 @@ import {
   projectPublicSelection,
   ProjectUpdateInput,
   Semester,
+  STATUS_FILTER_ALL,
 } from "@/types/project";
 import { PaginatedType, PasswordOmittedType } from "@/types/utils";
 import { getServerSupabase } from "@/utils/supabase/server";
@@ -224,7 +225,7 @@ export async function getAllProjects(
   let filteredProjects: PasswordOmittedProject[] = projectsFromDb as PasswordOmittedProject[];
   let finalTotalCount = totalCount;
 
-  if (status) {
+  if (status && status !== STATUS_FILTER_ALL) {
     const allProjects = await prisma.project.findMany({
       where: whereConditions,
       select: projectPublicSelection,

@@ -30,6 +30,15 @@ export const ProjectUpdateSchema = ProjectSchema.extend({
 export type ProjectInput = z.infer<typeof ProjectSchema>;
 export type ProjectUpdateInput = z.infer<typeof ProjectUpdateSchema>;
 
+// "all" 센티넬: 사용자가 명시적으로 "전체"를 선택했을 때만 사용.
+// URL/쿼리에서 status가 없으면 기본값(모집중)이 들어가고, "all"이면 status 필터를 건너뛴다.
+export const STATUS_FILTER_ALL = "all" as const;
+export const StatusFilterSchema = z.union([
+  z.nativeEnum(ProjectStatus),
+  z.literal(STATUS_FILTER_ALL),
+]);
+export type StatusFilter = z.infer<typeof StatusFilterSchema>;
+
 export const GetProjectsQuerySchema = z.object({
   page: z.coerce.number().int().positive().optional(),
   limit: z.coerce.number().int().positive().optional(),
@@ -39,7 +48,7 @@ export const GetProjectsQuerySchema = z.object({
   keyword: z.string().optional(),
   proposerType: z.nativeEnum(ProposerType).optional(),
   searchTerm: z.string().optional(),
-  status: z.nativeEnum(ProjectStatus).optional(),
+  status: StatusFilterSchema.optional().default(ProjectStatus.RECRUITING),
   year: z.coerce.number().int().optional(),
   semester: z.nativeEnum(Semester).optional(),
 });
