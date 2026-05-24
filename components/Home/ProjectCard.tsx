@@ -1,10 +1,12 @@
+import { Calendar, Eye } from "lucide-react";
+
 import ApplyStatueBadge from "@/components/Badge/ApplyStatueBadge";
 import ProposalBadge from "@/components/Badge/ProposalBadge";
 import { Badge } from "@/components/ui/badge";
 import { MAX_APPLICANTS } from "@/constants";
 import { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
 import { cn, parseDate } from "@/lib/utils";
-import { Calendar, Eye } from "lucide-react";
+
 import KeywordBadge from "../Badge/KeywordBadge";
 
 export interface ProjectCardProps {

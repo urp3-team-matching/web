@@ -1,10 +1,10 @@
 "use client";
 
-import TabTrigger from "@/components/Filter/TabTrigger";
-import { GetProjectsQuerySchema } from "@/types/project";
+import { ProjectStatus } from "@prisma/client";
 import { parseAsInteger, parseAsStringEnum, useQueryState } from "nuqs";
 import { z } from "zod";
 
+import TabTrigger from "@/components/Filter/TabTrigger";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -14,8 +14,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { GetProjectsQuerySchema } from "@/types/project";
 import { Semester } from "@/types/project";
-import { ProjectStatus } from "@prisma/client";
+
 
 const Filter = () => {
   const [filter, setFilter] = useQueryState(

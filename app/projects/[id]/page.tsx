@@ -1,5 +1,12 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ApplicantStatus } from "@prisma/client";
+import { useRouter } from "next/navigation";
+import { parseAsStringEnum, useQueryState } from "nuqs";
+import { useEffect, useState, use } from "react";
+import { useForm } from "react-hook-form";
+
 import { ProjectPageModeEnum } from "@/app/projects/[id]/_components/constants";
 import ProjectDetailHeader from "@/app/projects/[id]/_components/Header";
 import ProjectDetailRightPanel from "@/app/projects/[id]/_components/RightPanel";
@@ -18,12 +25,7 @@ import apiClient, {
 import { NotFoundError } from "@/lib/errors";
 import { cn } from "@/lib/utils";
 import { ProjectUpdateInput, ProjectUpdateSchema } from "@/types/project";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { ApplicantStatus } from "@prisma/client";
-import { useRouter } from "next/navigation";
-import { parseAsStringEnum, useQueryState } from "nuqs";
-import { useEffect, useState, use } from "react";
-import { useForm } from "react-hook-form";
+
 import ProjectApplyButton from "./_components/ApplyButton";
 import MobileTab from "./_components/MobileTab";
 

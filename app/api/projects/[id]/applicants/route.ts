@@ -1,6 +1,7 @@
+import { NextRequest, NextResponse } from "next/server";
+
 import { getApplicantsByProjectId } from "@/services/applicant";
 import { verifyProjectPermission } from "@/services/project";
-import { NextRequest, NextResponse } from "next/server";
 
 interface ProjectContext {
   params: Promise<{ id: string }>;

@@ -1,5 +1,9 @@
 "use client";
 
+import { Calendar, Eye } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState, use } from "react";
+
 import FileButton from "@/app/posts/[id]/_components/FileButton";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -9,9 +13,6 @@ import apiClient, { PublicPost } from "@/lib/apiClientHelper";
 import { NotFoundError } from "@/lib/errors";
 import { parseDate } from "@/lib/utils";
 import { Attachment } from "@/types/post";
-import { Calendar, Eye } from "lucide-react";
-import Link from "next/link";
-import { useEffect, useState, use } from "react";
 
 const PostDetail = (props: { params: Promise<{ id: string }> }) => {
   const params = use(props.params);

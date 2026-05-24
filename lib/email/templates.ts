@@ -1,5 +1,6 @@
-import { getCurrentKoreanDate } from "@/lib/utils";
 import { ApplicantStatus, Project, ProjectStatus } from "@prisma/client";
+
+import { getCurrentKoreanDate } from "@/lib/utils";
 
 // projectAdminSelection / projectPublicSelection 모두 passwordHash를 제외하고
 // 반환하므로, 이메일 템플릿은 그 narrowed shape을 받을 수 있어야 한다.

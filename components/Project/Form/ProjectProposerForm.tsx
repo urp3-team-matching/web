@@ -1,11 +1,12 @@
+import { ProposerType } from "@prisma/client";
+import { Control, Controller } from "react-hook-form";
+
 import ProjectProposerFormField from "@/components/Project/Form/ProjectProposerFormField";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { ProjectInput } from "@/types/project";
-import { ProposerType } from "@prisma/client";
-import { Control, Controller } from "react-hook-form";
 
 const proposerTypes: { label: string; value: ProposerType }[] = [
   {

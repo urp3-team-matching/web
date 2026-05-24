@@ -1,3 +1,7 @@
+import { ChevronDown } from "lucide-react";
+
+import KeywordBadge from "@/components/Badge/KeywordBadge";
+import { Badge } from "@/components/ui/badge";
 import {
   Menubar,
   MenubarContent,
@@ -5,10 +9,8 @@ import {
   MenubarMenu,
   MenubarTrigger,
 } from "@/components/ui/menubar";
-import { Badge } from "@/components/ui/badge";
-import { ChevronDown } from "lucide-react";
-import KeywordBadge from "@/components/Badge/KeywordBadge";
 import { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
+
 import { ProjectPageMode } from "../../page";
 
 interface KeywordMenubarProps {
