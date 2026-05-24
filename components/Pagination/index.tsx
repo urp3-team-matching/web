@@ -30,7 +30,7 @@ const CustomPagination = ({
 }: CustomPaginationProps) => {
   const [page, setPage] = useQueryState(
     queryKey,
-    parseAsInteger.withDefault(0)
+    parseAsInteger.withDefault(1)
   );
 
   const maxPagesToShow = 5; // 표시할 최대 페이지 수
@@ -69,10 +69,7 @@ const CustomPagination = ({
 
   const isFirstPage = page === 1;
   const isLastPage = page === totalPages;
-  const isCurrentOrDefaultPage = (pageNumber: number | string) => {
-    if (page === 0 && pageNumber === 1) return true;
-    return pageNumber === page;
-  };
+  const isCurrentPage = (pageNumber: number | string) => pageNumber === page;
 
   if (totalPages <= 1) {
     return null;
@@ -118,11 +115,11 @@ const CustomPagination = ({
               <PaginationLink
                 onClick={() => setPage(Number(pageNumber))}
                 className={cn(
-                  isCurrentOrDefaultPage(pageNumber) &&
+                  isCurrentPage(pageNumber) &&
                     "bg-secondary text-white hover:bg-secondary hover:text-white"
                 )}
                 aria-label={`Go to page ${pageNumber}`}
-                isActive={isCurrentOrDefaultPage(pageNumber)}
+                isActive={isCurrentPage(pageNumber)}
               >
                 {pageNumber}
               </PaginationLink>
