@@ -35,14 +35,15 @@ const CancelAndSubmitButton = ({
       <Button
         onClick={onDelete}
         type="button"
-        className="text-white flex-1 cursor-pointer text-base font-normal  h-10 bg-red-400 hover:bg-red-300 rounded-lg"
+        variant="destructive"
+        className="flex-1 cursor-pointer text-base font-normal h-10 rounded-lg"
       >
         삭제
       </Button>
       <Button
         type="button"
         onClick={onToggleClose}
-        className="text-white flex-1 cursor-pointer text-base font-normal  h-10 bg-orange-400 hover:bg-orange-300 rounded-lg"
+        className="text-white flex-1 cursor-pointer text-base font-normal h-10 bg-skku-orange hover:bg-skku-orange/90 rounded-lg"
       >
         {isProjectClosed ? "재모집" : "모집마감"}
       </Button>

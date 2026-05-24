@@ -107,7 +107,7 @@ const PostForm = ({ postId }: { postId?: number }) => {
           <Label htmlFor="title">제목</Label>
           <Input {...register("title")} placeholder="제목" />
           {formState.errors.title && (
-            <p className="text-red-500">{formState.errors.title.message}</p>
+            <p className="text-destructive">{formState.errors.title.message}</p>
           )}
         </div>
 
@@ -118,7 +118,7 @@ const PostForm = ({ postId }: { postId?: number }) => {
             initialFiles={getValues("attachments")}
           />
           {formState.errors.attachments && (
-            <p className="text-red-500">
+            <p className="text-destructive">
               {formState.errors.attachments.message}
             </p>
           )}
@@ -128,7 +128,7 @@ const PostForm = ({ postId }: { postId?: number }) => {
           <Label htmlFor="content">본문</Label>
           <Textarea {...register("content")} placeholder="본문" />
           {formState.errors.content && (
-            <p className="text-red-500">{formState.errors.content.message}</p>
+            <p className="text-destructive">{formState.errors.content.message}</p>
           )}
         </div>
 
