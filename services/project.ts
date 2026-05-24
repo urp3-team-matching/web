@@ -6,6 +6,7 @@ import { ProjectPasswordManager } from "@/lib/projectPasswordManager";
 import {
   ApplicantForProject,
   GetProjectsQueryInput,
+  projectAdminSelection,
   ProjectInput,
   projectPublicSelection,
   ProjectUpdateInput,
@@ -70,7 +71,7 @@ export async function verifyProjectPermission(
   }
 }
 
-export async function createProject(data: ProjectInput): Promise<Project> {
+export async function createProject(data: ProjectInput): Promise<PasswordOmittedProject> {
   const { password: projectPlainTextPassword, ...projectDataRest } = data;
 
   const projectPasswordHash = await bcrypt.hash(
@@ -243,10 +244,16 @@ export async function getAllProjects(
   };
 }
 
-export async function getProjectById(id: number): Promise<ProjectWithForeignKeys | null> {
+// isOwner=true(verifyProjectPermission 통과)일 때만 임베드된 applicants에
+// PII(email, introduction)를 포함한다. 미인증 호출은 PII 제외.
+export async function getProjectById(
+  id: number,
+  isOwner: boolean = false
+): Promise<ProjectWithForeignKeys | null> {
+  const select = isOwner ? projectAdminSelection : projectPublicSelection;
   const project = await prisma.project.findUnique({
     where: { id },
-    select: projectPublicSelection,
+    select,
   });
 
   if (project) {
@@ -270,7 +277,7 @@ export async function getProjectById(id: number): Promise<ProjectWithForeignKeys
 export async function updateProject(
   id: number,
   data: Omit<ProjectUpdateInput, "currentPassword">
-): Promise<Project> {
+): Promise<PasswordOmittedProject> {
   const { password: newPlainTextPassword, ...projectDataRest } = data;
   const projectToUpdate = await prisma.project.findUnique({ where: { id } });
 
@@ -287,7 +294,7 @@ export async function updateProject(
       ...projectDataRest,
       ...(projectPasswordHashToUpdate && { passwordHash: projectPasswordHashToUpdate }),
     },
-    select: projectPublicSelection,
+    select: projectAdminSelection,
   });
 }
 
@@ -323,7 +330,7 @@ export async function deleteProject(id: number): Promise<void> {
   }
 }
 
-export async function reopenProject(id: number): Promise<Project> {
+export async function reopenProject(id: number): Promise<PasswordOmittedProject> {
   const projectToReopen = await prisma.project.findUnique({
     where: { id },
     include: { applicants: true }
@@ -334,7 +341,7 @@ export async function reopenProject(id: number): Promise<Project> {
   const reopenedProject = await prisma.project.update({
     where: { id },
     data: { status: "RECRUITING" },
-    select: projectPublicSelection,
+    select: projectAdminSelection,
   });
 
   const projectStatusChangedEmail = emailTemplates.projectStatusChanged(
@@ -352,7 +359,7 @@ export async function reopenProject(id: number): Promise<Project> {
   return reopenedProject;
 }
 
-export async function closeProject(id: number): Promise<Project> {
+export async function closeProject(id: number): Promise<PasswordOmittedProject> {
   const projectToClose = await prisma.project.findUnique({
     where: { id },
     include: { applicants: true }
@@ -363,7 +370,7 @@ export async function closeProject(id: number): Promise<Project> {
   const closedProject = await prisma.project.update({
     where: { id },
     data: { status: "CLOSED" },
-    select: projectPublicSelection,
+    select: projectAdminSelection,
   });
 
   const projectStatusChangedEmail = emailTemplates.projectStatusChanged(

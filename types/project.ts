@@ -47,7 +47,8 @@ export type GetProjectsQueryInput = z.infer<typeof GetProjectsQuerySchema>;
 
 export type ApplicantForProject = Omit<Applicant, "projectId" | "project">;
 
-export const projectPublicSelection: Prisma.ProjectSelect = {
+// 공통 — 프로젝트 자체의 스칼라 필드는 admin/public 동일
+const projectScalarSelection = {
   id: true,
   name: true,
   viewCount: true,
@@ -67,6 +68,12 @@ export const projectPublicSelection: Prisma.ProjectSelect = {
   chatLink: true,
   status: true,
   passwordHash: false, // 비밀번호 해시 제외
+} satisfies Prisma.ProjectSelect;
+
+// Owner/admin 전용 — 임베드된 applicants에 PII(email, introduction) 포함.
+// verifyProjectPermission 통과한 호출자에게만 사용.
+export const projectAdminSelection = {
+  ...projectScalarSelection,
   applicants: {
     select: {
       id: true,
@@ -79,4 +86,20 @@ export const projectPublicSelection: Prisma.ProjectSelect = {
       status: true,
     },
   },
-};
+} satisfies Prisma.ProjectSelect;
+
+// 공개 — 임베드된 applicants에서 PII(email, introduction) 제외.
+// 미인증 GET / 목록 조회는 이 select만 사용한다.
+export const projectPublicSelection = {
+  ...projectScalarSelection,
+  applicants: {
+    select: {
+      id: true,
+      name: true,
+      major: true,
+      createdDatetime: true,
+      updatedDatetime: true,
+      status: true,
+    },
+  },
+} satisfies Prisma.ProjectSelect;

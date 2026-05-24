@@ -8,18 +8,20 @@ import {
 } from "@/lib/errors";
 import { prisma } from "@/lib/prisma";
 import {
+  ApplicantAdmin,
+  applicantAdminSelection,
   ApplicantInput,
+  ApplicantPublic,
   applicantPublicSelection,
   ApplicantUpdateInput,
 } from "@/types/applicant";
 import { ApplicantForProject, projectPublicSelection } from "@/types/project";
-import { Applicant } from "@prisma/client";
 import { waitUntil } from "@vercel/functions"; // Vercel 백그라운드 작업 유지를 위해 추가됨
 
 export async function applyToProject(
   projectId: number,
   data: ApplicantInput
-): Promise<Applicant> {
+): Promise<ApplicantPublic> {
   const project = await prisma.project.findUnique({
     where: { id: projectId },
     select: projectPublicSelection,
@@ -69,36 +71,48 @@ export async function applyToProject(
   return createdApplicant;
 }
 
+// isOwner=true(verifyProjectPermission 통과)일 때만 PII 포함된 admin select.
+// 미인증/비-owner 호출은 PII 제외된 public select.
 export async function getApplicantsByProjectId(
-  projectId: number
-): Promise<Applicant[]> {
-  const applicants = await prisma.applicant.findMany({
+  projectId: number,
+  isOwner: boolean = false
+): Promise<ApplicantPublic[] | ApplicantAdmin[]> {
+  if (isOwner) {
+    return await prisma.applicant.findMany({
+      where: { projectId },
+      select: applicantAdminSelection,
+      orderBy: { createdDatetime: "asc" },
+    });
+  }
+  return await prisma.applicant.findMany({
     where: { projectId },
     select: applicantPublicSelection,
     orderBy: { createdDatetime: "asc" },
   });
-  return applicants;
 }
 
 export async function getApplicantByIdForProject(
   applicantId: number,
-  projectId: number
-): Promise<Applicant | null> {
-  const applicant = await prisma.applicant.findUnique({
-    where: {
-      id: applicantId,
-      projectId: projectId,
-    },
+  projectId: number,
+  isOwner: boolean = false
+): Promise<ApplicantPublic | ApplicantAdmin | null> {
+  if (isOwner) {
+    return await prisma.applicant.findUnique({
+      where: { id: applicantId, projectId },
+      select: applicantAdminSelection,
+    });
+  }
+  return await prisma.applicant.findUnique({
+    where: { id: applicantId, projectId },
     select: applicantPublicSelection,
   });
-  return applicant;
 }
 
 export async function updateApplicant(
   applicantId: number,
   projectId: number,
   data: ApplicantUpdateInput
-): Promise<Applicant> {
+): Promise<ApplicantAdmin> {
   const applicantToUpdate = await prisma.applicant.findUnique({
     where: { id: applicantId, projectId },
   });
@@ -113,7 +127,7 @@ export async function updateApplicant(
       // projectId는 where 조건으로 이미 확인됨
     },
     data,
-    select: applicantPublicSelection,
+    select: applicantAdminSelection,
   });
   return updatedApplicant;
 }
@@ -121,7 +135,7 @@ export async function updateApplicant(
 export async function deleteApplicant(
   applicantId: number,
   projectId: number
-): Promise<Applicant> {
+): Promise<ApplicantAdmin> {
   const applicantToDelete = await prisma.applicant.findUnique({
     where: { id: applicantId, projectId },
   });
@@ -136,7 +150,7 @@ export async function deleteApplicant(
     where: {
       id: applicantId,
     },
-    select: applicantPublicSelection,
+    select: applicantAdminSelection,
   });
   return deletedApplicant;
 }
@@ -155,7 +169,7 @@ export async function acceptApplicant(
 
   const applicant = await prisma.applicant.findUnique({
     where: { id: applicantId },
-    select: applicantPublicSelection,
+    select: applicantAdminSelection,
   });
 
   if (!applicant || applicant.projectId !== projectId) {
@@ -192,7 +206,7 @@ export async function acceptApplicant(
   const updatedApplicant = await prisma.applicant.update({
     where: { id: applicantId },
     data: { status: "APPROVED" },
-    select: applicantPublicSelection,
+    select: applicantAdminSelection,
   });
 
   const applicantStatusChangedEmail = emailTemplates.applicantStatusChanged(
@@ -231,7 +245,7 @@ export async function rejectApplicant(
 
   const applicant = await prisma.applicant.findUnique({
     where: { id: applicantId },
-    select: applicantPublicSelection,
+    select: applicantAdminSelection,
   });
 
   if (!applicant || applicant.projectId !== projectId) {
@@ -247,7 +261,7 @@ export async function rejectApplicant(
   const updatedApplicant = await prisma.applicant.update({
     where: { id: applicantId },
     data: { status: "REJECTED" },
-    select: applicantPublicSelection,
+    select: applicantAdminSelection,
   });
 
   const applicantStatusChangedEmail = emailTemplates.applicantStatusChanged(
@@ -286,7 +300,7 @@ export async function pendingApplicant(
 
   const applicant = await prisma.applicant.findUnique({
     where: { id: applicantId },
-    select: applicantPublicSelection,
+    select: applicantAdminSelection,
   });
 
   if (!applicant || applicant.projectId !== projectId) {
@@ -302,7 +316,7 @@ export async function pendingApplicant(
   const updatedApplicant = await prisma.applicant.update({
     where: { id: applicantId },
     data: { status: "PENDING" },
-    select: applicantPublicSelection,
+    select: applicantAdminSelection,
   });
 
   const applicantStatusChangedEmail = emailTemplates.applicantStatusChanged(
