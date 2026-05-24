@@ -4,9 +4,13 @@ import { Badge } from "../ui/badge";
 
 export interface ApplyStatueBadgeProps {
   status: ProjectStatus;
+  className?: string;
 }
 
-export default function ApplyStatueBadge({ status }: ApplyStatueBadgeProps) {
+export default function ApplyStatueBadge({
+  status,
+  className,
+}: ApplyStatueBadgeProps) {
   let badgeColor = "";
   let badgeText = "";
   if (status === ProjectStatus.RECRUITING) {
@@ -20,7 +24,8 @@ export default function ApplyStatueBadge({ status }: ApplyStatueBadgeProps) {
     <Badge
       className={cn(
         badgeColor,
-        "sm:w-[72px] w-14 h-6 text-[11px] sm:h-7 font-medium sm:text-sm rounded-sm"
+        "sm:w-[72px] w-14 h-6 text-[11px] sm:h-7 font-medium sm:text-sm rounded-sm",
+        className
       )}
     >
       {badgeText}

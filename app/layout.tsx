@@ -1,7 +1,5 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { AppSidebar } from "@/components/Header/AppSidebar";
-import { SidebarProvider } from "@/components/ui/sidebar";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
@@ -27,28 +25,13 @@ export default function RootLayout({
     <html lang="ko">
       <body className="flex flex-col items-center">
         <NuqsAdapter>
-          <SidebarProvider>
-            {/* ✅ 전체를 세로 레이아웃으로: (상단/본문/푸터) */}
-            <div className="flex min-h-screen w-full flex-col overflow-hidden">
-              {/* ✅ 본문(사이드바+콘텐츠)은 남은 높이 차지 */}
-              <div className="flex flex-1 w-full overflow-hidden">
-                {/* 사이드바 (좌측 고정) */}
-                <AppSidebar />
-
-                {/* 본문 영역 */}
-                <div className="flex flex-col flex-1 min-w-0">
-                  <Header />
-                  <main className="container flex-1">{children}</main>
-                </div>
-              </div>
-
-              {/* ✅ Footer는 '사이드바 포함 전체 폭'으로 하단에 위치 */}
-              <Footer />
-
-              <SpeedInsights />
-              <Analytics />
-            </div>
-          </SidebarProvider>
+          <div className="flex min-h-screen w-full flex-col overflow-hidden">
+            <Header />
+            <main className="container flex-1">{children}</main>
+            <Footer />
+            <SpeedInsights />
+            <Analytics />
+          </div>
         </NuqsAdapter>
       </body>
     </html>
