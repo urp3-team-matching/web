@@ -4,9 +4,13 @@ import { Badge } from "../ui/badge";
 
 interface ProposalBadgeProps {
   proposerType: ProposerType;
+  className?: string;
 }
 
-export default function ProposalBadge({ proposerType }: ProposalBadgeProps) {
+export default function ProposalBadge({
+  proposerType,
+  className,
+}: ProposalBadgeProps) {
   let proposerText = "";
   let badgeColor = "";
   switch (proposerType) {
@@ -32,7 +36,8 @@ export default function ProposalBadge({ proposerType }: ProposalBadgeProps) {
     <Badge
       className={cn(
         "sm:w-[72px] sm:h-7 w-16 h-6 text-[11px] rounded-sm flex justify-center items-center sm:text-sm font-medium text-white",
-        badgeColor
+        badgeColor,
+        className
       )}
     >
       {proposerText}

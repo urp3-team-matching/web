@@ -11,7 +11,6 @@ import { parseDate } from "@/lib/utils";
 import { ProjectInput } from "@/types/project";
 import { Calendar, Eye, Trash2 } from "lucide-react";
 import { Control } from "react-hook-form";
-import KeywordMenubar from "./KeywordMenubar";
 
 interface ProjectDetailHeaderProps {
   project: PublicProjectWithForeignKeys;
@@ -41,21 +40,19 @@ const ProjectDetailHeader = ({
 
   return (
     <div className={className}>
-      {/* 최상단: 프로젝트 뱃지, 키워드, 관리자 스위치 */}
+      {/* 최상단: 프로젝트 뱃지, 관리자 스위치 */}
       <div className="flex justify-between items-center">
-        <div className="flex w-full gap-[8px] items-center h-7 ">
-          <ApplyStatueBadge status={projectStatus} />
+        <div className="flex w-full gap-2 items-center">
+          <ApplyStatueBadge
+            status={projectStatus}
+            className="w-[72px] h-8 text-sm"
+          />
           {mode === null && (
-            <ProposalBadge proposerType={project.proposerType} />
+            <ProposalBadge
+              proposerType={project.proposerType}
+              className="w-[72px] h-8 text-sm"
+            />
           )}
-          {mode === null && (
-            <div className="w-auto hidden h-full lg:flex gap-1 items-center">
-              {project.keywords.map((keyword) => (
-                <KeywordBadge key={keyword} keyword={keyword} />
-              ))}
-            </div>
-          )}
-          {mode === null && <KeywordMenubar mode={mode} project={project} />}
         </div>
 
         <div className="flex gap-4 items-center">
@@ -84,6 +81,15 @@ const ProjectDetailHeader = ({
           )}
         </div>
       </div>
+
+      {/* 키워드 (모든 뷰포트에서 풀어서 표시) */}
+      {mode === null && project.keywords.length > 0 && (
+        <div className="mt-2 flex flex-wrap gap-1 items-center">
+          {project.keywords.map((keyword) => (
+            <KeywordBadge key={keyword} keyword={keyword} />
+          ))}
+        </div>
+      )}
 
       {/* 메인: 프로젝트 제목 */}
       <ProjectNameForm
