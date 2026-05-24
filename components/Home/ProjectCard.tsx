@@ -71,7 +71,7 @@ export default function ProjectCard({ project, className }: ProjectCardProps) {
       {/* 신청 현황 */}
       <Badge
         variant="secondary"
-        className="font-black flex flex-col *:text-xs gap-0 lg:text-base absolute w-14 h-10 lg:w-16 lg:h-12 top-1/2 -translate-y-1/2 right-0"
+        className="flex flex-col *:text-xs gap-0 lg:text-base absolute w-14 h-10 lg:w-16 lg:h-12 top-1/2 -translate-y-1/2 right-0"
       >
         <span>지원현황</span>
         {applicantCount} / {MAX_APPLICANTS}
