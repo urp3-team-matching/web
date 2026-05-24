@@ -4,7 +4,7 @@ import { verifyProjectPermission } from "@/services/project";
 import { NextRequest, NextResponse } from "next/server";
 
 interface RouteContext {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 /**
@@ -12,7 +12,8 @@ interface RouteContext {
  * 요청 바디에 { password: string } 형식으로 비밀번호를 전달한 경우: 해당 비밀번호로 검증
  * 요청 바디에 비밀번호가 없는 경우: 쿠키에 저장된 비밀번호로 검증
  */
-export async function POST(request: NextRequest, { params }: RouteContext) {
+export async function POST(request: NextRequest, props: RouteContext) {
+  const params = await props.params;
   try {
     const projectId = parseInt(params.id, 10);
     const password = (await request.json()).password as string | undefined;

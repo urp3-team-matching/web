@@ -11,9 +11,10 @@ import { parseDate } from "@/lib/utils";
 import { Attachment } from "@/types/post";
 import { Calendar, Eye } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
 
-const PostDetail = ({ params }: { params: { id: string } }) => {
+const PostDetail = (props: { params: Promise<{ id: string }> }) => {
+  const params = use(props.params);
   const user = useUser();
 
   const [post, setPost] = useState<PublicPost | null>(null);

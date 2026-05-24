@@ -3,10 +3,11 @@ import { verifyProjectPermission } from "@/services/project";
 import { NextRequest, NextResponse } from "next/server";
 
 interface ProjectContext {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
-export async function GET(request: NextRequest, { params }: ProjectContext) {
+export async function GET(request: NextRequest, props: ProjectContext) {
+  const params = await props.params;
   try {
     const projectId = parseInt(params.id, 10);
     if (isNaN(projectId))

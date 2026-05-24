@@ -9,10 +9,11 @@ import { ApplicantUpdateSchema } from "@/types/applicant";
 import { NextRequest, NextResponse } from "next/server";
 
 interface ApplicantContext {
-  params: { projectId: string; applicantId: string };
+  params: Promise<{ projectId: string; applicantId: string }>;
 }
 
-export async function GET(request: NextRequest, { params }: ApplicantContext) {
+export async function GET(request: NextRequest, props: ApplicantContext) {
+  const params = await props.params;
   try {
     const projectId = parseInt(params.projectId, 10);
     const applicantId = parseInt(params.applicantId, 10);
@@ -38,7 +39,8 @@ export async function GET(request: NextRequest, { params }: ApplicantContext) {
   }
 }
 
-export async function PUT(request: NextRequest, { params }: ApplicantContext) {
+export async function PUT(request: NextRequest, props: ApplicantContext) {
+  const params = await props.params;
   try {
     const projectId = parseInt(params.projectId, 10);
     const applicantId = parseInt(params.applicantId, 10);
@@ -84,10 +86,8 @@ export async function PUT(request: NextRequest, { params }: ApplicantContext) {
   }
 }
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: ApplicantContext
-) {
+export async function DELETE(request: NextRequest, props: ApplicantContext) {
+  const params = await props.params;
   try {
     const projectId = parseInt(params.projectId, 10);
     const applicantId = parseInt(params.applicantId, 10);
