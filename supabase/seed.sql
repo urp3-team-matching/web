@@ -6,6 +6,33 @@ insert into storage.buckets (id, name, public)
 values ('web-development', 'web-development', true)
 on conflict (id) do nothing;
 
+-- RLS policies for local dev bucket — allow anon CRUD on web-development.
+-- prisma/seed.ts uploads via anon key (NEXT_PUBLIC_SUPABASE_ANON_KEY); without
+-- these policies storage.objects RLS rejects with "new row violates RLS".
+-- Local-only: prod's web-production bucket should keep stricter policies
+-- (use service_role for admin uploads instead).
+drop policy if exists "anon insert web-development" on storage.objects;
+drop policy if exists "anon select web-development" on storage.objects;
+drop policy if exists "anon update web-development" on storage.objects;
+drop policy if exists "anon delete web-development" on storage.objects;
+
+create policy "anon insert web-development"
+  on storage.objects for insert to anon
+  with check (bucket_id = 'web-development');
+
+create policy "anon select web-development"
+  on storage.objects for select to anon
+  using (bucket_id = 'web-development');
+
+create policy "anon update web-development"
+  on storage.objects for update to anon
+  using (bucket_id = 'web-development')
+  with check (bucket_id = 'web-development');
+
+create policy "anon delete web-development"
+  on storage.objects for delete to anon
+  using (bucket_id = 'web-development');
+
 -- Local dev admin account. Email: admin@local.test / Password: dev1234
 -- /login uses supabase.auth.signInWithPassword (actions/auth.ts).
 do $$
