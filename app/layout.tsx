@@ -1,11 +1,12 @@
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import { AppSidebar } from "@/components/Header/AppSidebar";
-import { SidebarProvider } from "@/components/ui/sidebar";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+
+import Footer from "@/components/Footer";
+import Header from "@/components/Header";
+import { AppSidebar } from "@/components/Header/AppSidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import "./globals.css";
 
 export const metadata: Metadata = {

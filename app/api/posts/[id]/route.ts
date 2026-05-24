@@ -1,9 +1,10 @@
+import { NextRequest, NextResponse } from "next/server";
+
 import { NotFoundError } from "@/lib/errors";
 import { parseAndValidateRequestBody } from "@/lib/routeUtils";
 import { deletePost, getPostById, updatePost } from "@/services/post";
 import { PostSchema } from "@/types/post";
 import { getServerSupabase } from "@/utils/supabase/server";
-import { NextRequest, NextResponse } from "next/server";
 
 interface RouteContext {
   params: Promise<{ id: string }>;

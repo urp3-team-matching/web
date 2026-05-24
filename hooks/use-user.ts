@@ -1,6 +1,7 @@
-import { getClientSupabase } from "@/utils/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
+
+import { getClientSupabase } from "@/utils/supabase/client";
 
 const useUser = () => {
   const supabase = getClientSupabase();

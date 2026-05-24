@@ -1,3 +1,7 @@
+import { ApplicantStatus } from "@prisma/client";
+import { parseAsStringEnum, useQueryState } from "nuqs";
+import { Control } from "react-hook-form";
+
 import CancelAndSubmitButton from "@/components/Project/Form/CancelAndSubmitButton";
 import ProjectForm from "@/components/Project/Form/ProjectForm";
 import ProjectProposerForm from "@/components/Project/Form/ProjectProposerForm";
@@ -8,10 +12,9 @@ import {
 } from "@/lib/apiClientHelper";
 import { cn } from "@/lib/utils";
 import { ProjectInput } from "@/types/project";
-import { ApplicantStatus } from "@prisma/client";
-import { parseAsStringEnum, useQueryState } from "nuqs";
-import { Control } from "react-hook-form";
+
 import { ProjectPageMode } from "../page";
+
 import { ProjectPageModeEnum } from "./constants";
 import ContactCard from "./ContactCard";
 import ApplicantsManage from "./RightPanel/Chat/ApplicantsManage";

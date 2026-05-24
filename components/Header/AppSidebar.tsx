@@ -1,4 +1,7 @@
 "use client";
+import { X } from "lucide-react";
+import Link from "next/link";
+
 import {
   Sidebar,
   SidebarContent,
@@ -9,8 +12,7 @@ import {
   SidebarMenuButton,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { X } from "lucide-react";
-import Link from "next/link";
+
 import { Separator } from "../ui/separator";
 
 const sidebarMenus = [

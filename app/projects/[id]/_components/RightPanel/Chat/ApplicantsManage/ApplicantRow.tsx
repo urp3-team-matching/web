@@ -1,3 +1,6 @@
+import { User } from "lucide-react";
+import { useState } from "react";
+
 import { ProjectPageMode } from "@/app/projects/[id]/page";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,8 +14,6 @@ import {
 } from "@/components/ui/dialog";
 import { PublicApplicantForProject } from "@/lib/apiClientHelper";
 import { cn } from "@/lib/utils";
-import { User } from "lucide-react";
-import { useState } from "react";
 
 type ApplicantRowType = {
   className?: string;

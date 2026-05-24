@@ -1,3 +1,6 @@
+import { Calendar, Eye, Trash2 } from "lucide-react";
+import { Control } from "react-hook-form";
+
 import AdminSwitch from "@/app/projects/[id]/_components/Header/AdminSwitch";
 import { ProjectPageMode } from "@/app/projects/[id]/page";
 import ApplyStatueBadge from "@/components/Badge/ApplyStatueBadge";
@@ -9,8 +12,7 @@ import useUser from "@/hooks/use-user";
 import { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
 import { parseDate } from "@/lib/utils";
 import { ProjectInput } from "@/types/project";
-import { Calendar, Eye, Trash2 } from "lucide-react";
-import { Control } from "react-hook-form";
+
 import KeywordMenubar from "./KeywordMenubar";
 
 interface ProjectDetailHeaderProps {

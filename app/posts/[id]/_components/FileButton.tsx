@@ -1,8 +1,9 @@
 "use client";
 
-import Spinner from "@/components/ui/spinner";
 import { File } from "lucide-react";
 import { useState } from "react";
+
+import Spinner from "@/components/ui/spinner";
 
 const FileButton = ({ url, fileName }: { url: string; fileName: string }) => {
   const [downloading, setDownloading] = useState(false);

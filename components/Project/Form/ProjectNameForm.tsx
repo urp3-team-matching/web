@@ -1,8 +1,9 @@
+import { Control, Controller } from "react-hook-form";
+
 import { ProjectPageModeEnum } from "@/app/projects/[id]/_components/constants";
 import { ProjectPageMode } from "@/app/projects/[id]/page";
 import { cn } from "@/lib/utils";
 import { ProjectInput } from "@/types/project";
-import { Control, Controller } from "react-hook-form";
 
 interface ProjectNameFormProps {
   className?: string;

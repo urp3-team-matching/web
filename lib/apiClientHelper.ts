@@ -1,3 +1,5 @@
+import { Applicant, Post, Project } from "@prisma/client";
+
 import {
   BadRequestError,
   InternalServerError,
@@ -14,7 +16,6 @@ import type {
   ProjectUpdateInput,
 } from "@/types/project";
 import { PaginatedType, PublicType } from "@/types/utils";
-import { Applicant, Post, Project } from "@prisma/client";
 
 export type PublicApplicant = PublicType<Applicant>;
 export type PublicApplicantForProject = PublicType<ApplicantForProject>;

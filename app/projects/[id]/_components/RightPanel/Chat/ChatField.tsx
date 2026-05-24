@@ -1,3 +1,7 @@
+import type { RealtimePostgresInsertPayload } from "@supabase/supabase-js";
+import { Send } from "lucide-react";
+import { KeyboardEvent, useEffect, useId, useMemo, useRef, useState } from "react";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -19,11 +23,8 @@ import type {
   ChatMessageContent,
   MessageFromDB,
 } from "@/types/chat"; // 타입 정의 경로 확인
-import type { RealtimePostgresInsertPayload } from "@supabase/supabase-js";
-
 import { getClientSupabase } from "@/utils/supabase/client";
-import { Send } from "lucide-react";
-import { KeyboardEvent, useEffect, useId, useRef, useState } from "react";
+
 import ChatBubble from "./ChatBubble";
 
 const COOKIE_KEY = "chat_user_data";
@@ -125,7 +126,6 @@ export default function ChatField({ project }: ChatFieldProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const [rawMessages, setRawMessages] = useState<MessageFromDB[]>([]);
-  const [displayedChats, setDisplayedChats] = useState<ChatItemGroup[]>([]);
   const [currentUserId, setCurrentUserId] = useState<string>("");
   const [currentMajor, setCurrentMajor] = useState<string>("");
   const [currentNickname, setCurrentNickname] = useState<string>("");
@@ -150,7 +150,9 @@ export default function ChatField({ project }: ChatFieldProps) {
     saveChatUserData(userId, nickname, major);
   }
 
-  // 페이지 로드시 자동으로 채팅 참여
+  // 페이지 로드시 자동으로 채팅 참여 — 검증 결과/쿠키 확인 후 1회 init.
+  // enterChatRoom 내부의 5개 setState cascade는 의도된 동작 (효과로 묶어야 sync가 가능).
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (isVerified === null) return; // 아직 검증 중
 
@@ -163,7 +165,8 @@ export default function ChatField({ project }: ChatFieldProps) {
     if (chatUserData) {
       enterChatRoom(false, chatUserData.major, chatUserData.nickname);
     }
-  }, [isVerified, project.proposerName]); // 🔹 isVerified 의존성 추가
+  }, [isVerified, project.proposerName]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   useEffect(() => {
     const fetchInitialMessages = async () => {
@@ -215,9 +218,10 @@ export default function ChatField({ project }: ChatFieldProps) {
     };
   }, [projectId, supabase, instanceId]);
 
-  useEffect(() => {
-    setDisplayedChats(transformMessagesForDisplay(rawMessages, currentUserId));
-  }, [rawMessages, currentUserId]);
+  const displayedChats = useMemo(
+    () => transformMessagesForDisplay(rawMessages, currentUserId),
+    [rawMessages, currentUserId]
+  );
 
   const scrollToBottom = () => {
     if (scrollAreaRef.current) {

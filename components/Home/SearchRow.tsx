@@ -1,13 +1,14 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
-import { GetProjectsQuerySchema } from "@/types/project";
 import { PencilIcon, Search } from "lucide-react";
 import Link from "next/link";
 import { useQueryState } from "nuqs";
 import z from "zod";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { GetProjectsQuerySchema } from "@/types/project";
 
 interface SearchBarProps {
   className?: string;

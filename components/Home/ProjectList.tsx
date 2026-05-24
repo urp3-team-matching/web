@@ -13,6 +13,7 @@ import ApiClient, {
   PublicProjectWithForeignKeys,
 } from "@/lib/apiClientHelper";
 import { GetProjectsQuerySchema } from "@/types/project";
+
 import ProjectCard from "./ProjectCard";
 
 function safeParseSearchParams<T extends z.ZodTypeAny>(

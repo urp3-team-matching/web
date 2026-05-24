@@ -1,6 +1,7 @@
-import { passwordField } from "@/types/utils";
 import { Applicant, Prisma, ProjectStatus, ProposerType } from "@prisma/client";
 import { z } from "zod";
+
+import { passwordField } from "@/types/utils";
 
 export enum Semester {
   FIRST = "1학기",

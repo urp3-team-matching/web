@@ -1,3 +1,9 @@
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { v4 as uuidv4 } from "uuid";
+
 import FileDropzone from "@/app/posts/[id]/_components/FileDropzone";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,11 +12,6 @@ import { Textarea } from "@/components/ui/textarea";
 import apiClient from "@/lib/apiClientHelper";
 import { getPublicUrl, uploadFile } from "@/lib/supabaseStorage";
 import { Attachment, PostInput, PostSchema } from "@/types/post";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { v4 as uuidv4 } from "uuid";
 
 const PostForm = ({ postId }: { postId?: number }) => {
   const [loading, setLoading] = useState(true);

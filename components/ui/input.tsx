@@ -1,7 +1,7 @@
 import * as React from "react";
+import { ControllerFieldState } from "react-hook-form";
 
 import { cn } from "@/lib/utils";
-import { ControllerFieldState } from "react-hook-form";
 
 interface InputProps extends React.ComponentPropsWithoutRef<"input"> {
   fieldState?: ControllerFieldState;

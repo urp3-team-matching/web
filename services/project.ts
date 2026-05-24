@@ -1,3 +1,7 @@
+import { Prisma, Project } from "@prisma/client";
+import bcrypt from "bcryptjs";
+import { NextRequest } from "next/server";
+
 import sendEmail from "@/lib/email";
 import emailTemplates from "@/lib/email/templates";
 import { BadRequestError, NotFoundError } from "@/lib/errors";
@@ -14,9 +18,6 @@ import {
 } from "@/types/project";
 import { PaginatedType, PasswordOmittedType } from "@/types/utils";
 import { getServerSupabase } from "@/utils/supabase/server";
-import { Prisma, Project } from "@prisma/client";
-import bcrypt from "bcryptjs";
-import { NextRequest } from "next/server";
 
 const SALT_ROUNDS = 10;
 type PasswordOmittedProject = PasswordOmittedType<Project>;
@@ -349,7 +350,7 @@ export async function reopenProject(id: number): Promise<PasswordOmittedProject>
     projectToReopen.status,
     reopenedProject.status
   );
-  reopenedProject.applicants.forEach((applicant: any) => {
+  reopenedProject.applicants.forEach((applicant: ApplicantForProject) => {
     sendEmail({
       to: applicant.email,
       subject: projectStatusChangedEmail.subject,
@@ -378,7 +379,7 @@ export async function closeProject(id: number): Promise<PasswordOmittedProject> 
     projectToClose.status,
     closedProject.status
   );
-  closedProject.applicants.forEach((applicant: any) => {
+  closedProject.applicants.forEach((applicant: ApplicantForProject) => {
     sendEmail({
       to: applicant.email,
       subject: projectStatusChangedEmail.subject,

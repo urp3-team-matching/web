@@ -1,5 +1,10 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryState } from "nuqs";
+import { HTMLInputTypeAttribute, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+
 import {
   MOBILE_TAB_QUERY_KEY,
   MobileTabEnum,
@@ -20,10 +25,6 @@ import apiClient, { PublicApplicant } from "@/lib/apiClientHelper";
 import { MaxApplicantsError } from "@/lib/errors";
 import { cn } from "@/lib/utils";
 import { ApplicantInput, ApplicantSchema } from "@/types/applicant";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useQueryState } from "nuqs";
-import { HTMLInputTypeAttribute, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
 
 const applyFields: {
   name: keyof (typeof ApplicantSchema)["shape"];

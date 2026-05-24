@@ -1,7 +1,8 @@
+import { NextResponse } from "next/server";
+
 import sendEmail from "@/lib/email";
 import emailTemplates from "@/lib/email/templates";
 import { getClientSupabase } from "@/utils/supabase/client";
-import { NextResponse } from "next/server";
 
 /**
  * GitHub Actions Cron을 통해 Supabase 프로젝트 일시중지 방지
