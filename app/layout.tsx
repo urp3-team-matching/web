@@ -2,19 +2,11 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { AppSidebar } from "@/components/Header/AppSidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { cn } from "@/lib/utils";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
-import { Noto_Sans_KR } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import "./globals.css";
-
-const notoSansKR = Noto_Sans_KR({
-  variable: "--font-noto-sans-kr",
-  subsets: ["latin"],
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: "융합연구학점제 팀 모집 플랫폼",
@@ -33,7 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className={cn(notoSansKR.className, "flex flex-col items-center")}>
+      <body className="flex flex-col items-center">
         <NuqsAdapter>
           <SidebarProvider>
             {/* ✅ 전체를 세로 레이아웃으로: (상단/본문/푸터) */}

@@ -48,7 +48,8 @@ const ProjectSort = () => {
       <div className="flex gap-2 items-center">
         <Button
           asChild
-          className="hidden sm:flex w-full h-10 sm:w-50 sm:h-full bg-green-400 hover:bg-green-500 hover:cursor-pointer"
+          variant="secondary"
+          className="hidden sm:flex w-full h-10 sm:w-50 sm:h-full hover:cursor-pointer"
         >
           <Link href="/projects/create">
             <PencilIcon size={24} />
@@ -58,7 +59,8 @@ const ProjectSort = () => {
         {user && (
           <Button
             asChild
-            className="w-32 h-10 hidden sm:flex sm:w-50 sm:h-full bg-green-400 hover:bg-green-500 hover:cursor-pointer"
+            variant="secondary"
+            className="w-32 h-10 hidden sm:flex sm:w-50 sm:h-full hover:cursor-pointer"
           >
             <Link href="/posts/create">
               <PencilIcon size={24} />
