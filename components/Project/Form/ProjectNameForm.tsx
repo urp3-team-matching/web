@@ -19,20 +19,35 @@ const ProjectNameForm = ({
     <Controller
       name="name"
       control={control}
-      render={({ field, fieldState }) => (
-        <input
-          {...field}
-          value={field.value || ""}
-          readOnly={mode === null}
-          placeholder="프로젝트 제목"
-          className={cn(
-            "text-2xl md:text-3xl lg:text-4xl font-medium text-black w-full h-14 p-1 py-1",
-            mode === ProjectPageModeEnum.ADMIN && "bg-gray-100",
-            className,
-            fieldState.error && "border-b-destructive"
-          )}
-        />
-      )}
+      render={({ field, fieldState }) => {
+        if (mode === null) {
+          return (
+            <h1
+              className={cn(
+                "text-2xl md:text-3xl lg:text-4xl font-medium text-black w-full h-14 p-1 py-1 break-words",
+                className
+              )}
+            >
+              {field.value || (
+                <span className="text-gray-400">프로젝트 제목</span>
+              )}
+            </h1>
+          );
+        }
+        return (
+          <input
+            {...field}
+            value={field.value || ""}
+            placeholder="프로젝트 제목"
+            className={cn(
+              "text-2xl md:text-3xl lg:text-4xl font-medium text-black w-full h-14 p-1 py-1",
+              mode === ProjectPageModeEnum.ADMIN && "bg-gray-100",
+              className,
+              fieldState.error && "border-b-destructive"
+            )}
+          />
+        );
+      }}
     />
   );
 };

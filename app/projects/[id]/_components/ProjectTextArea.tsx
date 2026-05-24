@@ -15,6 +15,17 @@ interface ProjectTextAreaProps {
 
 const ProjectTextArea = forwardRef<HTMLTextAreaElement, ProjectTextAreaProps>(
   ({ title, value, onChange, mode, fieldState }, ref) => {
+    if (mode === null) {
+      return (
+        <section>
+          <h3 className="w-full text-lg font-semibold">{title}</h3>
+          <p className="w-full mt-2 whitespace-pre-wrap break-words text-base">
+            {value || <span className="text-gray-400">—</span>}
+          </p>
+        </section>
+      );
+    }
+
     return (
       <div>
         <div className="w-full text-lg font-semibold">{title}</div>
@@ -23,12 +34,10 @@ const ProjectTextArea = forwardRef<HTMLTextAreaElement, ProjectTextAreaProps>(
           className={cn(
             "w-full resize-none mt-2 border p-2 rounded",
             mode === ProjectPageModeEnum.ADMIN ? "bg-gray-100" : "bg-white",
-            fieldState.error ? "border-destructive" : "border-gray-300",
-            mode === null ? "cursor-not-allowed" : "cursor-text"
+            fieldState.error ? "border-destructive" : "border-gray-300"
           )}
           value={value}
           onChange={onChange}
-          readOnly={mode === null}
         />
         {fieldState.error && (
           <p className="text-xs text-destructive mt-1">
