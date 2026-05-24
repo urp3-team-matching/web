@@ -1,3 +1,5 @@
+import { ApplicantStatus } from "@prisma/client";
+
 import ApplicantRow from "@/app/projects/[id]/_components/RightPanel/Chat/ApplicantsManage/ApplicantRow";
 import { ProjectPageMode } from "@/app/projects/[id]/page";
 import {
@@ -9,7 +11,6 @@ import {
 import { MAX_APPLICANT_MAJOR_COUNT, MAX_APPLICANTS } from "@/constants";
 import apiClient, { PublicApplicant } from "@/lib/apiClientHelper";
 import { MaxApplicantsError } from "@/lib/errors";
-import { ApplicantStatus } from "@prisma/client";
 
 interface ApplicantGroupProps {
   projectId: number;

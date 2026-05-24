@@ -1,5 +1,7 @@
 "use client";
 
+import { Control, Controller } from "react-hook-form";
+
 import { ProjectPageModeEnum } from "@/app/projects/[id]/_components/constants";
 import ProjectTextArea from "@/app/projects/[id]/_components/ProjectTextArea";
 import { ProjectPageMode } from "@/app/projects/[id]/page";
@@ -7,7 +9,6 @@ import { KeywordInput } from "@/components/Project/KeywordInput";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { ProjectInput } from "@/types/project";
-import { Control, Controller } from "react-hook-form";
 
 const fields = [
   { name: "background", label: "프로젝트 추진배경" },

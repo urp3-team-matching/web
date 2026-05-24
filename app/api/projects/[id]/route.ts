@@ -1,3 +1,5 @@
+import { NextRequest, NextResponse } from "next/server";
+
 import { NotFoundError, UnauthorizedError } from "@/lib/errors";
 import { ProjectPasswordManager } from "@/lib/projectPasswordManager";
 import { parseAndValidateRequestBody } from "@/lib/routeUtils";
@@ -8,7 +10,6 @@ import {
   verifyProjectPermission,
 } from "@/services/project";
 import { ProjectUpdateSchema } from "@/types/project";
-import { NextRequest, NextResponse } from "next/server";
 
 interface RouteContext {
   params: Promise<{ id: string }>;

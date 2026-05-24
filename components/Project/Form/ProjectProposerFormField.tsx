@@ -1,7 +1,8 @@
+import { Control, Controller } from "react-hook-form";
+
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { ProjectInput } from "@/types/project";
-import { Control, Controller } from "react-hook-form";
 
 interface ProposerFieldProps {
   className?: string;

@@ -606,10 +606,13 @@ function SidebarMenuSkeleton({
 }: React.ComponentProps<"div"> & {
   showIcon?: boolean;
 }) {
-  // Random width between 50 to 90%.
-  const width = React.useMemo(() => {
-    return `${Math.floor(Math.random() * 40) + 50}%`;
-  }, []);
+  // shadcn 자동 생성 skeleton — Math.random은 첫 render에만 한 번 호출되며
+  // SSR/CSR mismatch는 시각적 영향 없음 (placeholder).
+  const width = React.useMemo(
+    // eslint-disable-next-line react-hooks/purity
+    () => `${Math.floor(Math.random() * 40) + 50}%`,
+    []
+  );
 
   return (
     <div

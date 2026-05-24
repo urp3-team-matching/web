@@ -1,3 +1,5 @@
+import { ApplicantStatus } from "@prisma/client";
+
 import ProjectApplyButton from "@/app/projects/[id]/_components/ApplyButton";
 import { ProjectPageModeEnum } from "@/app/projects/[id]/_components/constants";
 // import Chat from "@/app/projects/[id]/_components/RightPanel/Chat";
@@ -8,8 +10,9 @@ import {
   PublicProjectWithForeignKeys,
 } from "@/lib/apiClientHelper";
 import { cn } from "@/lib/utils";
-import { ApplicantStatus } from "@prisma/client";
+
 import ContactCard from "../ContactCard";
+
 import Chat from "./Chat";
 import ApplicantsManage from "./Chat/ApplicantsManage";
 

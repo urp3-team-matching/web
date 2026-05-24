@@ -1,8 +1,10 @@
+import { ApplicantStatus } from "@prisma/client";
+
 import {
   PublicApplicant,
   PublicProjectWithForeignKeys,
 } from "@/lib/apiClientHelper";
-import { ApplicantStatus } from "@prisma/client";
+
 import ChatField from "./ChatField";
 
 export enum Tab {

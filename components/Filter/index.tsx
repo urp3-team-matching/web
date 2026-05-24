@@ -1,15 +1,10 @@
 "use client";
 
-import TabTrigger from "@/components/Filter/TabTrigger";
-import {
-  GetProjectsQuerySchema,
-  STATUS_FILTER_ALL,
-  StatusFilter,
-  StatusFilterSchema,
-} from "@/types/project";
+import { ProjectStatus } from "@prisma/client";
 import { parseAsInteger, parseAsStringEnum, useQueryState } from "nuqs";
 import { z } from "zod";
 
+import TabTrigger from "@/components/Filter/TabTrigger";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -19,8 +14,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Semester } from "@/types/project";
-import { ProjectStatus } from "@prisma/client";
+import {
+  GetProjectsQuerySchema,
+  Semester,
+  STATUS_FILTER_ALL,
+  StatusFilter,
+  StatusFilterSchema,
+} from "@/types/project";
+
 
 const STATUS_FILTER_VALUES: StatusFilter[] = [
   ...Object.values(ProjectStatus),

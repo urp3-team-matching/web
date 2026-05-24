@@ -1,3 +1,5 @@
+import { waitUntil } from "@vercel/functions"; // Vercel 백그라운드 작업 유지를 위해 추가됨
+
 import { MAX_APPLICANT_MAJOR_COUNT, MAX_APPLICANTS } from "@/constants";
 import sendEmail from "@/lib/email";
 import emailTemplates from "@/lib/email/templates";
@@ -16,7 +18,6 @@ import {
   ApplicantUpdateInput,
 } from "@/types/applicant";
 import { ApplicantForProject, projectPublicSelection } from "@/types/project";
-import { waitUntil } from "@vercel/functions"; // Vercel 백그라운드 작업 유지를 위해 추가됨
 
 export async function applyToProject(
   projectId: number,

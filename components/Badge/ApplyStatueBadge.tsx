@@ -1,5 +1,7 @@
-import { cn } from "@/lib/utils";
 import { ProjectStatus } from "@prisma/client";
+
+import { cn } from "@/lib/utils";
+
 import { Badge } from "../ui/badge";
 
 export interface ApplyStatueBadgeProps {

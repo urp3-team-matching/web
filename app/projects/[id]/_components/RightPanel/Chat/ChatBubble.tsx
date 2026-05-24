@@ -1,6 +1,7 @@
-import type { ChatItemGroup, ChatMessageContent } from "@/types/chat";
 import { SquareUserRound } from "lucide-react";
 import { forwardRef } from "react";
+
+import type { ChatItemGroup, ChatMessageContent } from "@/types/chat";
 
 interface ChatBubbleProps {
   chatGroup: ChatItemGroup;

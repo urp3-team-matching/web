@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { SidebarTrigger } from "@/components/ui/sidebar";
+
 export default function BottomHeaderBox() {
   return (
     <div className="w-full h-20 lg:h-24 flex flex-col">
