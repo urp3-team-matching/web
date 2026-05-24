@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -8,6 +9,14 @@
   --color-third: var(--third);
 
   --container-max-width: 1280px;
+
+  /* SKKU 지정서체(윤고딕/Frutiger)는 유료 라이선스. 공식 가이드의
+     "매체 특성에 따라 다른 서체 사용도 가능" 조항에 따라 Pretendard로 대체.
+     Pretendard는 한국 IT 사실상 표준 (Toss/Naver 채택, OFL 라이선스).
+     Source: skku.edu/skku/about/symbol/symbol_03.do */
+  --font-sans: "Pretendard Variable", "Pretendard", -apple-system,
+    BlinkMacSystemFont, ui-sans-serif, system-ui, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
 }
 
 .container {
@@ -54,7 +63,6 @@
   --skku-orange: #ff6c0f;     /* Pantone 1585C --- 창조, 역동, 혁신 */
   --skku-dark-green: #124633; /* Pantone 3435C --- 소통, 공유, 협력 */
 
-  --font-noto-sans-kr: "Noto Sans KR", sans-serif;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -90,14 +98,6 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
 }
-
-body {
-  font-family: var(--font-noto-sans-kr); /* 설정된 폰트 변수 사용 */
-}
-
-/*
-  ---break---
-*/
 
 .dark {
   --background: oklch(0.145 0 0);
