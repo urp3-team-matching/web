@@ -1,6 +1,7 @@
+import { Megaphone } from "lucide-react";
+
 import { PublicPost } from "@/lib/apiClientHelper";
 import { cn } from "@/lib/utils";
-import { Megaphone } from "lucide-react";
 
 export interface PostCardProps {
   post: PublicPost;

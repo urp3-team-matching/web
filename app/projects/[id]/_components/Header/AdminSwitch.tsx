@@ -1,5 +1,10 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { z } from "zod";
+
 import { ProjectPageModeEnum } from "@/app/projects/[id]/_components/constants";
 import { ProjectPageMode } from "@/app/projects/[id]/page";
 import { Button } from "@/components/ui/button";
@@ -14,10 +19,6 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { useProjectVerification } from "@/contexts/ProjectVerificationContext";
 import apiClient from "@/lib/apiClientHelper";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { z } from "zod";
 
 interface AdminSwitchProps {
   className?: string;

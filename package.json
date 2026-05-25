@@ -7,7 +7,8 @@
     "dev": "NODE_ENV=development next dev --turbo",
     "build": "NODE_ENV=production && prisma generate && next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push",
     "prisma:migrate:dev": "prisma migrate dev",
@@ -65,13 +66,14 @@
     "zod": "^3.24.4"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.4",
     "@tailwindcss/postcss": "^4.3.0",
     "@types/node": "^20.17.23",
     "@types/nodemailer": "^6.4.17",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "bcryptjs": "^3.0.2",
-    "eslint": "^8",
+    "eslint": "^9.39.4",
     "eslint-config-next": "^16.2.6",
     "postcss": "^8",
     "prisma": "^6.12.0",
@@ -95,6 +97,9 @@
       "@prisma/client",
       "@prisma/engines",
       "prisma"
-    ]
+    ],
+    "overrides": {
+      "postcss@<8.5.10": ">=8.5.10"
+    }
   }
 }

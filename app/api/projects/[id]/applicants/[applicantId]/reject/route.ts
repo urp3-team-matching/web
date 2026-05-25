@@ -1,3 +1,5 @@
+import { NextRequest, NextResponse } from "next/server";
+
 import {
   BadRequestError,
   NotFoundError,
@@ -5,7 +7,6 @@ import {
 } from "@/lib/errors";
 import { rejectApplicant } from "@/services/applicant";
 import { verifyProjectPermission } from "@/services/project";
-import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(
   request: NextRequest,

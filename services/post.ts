@@ -1,3 +1,5 @@
+import { Post, Prisma } from "@prisma/client";
+
 import { NotFoundError } from "@/lib/errors";
 import { prisma } from "@/lib/prisma";
 import {
@@ -6,7 +8,6 @@ import {
   postPublicSelection,
 } from "@/types/post";
 import { PaginatedType } from "@/types/utils";
-import { Post, Prisma } from "@prisma/client";
 
 // 포스트 생성
 export async function createPost(data: PostInput): Promise<Post> {

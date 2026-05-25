@@ -1,8 +1,9 @@
+import { NextRequest, NextResponse } from "next/server";
+
 import { NotFoundError } from "@/lib/errors";
 import { parseAndValidateRequestBody } from "@/lib/routeUtils";
 import { applyToProject } from "@/services/applicant";
 import { ApplicantSchema } from "@/types/applicant";
-import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest, props: { params: Promise<{ id: string }> }) {
   const params = await props.params;

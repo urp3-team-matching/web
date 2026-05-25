@@ -1,7 +1,9 @@
-import { NotFoundError } from "@/lib/errors";
-import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { NextRequest, NextResponse } from "next/server";
+
+import { NotFoundError } from "@/lib/errors";
+import { prisma } from "@/lib/prisma";
+
 import { decryptPassword, encryptPassword } from "./encryption";
 
 export class ProjectPasswordManager {

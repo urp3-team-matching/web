@@ -1,10 +1,11 @@
+import { NextRequest, NextResponse } from "next/server";
+import { ZodError } from "zod";
+
 import { BadRequestError } from "@/lib/errors";
 import { ProjectPasswordManager } from "@/lib/projectPasswordManager";
 import { parseAndValidateRequestBody } from "@/lib/routeUtils";
 import { createProject, getAllProjects } from "@/services/project";
 import { GetProjectsQuerySchema, ProjectSchema } from "@/types/project";
-import { NextRequest, NextResponse } from "next/server";
-import { ZodError } from "zod";
 
 export async function POST(request: NextRequest) {
   try {

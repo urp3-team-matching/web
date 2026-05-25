@@ -1,6 +1,7 @@
+import Link from "next/link";
+
 import { logout } from "@/actions/auth";
 import { getServerSupabase } from "@/utils/supabase/server";
-import Link from "next/link";
 
 export default async function TopHeaderBox() {
   const supabase = await getServerSupabase();

@@ -1,12 +1,13 @@
 "use client";
 
+import { useState } from "react";
+
 import {
   Dropzone,
   DropzoneContent,
   DropzoneEmptyState,
 } from "@/components/ui/shadcn-io/dropzone";
 
-import { useState } from "react";
 
 interface FileDropzoneProps {
   onFilesAdded?: (files: File[]) => void;

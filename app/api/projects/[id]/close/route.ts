@@ -1,10 +1,11 @@
+import { NextRequest, NextResponse } from "next/server";
+
 import {
   BadRequestError,
   NotFoundError,
   UnauthorizedError,
 } from "@/lib/errors";
 import { closeProject, verifyProjectPermission } from "@/services/project";
-import { NextRequest, NextResponse } from "next/server";
 
 interface RouteContext {
   params: Promise<{ id: string }>;

@@ -1,9 +1,10 @@
+import { NextRequest, NextResponse } from "next/server";
+import { ZodError } from "zod";
+
 import { parseAndValidateRequestBody } from "@/lib/routeUtils"; // GET에는 필요 없음
 import { createPost, getAllPosts } from "@/services/post";
 import { GetPostsQuerySchema, PostSchema } from "@/types/post";
 import { getServerSupabase } from "@/utils/supabase/server";
-import { NextRequest, NextResponse } from "next/server";
-import { ZodError } from "zod";
 
 export async function POST(request: NextRequest) {
   const supabase = await getServerSupabase();

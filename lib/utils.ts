@@ -1,6 +1,7 @@
-import { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+
+import { PublicProjectWithForeignKeys } from "@/lib/apiClientHelper";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

@@ -1,9 +1,10 @@
+import { Suspense } from "react";
+
 import Filter from "@/components/Filter";
 import ProjectList from "@/components/Home/ProjectList";
 import ProjectSort from "@/components/Home/ProjectSort";
 import SearchRow from "@/components/Home/SearchRow";
 import Spinner from "@/components/ui/spinner";
-import { Suspense } from "react";
 
 export default function Home() {
   return (
