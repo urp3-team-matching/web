@@ -25,7 +25,7 @@ const ProjectNameForm = ({
           return (
             <h1
               className={cn(
-                "text-2xl md:text-3xl lg:text-4xl font-medium text-black w-full h-14 p-1 py-1 break-words",
+                "text-2xl md:text-3xl lg:text-4xl font-medium text-black w-full min-h-14 p-1 py-1 break-words",
                 className
               )}
             >
