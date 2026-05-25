@@ -1,82 +1,26 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# URP3 팀 모집 플랫폼
 
-## Getting Started
+성균관대학교 **URP Ⅲ형(융합연구학점제 / Undergraduate Research Program 3형)** 팀 모집 플랫폼 웹 프론트엔드 + API.
 
-### Environment Variables
+- 운영 사이트: [urp3team.vercel.app](https://urp3team.vercel.app)
+- 프로그램 안내: [urp3.skku.edu](https://urp3.skku.edu/urp3/index.do)
+- 운영: 성균관대학교 성균융합원 (`urp3@skku.edu`)
 
-Create a `.env.local` file in the root directory with the following variables:
-
-```bash
-# Supabase Configuration
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-
-# Email Configuration (for notifications)
-EMAIL_HOST=smtp.gmail.com
-EMAIL_PORT=587
-EMAIL_USER=your_email@gmail.com
-EMAIL_PASSWORD=your_app_password
-EMAIL_FROM=your_email@gmail.com
-
-# Admin Emails (comma-separated list for keep-alive failure alerts)
-ADMIN_EMAILS=admin1@example.com,admin2@example.com,admin3@example.com
-
-# Other configurations...
-```
-
-#### Admin Email Alerts
-
-The `ADMIN_EMAILS` environment variable is used for Supabase keep-alive monitoring:
-
-- Accepts multiple email addresses separated by commas
-- All listed administrators will receive immediate alerts when the Supabase connection fails
-- Keep-alive checks run **every hour** (24 times per day) via GitHub Actions
-- Example: `ADMIN_EMAILS=dev@example.com,ops@example.com,manager@example.com`
-
-> **Note:** The automated keep-alive system helps prevent Supabase project from going inactive by sending regular health checks every hour.
-
-#### Testing Email Alerts (Debug Mode)
-
-To test the email notification system:
-
-1. Go to GitHub Actions → "Supabase Keep-Alive" workflow
-2. Click "Run workflow"
-3. Check the "Debug mode" checkbox
-4. Run the workflow
-
-When debug mode is enabled, emails will be sent to all admin addresses regardless of success/failure status, allowing you to verify the notification system is working correctly.
-
-### Running the Development Server
-
-First, run the development server:
+## 시작하기
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env
+pnpm dev:setup   # Docker로 로컬 Supabase 스택 기동 + DB 초기화 + 시드
+pnpm dev         # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+자세한 셋업(anon key 발급, `PROJECT_ENCRYPTION_KEY` 등)은 [AGENTS.md → 로컬 환경 셋업](AGENTS.md#로컬-환경-셋업) 참고.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 운영 메모
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Supabase keep-alive**: GitHub Actions가 매시 정각 `/api/cron/keep-alive`를 호출해 Supabase 프로젝트가 inactive 되는 것을 방지. 실패 시 `ADMIN_EMAILS`(쉼표 구분)로 메일 알림. 수동 테스트는 Actions 탭 → "Supabase Keep-Alive" → "Run workflow" → "Debug mode" 체크 후 실행.
+- **배포 환경**: Vercel preview는 production Supabase·Gmail 계정을 공유하므로 파괴적 테스트는 로컬에서만. 상세 매트릭스는 [AGENTS.md → 배포 환경](AGENTS.md#배포-환경).
 
-## Learn More
+## 기여
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+아키텍처, 도메인 모델, 인증 흐름, 디렉터리 컨벤션, ESLint 규칙 등 전체 가이드라인은 **[AGENTS.md](AGENTS.md)** 단일 문서에 정리되어 있습니다. 이 파일은 사람 기여자와 AI 코딩 에이전트(Claude Code, OpenAI Codex, Cursor 등) 모두가 참고합니다.
