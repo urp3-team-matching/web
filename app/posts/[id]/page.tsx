@@ -87,7 +87,7 @@ const PostDetail = (props: { params: Promise<{ id: string }> }) => {
       )}
 
       {/* 헤더: 프로젝트 제목 */}
-      <h3 className="text-2xl md:text-3xl lg:text-4xl font-medium text-black w-full h-12">
+      <h3 className="text-2xl md:text-3xl lg:text-4xl font-medium text-black w-full min-h-12">
         {post.title}
       </h3>
 
