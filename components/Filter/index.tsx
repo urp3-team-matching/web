@@ -22,13 +22,36 @@ import {
   StatusFilterSchema,
 } from "@/types/project";
 
-
 const STATUS_FILTER_VALUES: StatusFilter[] = [
   ...Object.values(ProjectStatus),
   STATUS_FILTER_ALL,
 ];
 
+// 현재 날짜 기준으로 기본 년도 및 학기를 계산하는 안전한 함수
+const getDefaultAcademicPeriod = () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth() + 1; // 1~12월
+
+  // 1월 ~ 6월: 당해년도 2학기
+  if (month >= 1 && month <= 6) {
+    return {
+      defaultYear: year,
+      defaultSemester: Semester.SECOND,
+    };
+  }
+
+  // 7월 ~ 12월: 내년도 1학기
+  return {
+    defaultYear: year + 1,
+    defaultSemester: Semester.FIRST,
+  };
+};
+
 const Filter = () => {
+  // 기본 학년도/학기 도출
+  const { defaultYear, defaultSemester } = getDefaultAcademicPeriod();
+
   const [filter, setFilter] = useQueryState(
     "status" as keyof z.infer<typeof GetProjectsQuerySchema>,
     parseAsStringEnum<StatusFilter>(STATUS_FILTER_VALUES).withDefault(
@@ -36,15 +59,16 @@ const Filter = () => {
     )
   );
 
-  const currentYear = new Date().getFullYear();
-
   const [year, setYear] = useQueryState<number>(
     "year",
-    parseAsInteger.withDefault(currentYear)
+    parseAsInteger.withDefault(defaultYear)
   );
+
   const [semester, setSemester] = useQueryState<Semester>(
     "semester",
-    parseAsStringEnum<Semester>(Object.values(Semester))
+    parseAsStringEnum<Semester>(Object.values(Semester) as Semester[]).withDefault(
+      defaultSemester
+    )
   );
 
   return (
@@ -80,7 +104,7 @@ const Filter = () => {
                 {sem}
               </SelectItem>
             ))}
-            <SelectItem key={null} value="전체">
+            <SelectItem key="all" value="전체">
               전체
             </SelectItem>
           </SelectContent>
