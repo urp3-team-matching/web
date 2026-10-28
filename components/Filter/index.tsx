@@ -27,28 +27,24 @@ const STATUS_FILTER_VALUES: StatusFilter[] = [
   STATUS_FILTER_ALL,
 ];
 
-// 💡 현재 날짜 기준으로 기본 년도와 학기를 계산하는 함수
-const getDefaultAcademicPeriod = () => {
+// 💡 현재 월에 따라 기본 년도만 계산하는 함수 (학기는 '전체'로 고정)
+const getDefaultYear = () => {
   const now = new Date();
   const year = now.getFullYear();
-  const month = now.getMonth() + 1; // getMonth()는 0부터 시작하므로 +1
+  const month = now.getMonth() + 1; // 1~12월
 
-  // 1월 ~ 6월: 당해년도 2학기 (예: 2026년 1~6월 -> 2026학년도 2학기)
+  // 1월 ~ 6월: 2026학년도 (당해 년도)
   if (month >= 1 && month <= 6) {
-    return {
-      defaultYear: year,
-      defaultSemester: Semester.SECOND,
-    };
+    return year;
   }
 
-  // 7월 ~ 12월: 내년도 1학기 (예: 2026년 7~12월 -> 2027학년도 1학기)
-  return {
-    defaultYear: year + 1,
-    defaultSemester: Semester.FIRST,
-  };
+  // 7월 ~ 12월: 2027학년도 (내년도)
+  return year + 1;
 };
 
 const Filter = () => {
+  const defaultYear = getDefaultYear();
+
   const [filter, setFilter] = useQueryState(
     "status" as keyof z.infer<typeof GetProjectsQuerySchema>,
     parseAsStringEnum<StatusFilter>(STATUS_FILTER_VALUES).withDefault(
@@ -56,21 +52,16 @@ const Filter = () => {
     )
   );
 
-  // 💡 접속 날짜 기준 기본 학년도 및 학기 도출
-  const { defaultYear, defaultSemester } = getDefaultAcademicPeriod();
-
-  // 💡 기본 년도 적용
+  // 💡 월 기준에 따라 년도 기본값 설정 (2026 또는 2027)
   const [year, setYear] = useQueryState<number>(
     "year",
     parseAsInteger.withDefault(defaultYear)
   );
 
-  // 💡 기본 학기 적용
+  // 💡 학기는 기본값(.withDefault)을 지정하지 않아 null(전체)로 시작
   const [semester, setSemester] = useQueryState<Semester>(
     "semester",
-    parseAsStringEnum<Semester>(Object.values(Semester)).withDefault(
-      defaultSemester
-    )
+    parseAsStringEnum<Semester>(Object.values(Semester) as Semester[])
   );
 
   return (
@@ -106,7 +97,7 @@ const Filter = () => {
                 {sem}
               </SelectItem>
             ))}
-            <SelectItem key={null} value="전체">
+            <SelectItem key="all" value="전체">
               전체
             </SelectItem>
           </SelectContent>
