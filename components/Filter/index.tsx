@@ -51,10 +51,11 @@ const getDefaultAcademicPeriod = () => {
 const Filter = () => {
   const { defaultYear, defaultSemester } = getDefaultAcademicPeriod();
 
+  // 💡 상태 필터 기본값을 '모집중'에서 '전체'(STATUS_FILTER_ALL)로 변경
   const [filter, setFilter] = useQueryState(
     "status" as keyof z.infer<typeof GetProjectsQuerySchema>,
     parseAsStringEnum<StatusFilter>(STATUS_FILTER_VALUES).withDefault(
-      ProjectStatus.RECRUITING
+      STATUS_FILTER_ALL
     )
   );
 
@@ -81,7 +82,6 @@ const Filter = () => {
           type="number"
           value={year}
           onChange={(e) => setYear(e.target.valueAsNumber)}
-          /* 💡 화살표(Spin button)의 투명도를 항상 100%(항상 보이게)로 설정 */
           className="w-20 px-3 py-1 h-8 text-sm [&::-webkit-inner-spin-button]:opacity-100 [&::-webkit-outer-spin-button]:opacity-100"
         />
 
@@ -147,7 +147,7 @@ const Filter = () => {
           }}
         >
           <SelectTrigger className="w-[110px]">
-            <SelectValue placeholder="모집중" />
+            <SelectValue placeholder="전체" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value={STATUS_FILTER_ALL}>전체</SelectItem>
