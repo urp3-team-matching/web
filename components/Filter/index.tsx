@@ -27,7 +27,7 @@ const STATUS_FILTER_VALUES: StatusFilter[] = [
   STATUS_FILTER_ALL,
 ];
 
-// 💡 날짜 기준에 따른 기본 연도 및 학기 계산 함수
+// 날짜 기준에 따른 기본 연도 및 학기 계산 함수
 const getDefaultAcademicPeriod = () => {
   const now = new Date();
   const year = now.getFullYear();
@@ -58,13 +58,11 @@ const Filter = () => {
     )
   );
 
-  // 💡 월 기준 기본 연도 적용 (1~6월: 당해년, 7~12월: 내년)
   const [year, setYear] = useQueryState<number>(
     "year",
     parseAsInteger.withDefault(defaultYear)
   );
 
-  // 💡 월 기준 기본 학기 적용 (1~6월: 2학기, 7~12월: 1학기)
   const [semester, setSemester] = useQueryState<Semester>(
     "semester",
     parseAsStringEnum<Semester>(Object.values(Semester) as Semester[]).withDefault(
@@ -83,7 +81,7 @@ const Filter = () => {
           type="number"
           value={year}
           onChange={(e) => setYear(e.target.valueAsNumber)}
-          className="w-16 px-2 py-1 h-8 text-sm"
+          className="w-20 px-3 py-1 h-8 text-sm" // 💡 w-16에서 w-20으로 확장
         />
 
         <Label htmlFor="semester" className="hidden md:block">
@@ -97,7 +95,6 @@ const Filter = () => {
           }}
         >
           <SelectTrigger size="sm">
-            {/* 💡 기본 선택된 학기 값이 화면 표시 드롭다운에 출력되도록 설정 */}
             <SelectValue placeholder={defaultSemester} />
           </SelectTrigger>
           <SelectContent>
