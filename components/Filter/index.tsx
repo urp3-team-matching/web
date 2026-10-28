@@ -81,7 +81,8 @@ const Filter = () => {
           type="number"
           value={year}
           onChange={(e) => setYear(e.target.valueAsNumber)}
-          className="w-20 px-3 py-1 h-8 text-sm" // 💡 w-16에서 w-20으로 확장
+          /* 💡 화살표(Spin button)의 투명도를 항상 100%(항상 보이게)로 설정 */
+          className="w-20 px-3 py-1 h-8 text-sm [&::-webkit-inner-spin-button]:opacity-100 [&::-webkit-outer-spin-button]:opacity-100"
         />
 
         <Label htmlFor="semester" className="hidden md:block">
