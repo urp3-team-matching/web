@@ -22,11 +22,31 @@ import {
   StatusFilterSchema,
 } from "@/types/project";
 
-
 const STATUS_FILTER_VALUES: StatusFilter[] = [
   ...Object.values(ProjectStatus),
   STATUS_FILTER_ALL,
 ];
+
+// 💡 현재 날짜 기준으로 기본 년도와 학기를 계산하는 함수
+const getDefaultAcademicPeriod = () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth() + 1; // getMonth()는 0부터 시작하므로 +1
+
+  // 1월 ~ 6월: 당해년도 2학기 (예: 2026년 1~6월 -> 2026학년도 2학기)
+  if (month >= 1 && month <= 6) {
+    return {
+      defaultYear: year,
+      defaultSemester: Semester.SECOND,
+    };
+  }
+
+  // 7월 ~ 12월: 내년도 1학기 (예: 2026년 7~12월 -> 2027학년도 1학기)
+  return {
+    defaultYear: year + 1,
+    defaultSemester: Semester.FIRST,
+  };
+};
 
 const Filter = () => {
   const [filter, setFilter] = useQueryState(
@@ -36,15 +56,21 @@ const Filter = () => {
     )
   );
 
-  const currentYear = new Date().getFullYear();
+  // 💡 접속 날짜 기준 기본 학년도 및 학기 도출
+  const { defaultYear, defaultSemester } = getDefaultAcademicPeriod();
 
+  // 💡 기본 년도 적용
   const [year, setYear] = useQueryState<number>(
     "year",
-    parseAsInteger.withDefault(currentYear)
+    parseAsInteger.withDefault(defaultYear)
   );
+
+  // 💡 기본 학기 적용
   const [semester, setSemester] = useQueryState<Semester>(
     "semester",
-    parseAsStringEnum<Semester>(Object.values(Semester))
+    parseAsStringEnum<Semester>(Object.values(Semester)).withDefault(
+      defaultSemester
+    )
   );
 
   return (
