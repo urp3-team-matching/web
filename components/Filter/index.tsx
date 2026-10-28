@@ -27,23 +27,29 @@ const STATUS_FILTER_VALUES: StatusFilter[] = [
   STATUS_FILTER_ALL,
 ];
 
-// 💡 현재 월에 따라 기본 년도만 계산하는 함수 (학기는 '전체'로 고정)
-const getDefaultYear = () => {
+// 💡 날짜 기준에 따른 기본 연도 및 학기 계산 함수
+const getDefaultAcademicPeriod = () => {
   const now = new Date();
   const year = now.getFullYear();
   const month = now.getMonth() + 1; // 1~12월
 
-  // 1월 ~ 6월: 2026학년도 (당해 년도)
+  // 1월 ~ 6월: 당해 연도 2학기
   if (month >= 1 && month <= 6) {
-    return year;
+    return {
+      defaultYear: year,
+      defaultSemester: Semester.SECOND,
+    };
   }
 
-  // 7월 ~ 12월: 2027학년도 (내년도)
-  return year + 1;
+  // 7월 ~ 12월: 내년 연도 1학기
+  return {
+    defaultYear: year + 1,
+    defaultSemester: Semester.FIRST,
+  };
 };
 
 const Filter = () => {
-  const defaultYear = getDefaultYear();
+  const { defaultYear, defaultSemester } = getDefaultAcademicPeriod();
 
   const [filter, setFilter] = useQueryState(
     "status" as keyof z.infer<typeof GetProjectsQuerySchema>,
@@ -52,16 +58,18 @@ const Filter = () => {
     )
   );
 
-  // 💡 월 기준에 따라 년도 기본값 설정 (2026 또는 2027)
+  // 💡 월 기준 기본 연도 적용 (1~6월: 당해년, 7~12월: 내년)
   const [year, setYear] = useQueryState<number>(
     "year",
     parseAsInteger.withDefault(defaultYear)
   );
 
-  // 💡 학기는 기본값(.withDefault)을 지정하지 않아 null(전체)로 시작
+  // 💡 월 기준 기본 학기 적용 (1~6월: 2학기, 7~12월: 1학기)
   const [semester, setSemester] = useQueryState<Semester>(
     "semester",
-    parseAsStringEnum<Semester>(Object.values(Semester) as Semester[])
+    parseAsStringEnum<Semester>(Object.values(Semester) as Semester[]).withDefault(
+      defaultSemester
+    )
   );
 
   return (
@@ -89,7 +97,8 @@ const Filter = () => {
           }}
         >
           <SelectTrigger size="sm">
-            <SelectValue placeholder={Semester.FIRST} />
+            {/* 💡 기본 선택된 학기 값이 화면 표시 드롭다운에 출력되도록 설정 */}
+            <SelectValue placeholder={defaultSemester} />
           </SelectTrigger>
           <SelectContent>
             {Object.values(Semester).map((sem) => (
