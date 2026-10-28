@@ -22,7 +22,6 @@ import {
   StatusFilterSchema,
 } from "@/types/project";
 
-
 const STATUS_FILTER_VALUES: StatusFilter[] = [
   ...Object.values(ProjectStatus),
   STATUS_FILTER_ALL,
@@ -36,15 +35,18 @@ const Filter = () => {
     )
   );
 
-  const currentYear = new Date().getFullYear();
-
+  // 💡 기본값을 2027년도로 고정
   const [year, setYear] = useQueryState<number>(
     "year",
-    parseAsInteger.withDefault(currentYear)
+    parseAsInteger.withDefault(2027)
   );
+
+  // 💡 기본 학기를 1학기로 고정 (Semester.FIRST)
   const [semester, setSemester] = useQueryState<Semester>(
     "semester",
-    parseAsStringEnum<Semester>(Object.values(Semester))
+    parseAsStringEnum<Semester>(Object.values(Semester) as Semester[]).withDefault(
+      Semester.FIRST
+    )
   );
 
   return (
@@ -80,7 +82,7 @@ const Filter = () => {
                 {sem}
               </SelectItem>
             ))}
-            <SelectItem key={null} value="전체">
+            <SelectItem key="all" value="전체">
               전체
             </SelectItem>
           </SelectContent>
