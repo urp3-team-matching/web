@@ -20,7 +20,7 @@ export default function ApplyStatueBadge({
     badgeText = "모집중";
   } else {
     badgeColor = "bg-gray-400";
-    badgeText = "모집마감";
+    badgeText = "모집완료";
   }
   return (
     <Badge
