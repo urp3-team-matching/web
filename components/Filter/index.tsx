@@ -15,8 +15,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  getAcademicPeriod,
   GetProjectsQuerySchema,
   Semester,
+  SEMESTER_FILTER_ALL,
+  SemesterFilter,
+  SemesterFilterSchema,
   STATUS_FILTER_ALL,
   StatusFilter,
   StatusFilterSchema,
@@ -27,31 +31,18 @@ const STATUS_FILTER_VALUES: StatusFilter[] = [
   STATUS_FILTER_ALL,
 ];
 
-// 날짜 기준에 따른 기본 연도 및 학기 계산 함수
-const getDefaultAcademicPeriod = () => {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth() + 1; // 1~12월
-
-  // 1월 ~ 6월: 당해 연도 2학기
-  if (month >= 1 && month <= 6) {
-    return {
-      defaultYear: year,
-      defaultSemester: Semester.SECOND,
-    };
-  }
-
-  // 7월 ~ 12월: 내년 연도 1학기
-  return {
-    defaultYear: year + 1,
-    defaultSemester: Semester.FIRST,
-  };
-};
+const SEMESTER_FILTER_VALUES: SemesterFilter[] = [
+  ...Object.values(Semester),
+  SEMESTER_FILTER_ALL,
+];
 
 const Filter = () => {
-  const { defaultYear, defaultSemester } = getDefaultAcademicPeriod();
+  // 서버(getAllProjects)와 같은 함수로 기본 연도/학기를 계산한다.
+  // (작성일 기준 1~6월 → 당해 2학기 / 7~12월 → 다음 해 1학기)
+  // nuqs의 withDefault 값은 URL에 기록되지 않으므로, 서버도 같은 기본값을
+  // 써야 화면에 보이는 필터와 실제 조회 결과가 일치한다.
+  const { year: defaultYear, semester: defaultSemester } = getAcademicPeriod();
 
-  // 💡 상태 필터 기본값을 '모집중'에서 '전체'(STATUS_FILTER_ALL)로 변경
   const [filter, setFilter] = useQueryState(
     "status" as keyof z.infer<typeof GetProjectsQuerySchema>,
     parseAsStringEnum<StatusFilter>(STATUS_FILTER_VALUES).withDefault(
@@ -64,12 +55,20 @@ const Filter = () => {
     parseAsInteger.withDefault(defaultYear)
   );
 
-  const [semester, setSemester] = useQueryState<Semester>(
+  const [semester, setSemester] = useQueryState<SemesterFilter>(
     "semester",
-    parseAsStringEnum<Semester>(Object.values(Semester) as Semester[]).withDefault(
+    parseAsStringEnum<SemesterFilter>(SEMESTER_FILTER_VALUES).withDefault(
       defaultSemester
     )
   );
+
+  // 필터가 바뀌면 1페이지로 돌아간다(예: 전체 3페이지 → 모집중 탭 이동 시 빈 화면 방지).
+  const [, setPage] = useQueryState("page", parseAsInteger);
+
+  const changeStatus = (value: StatusFilter) => {
+    setFilter(value);
+    setPage(null);
+  };
 
   return (
     <div className="w-full flex gap-x-2 justify-between md:justify-start items-center">
@@ -81,7 +80,12 @@ const Filter = () => {
         <Input
           type="number"
           value={year}
-          onChange={(e) => setYear(e.target.valueAsNumber)}
+          onChange={(e) => {
+            const value = e.target.valueAsNumber;
+            // 입력칸을 비우면 NaN이 들어오므로 기본값으로 되돌린다.
+            setYear(Number.isNaN(value) ? null : value);
+            setPage(null);
+          }}
           className="w-20 px-3 py-1 h-8 text-sm [&::-webkit-inner-spin-button]:opacity-100 [&::-webkit-outer-spin-button]:opacity-100"
         />
 
@@ -89,10 +93,13 @@ const Filter = () => {
           학기
         </Label>
         <Select
-          value={semester ?? "전체"}
+          value={semester}
           onValueChange={(value) => {
-            if (value === "전체") setSemester(null);
-            else setSemester(value as Semester);
+            const parsed = SemesterFilterSchema.safeParse(value);
+            if (parsed.success) {
+              setSemester(parsed.data);
+              setPage(null);
+            }
           }}
         >
           <SelectTrigger size="sm">
@@ -104,7 +111,7 @@ const Filter = () => {
                 {sem}
               </SelectItem>
             ))}
-            <SelectItem key="all" value="전체">
+            <SelectItem key={SEMESTER_FILTER_ALL} value={SEMESTER_FILTER_ALL}>
               전체
             </SelectItem>
           </SelectContent>
@@ -116,23 +123,23 @@ const Filter = () => {
       <div className="flex-1 max-sm:hidden h-10 *:cursor-pointer items-center border-b-[1px] *:border-black border-b-black flex">
         <TabTrigger
           active={filter === STATUS_FILTER_ALL}
-          onClick={() => setFilter(STATUS_FILTER_ALL)}
+          onClick={() => changeStatus(STATUS_FILTER_ALL)}
         >
           전체
         </TabTrigger>
 
         <TabTrigger
           active={filter === ProjectStatus.RECRUITING}
-          onClick={() => setFilter(ProjectStatus.RECRUITING)}
+          onClick={() => changeStatus(ProjectStatus.RECRUITING)}
         >
           모집중
         </TabTrigger>
 
         <TabTrigger
           active={filter === ProjectStatus.CLOSED}
-          onClick={() => setFilter(ProjectStatus.CLOSED)}
+          onClick={() => changeStatus(ProjectStatus.CLOSED)}
         >
-          모집마감
+          모집완료
         </TabTrigger>
       </div>
 
@@ -143,7 +150,7 @@ const Filter = () => {
           value={filter}
           onValueChange={(value) => {
             const parsed = StatusFilterSchema.safeParse(value);
-            if (parsed.success) setFilter(parsed.data);
+            if (parsed.success) changeStatus(parsed.data);
           }}
         >
           <SelectTrigger className="w-[110px]">
@@ -152,7 +159,7 @@ const Filter = () => {
           <SelectContent>
             <SelectItem value={STATUS_FILTER_ALL}>전체</SelectItem>
             <SelectItem value={ProjectStatus.RECRUITING}>모집중</SelectItem>
-            <SelectItem value={ProjectStatus.CLOSED}>모집마감</SelectItem>
+            <SelectItem value={ProjectStatus.CLOSED}>모집완료</SelectItem>
           </SelectContent>
         </Select>
       </div>
