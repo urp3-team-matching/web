@@ -9,12 +9,13 @@ import { prisma } from "@/lib/prisma";
 import { ProjectPasswordManager } from "@/lib/projectPasswordManager";
 import {
   ApplicantForProject,
+  getAcademicPeriod,
   GetProjectsQueryInput,
+  getSemesterDateRange,
   projectAdminSelection,
   ProjectInput,
   projectPublicSelection,
   ProjectUpdateInput,
-  Semester,
   STATUS_FILTER_ALL,
 } from "@/types/project";
 import { PaginatedType, PasswordOmittedType } from "@/types/utils";
@@ -186,33 +187,19 @@ export async function getAllProjects(
     orderByConditions.createdDatetime = "desc";
   }
 
-  // --- [중요] 학기 날짜 로직 (9월~2월: 차년도 1학기 / 3월~8월: 당해 2학기) ---
-  // URP3는 이번 학기에 모집해 다음 학기에 진행할 팀원을 매칭하므로,
-  // 글 작성 시기가 아니라 모집 대상(다음) 학기로 분류한다.
-  let startDate: Date;
-  let endDate: Date;
-  const targetYear = year ?? new Date().getFullYear();
+  // --- [중요] 학기 날짜 로직 ---
+  // 작성일 기준: 1~6월 → 당해 2학기 / 7~12월 → 다음 해 1학기 (types/project.ts)
+  // 화면(Filter)은 URL에 year/semester가 없을 때 getAcademicPeriod() 기본값을
+  // "표시만" 하고 URL에는 쓰지 않는다(nuqs withDefault 동작). 따라서 서버도
+  // 같은 함수로 같은 기본값을 적용해야 화면과 실제 조회 범위가 일치한다.
+  const defaultPeriod = getAcademicPeriod();
+  const targetYear = year ?? defaultPeriod.year;
+  const targetSemester = semester ?? defaultPeriod.semester;
 
-  if (semester === Semester.FIRST) {
-    // 1학기 기준: 전년도 9월 1일 ~ 해당 연도 2월 말일
-    // 예: 2026년 1학기 조회 시 -> 2025년 9월 1일 ~ 2026년 2월 28/29일
-    startDate = new Date(targetYear - 1, 8, 1); // 전년도 9월(8) 1일
-    endDate = new Date(targetYear, 2, 0, 23, 59, 59, 999); // 당해 3월 0일 = 2월 말일
-  } else if (semester === Semester.SECOND) {
-    // 2학기 기준: 해당 연도 3월 1일 ~ 해당 연도 8월 31일
-    // 예: 2026년 2학기 조회 시 -> 2026년 3월 1일 ~ 2026년 8월 31일
-    startDate = new Date(targetYear, 2, 1); // 당해 3월(2) 1일
-    endDate = new Date(targetYear, 8, 0, 23, 59, 59, 999); // 당해 9월 0일 = 8월 31일
-  } else {
-    // 전체 학년도: 전년도 9월 1일 ~ 당해 8월 31일
-    startDate = new Date(targetYear - 1, 8, 1);
-    endDate = new Date(targetYear, 8, 0, 23, 59, 59, 999);
-  }
-
-  whereConditions.createdDatetime = {
-    gte: startDate,
-    lte: endDate,
-  };
+  whereConditions.createdDatetime = getSemesterDateRange(
+    targetYear,
+    targetSemester
+  );
 
   const totalCount = await prisma.project.count({ where: whereConditions });
 
