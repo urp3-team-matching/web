@@ -33,16 +33,10 @@ export async function applyToProject(
     );
   }
 
-  // 데이터베이스 쿼리를 통한 성능 및 메모리 최적화 적용
-  const currentApplicantsCount = await prisma.applicant.count({
-    where: { projectId, status: "APPROVED" }
-  });
-
-  if (currentApplicantsCount >= MAX_APPLICANTS) {
-    throw new MaxApplicantsError(
-      `Maximum number of applicants (${MAX_APPLICANTS}) reached for this project.`
-    );
-  }
+  // 승인 인원이 정원(MAX_APPLICANTS)에 도달했더라도 추가 신청은 받는다.
+  // 신규 신청은 항상 PENDING으로 생성되어 팀 구성에 바로 반영되지 않으며,
+  // 정원/전공 제한은 승인 단계(acceptApplicant)에서 검사한다.
+  // (모집 자체를 막으려면 작성자가 프로젝트를 '마감(CLOSED)' 처리하면 된다.)
 
   const createdApplicant = await prisma.applicant.create({
     data: {
